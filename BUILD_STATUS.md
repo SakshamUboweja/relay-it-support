@@ -17,15 +17,20 @@
 ## Verified this session
 
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
-- [x] 37 passing unit and integration/adapter tests; dependency audit reports zero known vulnerabilities.
+- [x] 49 passing unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
 - [x] TypeScript and optimized Next.js build.
 - [x] Local HTTP employee/session/operator workflows and persisted demo provider request.
 - [x] Heldout synthetic results published honestly; accuracy/precision/security targets not met.
+- [x] Free Jira workspace and restricted-customer HELP test project configured; six team queues verified.
+- [x] Real Jira smoke HELP-1 and authenticated browser-to-worker handoff HELP-2, with team/priority read-back.
+- [x] OpenAI extraction and 256-dimensional embeddings verified; 120 synthetic sources indexed in separate relay_sandbox database.
+- [x] GPT-5.6 Terra/high configured and live extraction verified; versioned Relay prompt, grounded fact handoff, complete summaries, readable descriptions and repeated-troubleshooting bypass. Original monitor extraction plus five focused live regressions passed; broader model comparison remains pending.
+- [x] Upgraded authenticated HTTP-to-worker test created HELP-4; Jira read-back verified summary, description, Endpoint and Medium. Submission replay produced no duplicate create operation. HELP-3 retained for before/after comparison.
+- [x] Live operator sign-in and My requests verified in Chrome. Setup and credential locations documented in LOCAL_SETUP.md.
 
 ## Pending or incomplete compared with the full brief
 
-- [ ] Real Jira smoke: supply authorized test-project mappings and API credentials, then run preflight and opt-in smoke.
-- [ ] Real model/embedding access verification and LLM-only comparison: configure models/key and run preflight; do not label demo results live.
+- [ ] Live LLM-only comparison and representative routing evaluation; the small setup checks are not an evaluation benchmark.
 - [ ] Human review of evaluation truth and a fresh holdout before any post-evaluation tuning claims.
 - [ ] Improve security recognition and routing on development data; current heldout security recall is 3/10.
 - [ ] Approved semantic reranking with a second model call and broader fact-fidelity evaluation.
@@ -36,4 +41,4 @@
 - [ ] Node web/worker + managed PostgreSQL deployment; this architecture is not Sites Worker-compatible.
 - [ ] Production SSO, operational hardening, comprehensive DLP, production incident policies (outside MVP scope).
 
-The local MVP is delivered; the full brief's live integration, complete evaluation and production-readiness claims are not complete.
+The local MVP and ordinary Jira handoff are configured and verified. Complete evaluation, remaining provider features, cloud deployment and production readiness remain incomplete.

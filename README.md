@@ -2,7 +2,7 @@
 
 A working local MVP based on `AI_TICKETING_BUILD_BRIEF.md`. Describe an IT issue, receive one approved procedure or one clarification, and retain a durable report whether it is resolved, associated with an advisory, or handed to support. The operator console exposes facts, sources, routing decisions, acknowledgements, correction jobs, and integration failures.
 
-**Status:** local application implemented and tested. Jira and OpenAI live adapters are implemented; real sandbox/model verification remains pending. The deterministic demo router misses the requested evaluation targets, especially security recall. This is a portfolio MVP, not an unattended production triage system. See [BUILD_STATUS.md](BUILD_STATUS.md) and [measured results](evaluation/RESULTS.md).
+**Status:** local application and real Jira/OpenAI sandbox handoff verified. The configured machine can run `npm run live`; see [LOCAL_SETUP.md](LOCAL_SETUP.md) for login, credential locations, token expiry and the separate sandbox database. The deterministic demo router misses the requested evaluation targets, especially security recall. This is a portfolio MVP, not an unattended production triage system. See [BUILD_STATUS.md](BUILD_STATUS.md) and [measured results](evaluation/RESULTS.md).
 
 ## Run locally
 
@@ -54,7 +54,7 @@ Configuration: [config/policy.json](config/policy.json), [Jira mapping template]
 
 ## Jira sandbox setup
 
-Use a dedicated test service project with synthetic data. No real ticket was created during this build.
+Use a dedicated test service project with synthetic data. The configured HELP project contains retained synthetic verification tickets HELP-1 and HELP-2.
 
 1. Copy `config/jira.example.json` to `config/jira.json`. Replace the site, project, desk, ordinary/fallback request types, all team option IDs, and priority IDs with discovered sandbox values. The example numbers are placeholders, not valid configuration for your organization.
 2. Configure a single-select Support team field and queues whose JQL filters use its options. Setting this field routes a request to a queue; it does not assign a human or prove a notification occurred.
@@ -76,6 +76,8 @@ Live user records must be provisioned by the operator in `users`, with appropria
 
 `npm run embed:sources` sends approved article/case text to the configured embedding model and writes vectors. Extraction uses the OpenAI Responses API with strict Zod output, exact quote validation, allowlisted evidence IDs, one bounded retry, and no tools. Live extraction may flag conflicts or security evidence; deterministic catalog policy still controls actions. This MVP has no second LLM reranker call or calibrated confidence model. Do not treat constrained JSON as proof of factual correctness.
 
+Current local configuration is `OPENAI_MODEL=gpt-5.6-terra`, `OPENAI_REASONING_EFFORT=high`, and `OPENAI_MAX_OUTPUT_TOKENS=8192`. Embeddings remain `text-embedding-3-small`. The versioned Relay prompt in `server/intake-prompt.ts` feeds extracted facts into the workflow; no Codex SDK is embedded. Known impact/urgency and reported attempts are preserved, direct support requests skip troubleshooting, and Jira receives a concise summary and readable description. Existing tickets are not rewritten. Extraction is bounded to 60 seconds per attempt. Changing models requires restarting both web and worker processes; use `npm run live`.
+
 ## Data handling and limits
 
 Known API-key, bearer-token, password-assignment, and MFA-code patterns are redacted before report storage/model calls. This is best-effort sanitation, not comprehensive DLP; users must avoid secrets and confidential records. Messages and retrieved text are treated as untrusted data. React escapes output, queries are parameterized, source visibility is filtered server-side, and embedded sources are re-resolved against current permissions. Historical conversation messages remain part of the originally authorized report record. Operators can inspect all reports; employees only their own reports and authorized shared summaries.
@@ -96,7 +98,7 @@ npm run preflight
 npm run smoke:http
 ```
 
-The verified suite contains 37 passing tests. The HTTP smoke passed seven end-to-end checks. Dependency audit reports zero known vulnerabilities as of this build. Tests need a seeded PostgreSQL database. Stop the demo worker while running tests because tests intentionally control operation delivery timing. Tests remove their own generated reports afterward. The suite covers policy facts, confirmation semantics, one-question fallback, authentication/origin boundaries, visibility revocation, mode isolation, source injection, persistence, duplicate submissions, lost create responses, rate limiting, Jira payloads, routing failures, human updates and review timers.
+The verified suite contains 49 passing tests. The original demo HTTP smoke passed seven end-to-end checks; live browser handoff created HELP-2 and confirmed Identity & Access routing. Dependency audit at the original build reported zero known vulnerabilities. Tests need a seeded demo PostgreSQL database and APP_MODE=demo; do not point tests at relay_sandbox. Stop the demo worker while running tests because tests intentionally control operation delivery timing. Tests remove their own generated reports afterward. The suite covers policy facts, confirmation semantics, one-question fallback, authentication/origin boundaries, visibility revocation, mode isolation, source injection, persistence, duplicate submissions, lost create responses, transient validation retries, rate limiting, Jira payloads, routing failures, human updates and review timers. The quality regression tests inject model/retrieval results in an isolated test process and verify the actual workflow/outbox contract without calling live providers. Focused live Terra checks are documented in LOCAL_SETUP.md and do not replace representative evaluation.
 
 The evaluation runner compares keyword/catalog and retrieval-plus-deterministic-policy methods on 60 development and 60 held-out synthetic scenarios, with families separated and held-out content excluded from retrieval. The independent scenario author did not inspect the router. Labels remain agent-authored and **not human reviewed**. See [results](evaluation/RESULTS.md), [full counts and failures](evaluation/results.json), and [dataset limitations](evaluation/DATASET.md). It records the frozen source hash; rerunning does not justify a new untouched-holdout claim after tuning against these failures.
 
@@ -108,4 +110,4 @@ The initial Sites starter was used for UI components, then the runtime was chang
 
 The browser includes an optional WebMCP `start_it_report` staging tool (not submission). It is feature-detected; a supported WebMCP verification context was unavailable, so this optional surface is unverified.
 
-No real Jira or OpenAI credentials were available, no paid accounts were created, no live messages/tickets were sent, and no production projects were modified. A filesystem project/repository was created. Codex's project-sidebar registration could not be automated because the computer-use tool disallows control of Codex; add this folder through the app's project picker if desired.
+The September 5 setup connected the user's OpenAI key and a new Jira Free test workspace, created synthetic test tickets, and enabled local live-mode operation. No payment details were added or cloud hosting provisioned. OpenAI requests consume metered API usage. See LOCAL_SETUP.md for the configured environment. Production projects were not modified.
