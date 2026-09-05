@@ -67,12 +67,19 @@ test('known secrets are removed before storage/model use', () => {
 });
 test('model evidence IDs and quotes cannot invent facts', () => {
   const data = {
+    summary: 'VPN fails',
     service: null,
     serviceQuote: null,
     symptomQuote: 'invented',
     impactQuote: null,
     urgencyQuote: null,
     securityQuote: null,
+    deviceQuote: null,
+    startedQuote: null,
+    workaroundQuote: null,
+    attemptedStepsQuotes: [],
+    supportRequestQuote: null,
+    procedureAttemptedQuote: null,
     evidenceIds: ['message'],
   };
   assert.throws(

@@ -4,7 +4,9 @@ import type pg from 'pg';
 import { pool, transaction, mode } from './db';
 import { decide } from './policy';
 import { retrieve } from './retrieval';
-import { extractLive } from './model';
+import { extractLive, modelSettings } from './model';
+import { applyExtraction } from './intake-evidence';
+import { INTAKE_PROMPT_VERSION } from './intake-prompt';
 import {
   fact,
   inputSchema,
@@ -142,6 +144,11 @@ export async function intake(raw: unknown, user: User) {
         user,
         r.clarifications,
       );
+      if (mode() === 'live') {
+        r.decision.supportRequested = true;
+        r.decision.facts.device = fact<string>(null);
+        r.decision.facts.location = fact<string>(null);
+      }
       for (const f of Object.values(r.decision.facts))
         f.evidenceIds = f.evidenceIds.map((e) =>
           e === 'current-message' ? messageId : e,
@@ -183,6 +190,15 @@ export async function intake(raw: unknown, user: User) {
       r.related_id = r.decision.related.id;
       reply =
         'Your individual report is saved and linked to this advisory. Following here does not subscribe you to Jira notifications. You can still send a separate request to support.';
+    } else if (
+      input.action === 'support' &&
+      text &&
+      mode() === 'live' &&
+      !r.provider_key &&
+      !['submission_pending', 'operator_review'].includes(r.state)
+    ) {
+      state = 'processing';
+      reply = 'Your message is saved. Preparing the details for support…';
     } else if (input.action === 'support' || input.action === 'broken') {
       if (input.action === 'broken') {
         if (!r.offered.length || r.state !== 'awaiting_response')
@@ -230,7 +246,11 @@ export async function intake(raw: unknown, user: User) {
     return id;
   });
 }
-export async function processIntake(id: string, user: User) {
+export async function processIntake(
+  id: string,
+  user: User,
+  dependencies = { retrieve, extractLive },
+) {
   const lock = await pool.connect();
   try {
     const locked = (
@@ -251,36 +271,33 @@ export async function processIntake(id: string, user: User) {
     let sources: Awaited<ReturnType<typeof retrieve>> = [];
     let modelError: string | null = null;
     try {
-      sources = await retrieve(text, user);
+      sources = await dependencies.retrieve(text, user);
     } catch {
       modelError =
         'Model/retrieval unavailable; known facts saved for general intake.';
     }
     let d = decide(text, sources, user, r.clarifications);
+    let summary = r.summary;
+    let requestedSupport = r.decision.supportRequested ?? false;
+    let procedureAlreadyTried = false;
     if (mode() === 'live') {
+      d.facts.device = fact<string>(null);
+      d.facts.location = fact<string>(null);
       try {
         if (modelError) throw new Error(modelError);
-        const result = await extractLive(
+        const result = await dependencies.extractLive(
           text,
           texts.map((m) => m.id),
+          d.procedure ? { id: d.procedure.id, body: d.procedure.body } : null,
         );
         d.model = process.env.OPENAI_MODEL!;
         d.usage = result.usage;
-        if (result.data.service && d.service !== result.data.service) {
-          d.accepted = false;
-          d.team = 'Service Desk';
-          d.reasons.push('model-catalog-conflict');
-        }
-        if (result.data.securityQuote) {
-          d.team = 'Security Review';
-          d.escalation = 'security';
-          d.priority = 'urgent';
-          d.visibility = 'restricted';
-          d.procedure = null;
-          d.question = null;
-          d.related = null;
-          d.reasons.push('model-extracted-security-evidence');
-        }
+        d.promptVersion = INTAKE_PROMPT_VERSION;
+        d.reasoningEffort = modelSettings().effort;
+        applyExtraction(d, result.data);
+        summary = result.data.summary;
+        requestedSupport ||= !!result.data.supportRequestQuote;
+        procedureAlreadyTried = !!result.data.procedureAttemptedQuote;
       } catch {
         modelError = 'Live model failed. Report saved for human intake.';
         d.model = 'live-failed';
@@ -297,10 +314,6 @@ export async function processIntake(id: string, user: User) {
       f.evidenceIds = f.evidenceIds.flatMap((e) =>
         e === 'current-message' ? texts.map((m) => m.id) : [e],
       );
-    if (mode() === 'live') {
-      d.facts.device = fact<string>(null);
-      d.facts.location = fact<string>(null);
-    }
     let state = 'submission_pending',
       reply = 'Your report is saved and queued for support.';
     let clarification = r.clarifications;
@@ -309,6 +322,11 @@ export async function processIntake(id: string, user: User) {
       state = 'operator_review';
       reply =
         'This may be a security concern. I’ve saved it for restricted Security Review and stopped routine troubleshooting. External handoff awaits a verified restricted destination.';
+    } else if (requestedSupport || procedureAlreadyTried) {
+      reply =
+        procedureAlreadyTried || d.facts.attemptedSteps?.value
+          ? 'I’ve included the troubleshooting you already tried and queued your report for support.'
+          : 'As requested, I’ve queued your report for support.';
     } else if (d.question && clarification < 1) {
       state = 'awaiting_clarification';
       clarification++;
@@ -332,8 +350,8 @@ export async function processIntake(id: string, user: User) {
       ).rows[0];
       if (current.state !== 'processing') return;
       await db.query(
-        'UPDATE reports SET state=$2,decision=$3,clarifications=$4,offered=$5,updated_at=now() WHERE id=$1',
-        [id, state, d, clarification, JSON.stringify(offered)],
+        'UPDATE reports SET state=$2,decision=$3,clarifications=$4,offered=$5,summary=$6,updated_at=now() WHERE id=$1',
+        [id, state, d, clarification, JSON.stringify(offered), summary],
       );
       await db.query('INSERT INTO decisions VALUES($1,$2,$3,now())', [
         randomUUID(),
@@ -355,7 +373,11 @@ export async function processIntake(id: string, user: User) {
         [randomUUID(), id, reply],
       );
       if (['submission_pending', 'operator_review'].includes(state))
-        await enqueue(db, { ...current, state, decision: d, offered }, user);
+        await enqueue(
+          db,
+          { ...current, summary, state, decision: d, offered },
+          user,
+        );
     });
   } finally {
     await lock.query('SELECT pg_advisory_unlock(hashtext($1))', [

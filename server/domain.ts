@@ -57,6 +57,9 @@ export type Decision = {
   related: Source | null;
   question: string | null;
   model: string;
+  promptVersion?: string;
+  reasoningEffort?: string;
+  supportRequested?: boolean;
   version: string;
   latencyMs: number;
   usage: { input: number; output: number };

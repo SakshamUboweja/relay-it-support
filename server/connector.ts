@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { readFile } from 'node:fs/promises';
 import { pool, mode } from './db';
 import { teams, type Team, type Report } from './domain';
+import { ticketDescription } from './ticket-description';
 export type Ticket = {
   key: string;
   url: string | null;
@@ -432,20 +433,7 @@ export async function connector(): Promise<Connector> {
 export function draft(report: Report, externalAccount: string | null): Draft {
   return {
     summary: report.summary,
-    description: JSON.stringify(
-      {
-        reported: report.decision.facts,
-        suggestedSteps: report.offered,
-        confirmedAttempted: report.attempted,
-        unknowns: Object.entries(report.decision.facts)
-          .filter(([, v]) => v.value === null)
-          .map(([k]) => k),
-        reasons: report.decision.reasons,
-        mode: report.mode,
-      },
-      null,
-      2,
-    ),
+    description: ticketDescription(report),
     team: report.decision.team,
     priority: report.decision.priority,
     restricted: report.decision.visibility === 'restricted',

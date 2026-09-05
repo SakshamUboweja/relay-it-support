@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { connector } from '../server/connector';
-import { embed, extractLive } from '../server/model';
+import { embed, extractLive, modelSettings } from '../server/model';
+import { INTAKE_PROMPT_VERSION } from '../server/intake-prompt';
 import { pool, mode } from '../server/db';
 try {
   await pool.query('SELECT 1');
@@ -14,6 +15,8 @@ try {
     console.log(
       JSON.stringify({
         model: process.env.OPENAI_MODEL,
+        reasoningEffort: modelSettings().effort ?? 'model default',
+        promptVersion: INTAKE_PROMPT_VERSION,
         structuredOutput: !!result.data,
         embeddingDimensions: vector.length,
         usage: result.usage,
