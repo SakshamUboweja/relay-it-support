@@ -17,6 +17,7 @@
     "eval": "tsx scripts/evaluate.ts",
     "typecheck": "tsc --noEmit",
     "demo": "node scripts/demo.mjs",
+    "live": "node scripts/live.mjs",
     "preflight": "tsx scripts/preflight.ts",
     "session": "tsx scripts/session.ts",
     "embed:sources": "tsx scripts/embed-sources.ts",

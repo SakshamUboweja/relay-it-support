@@ -347,7 +347,11 @@ export default function Home() {
         </a>
         <span className="demo-pill">
           <i />
-          {boot?.mode === 'live' ? 'Live mode' : 'Local demo'}
+          {!boot
+            ? 'Workspace access'
+            : boot.mode === 'live'
+              ? 'Live mode'
+              : 'Local demo'}
         </span>
       </header>
       {!boot ? (
@@ -1145,9 +1149,11 @@ export default function Home() {
       <footer>
         <span>relay / IT support, connected.</span>
         <span>
-          {boot?.mode === 'live'
-            ? 'Configured organization'
-            : 'Demo organization · Northstar'}
+          {!boot
+            ? 'Sign in to your workspace'
+            : boot.mode === 'live'
+              ? 'Configured organization'
+              : 'Demo organization · Northstar'}
         </span>
       </footer>
     </main>
