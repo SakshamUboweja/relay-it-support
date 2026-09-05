@@ -48,4 +48,4 @@ Security-related reports remain blocked from external delivery; a queue named Se
 
 ## Hosting
 
-The application runs locally. No cloud deployment or paid hosting service was provisioned. The existing Railway workspace is on Hobby, so adding services could incur costs. The current application requires a PostgreSQL database and a persistent worker in addition to the web server.
+Relay is also live at https://relay-web-production-6f5f.up.railway.app on the existing Railway Hobby plan, with one web service, worker and PostgreSQL database. Spending was authorized; no plan upgrade was made. Usage beyond the workspace's included allowance and OpenAI API calls are billed separately. See DEPLOYMENT.md for release verification, cloud sign-in and the remaining GitHub authentication step. The local environment remains separate.

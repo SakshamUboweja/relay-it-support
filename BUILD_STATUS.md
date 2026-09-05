@@ -16,7 +16,7 @@
 
 ## Verified this session
 
-- [x] Railway web/worker configs, runtime guards, Docker build, readiness probe, private mapping variables, user provisioning and source copy prepared. Linux container smoke verified with PostgreSQL 16/pgvector; cloud provisioning awaits budget authorization.
+- [x] Railway deployment verified: HTTPS web, persistent worker, PostgreSQL 16/pgvector, 120 synthetic sources/embeddings, owner provisioning, secure session API, worker heartbeat and Jira HELP-7. Existing Hobby plan; one replica each. GitHub auto-deployment and browser sign-in await owner authentication; see DEPLOYMENT.md.
 
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
 - [x] 51 passing unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
@@ -40,7 +40,8 @@
 - [ ] Live related-request linking and configurable mandatory provider logging for shared-incident reports.
 - [ ] Broad browser, keyboard, screen-reader and responsive interaction QA.
 - [ ] Supported WebMCP contract verification.
-- [ ] Node web/worker + managed PostgreSQL deployment; this architecture is not Sites Worker-compatible.
+- [x] Node web/worker + persistent PostgreSQL deployment on Railway; this architecture is not Sites Worker-compatible.
+- [ ] Resolve the retained HELP-7 routing regression: laptop + Wi-Fi evidence produces a conflict and Service Desk fallback instead of Network.
 - [ ] Production SSO, operational hardening, comprehensive DLP, production incident policies (outside MVP scope).
 
-The local MVP and ordinary Jira handoff are configured and verified. Complete evaluation, remaining provider features, cloud deployment and production readiness remain incomplete.
+The local and hosted MVPs and ordinary Jira handoff are verified. Complete evaluation, remaining provider features, GitHub automatic deployment and production readiness remain incomplete. MULTI_AGENT_PLAN.md describes a proposed next step; it is not implemented.

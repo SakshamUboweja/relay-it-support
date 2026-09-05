@@ -1,6 +1,8 @@
 # Railway deployment
 
-Status: Railway provisioning is underway on the existing Hobby workspace. The owner authorized necessary spending on the cheapest plan; no plan upgrade is required.
+Status: live MVP deployed September 5, 2026 on the existing Hobby workspace, with no plan upgrade. Open https://relay-web-production-6f5f.up.railway.app. Web and worker run committed release `d5a93f9`, uploaded through the Railway CLI after GitHub CI passed. GitHub automatic deployment still requires the owner's authentication and granting Railway access to this private repository.
+
+Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment `49371d2c-2cd1-464e-8eaa-44c72c2cda08`. Web deployment `ca032294-fa9c-4b95-9f55-be5b5a2b566d`; worker deployment `4074afd3-3021-4940-b0a1-f6c1ddf479dc`. All three services are online in US West, one replica each.
 
 ## Architecture
 
@@ -53,6 +55,20 @@ Do not copy the local `DATABASE_URL`, local `APP_ORIGIN`, session tokens, demo s
 GitHub CI runs schema setup, tests, TypeScript and the production build against disposable PostgreSQL with pgvector. It uses no live API keys and sends no Jira requests.
 
 Local deployment verification passed: clean Linux Docker build on Node 22; PostgreSQL 16 with pgvector schema migration; 120 synthetic source/embedding imports; owner provisioning; web readiness and unauthenticated API rejection; live sign-in with Secure/HttpOnly cookie; authenticated bootstrap; and worker heartbeat. The built runtime contained neither the local `.env` nor `config/jira.json`. All 51 automated tests passed. This verifies the deployment artifact locally, not a Railway release.
+
+Cloud verification also passed: HTTPS health 200, unauthenticated bootstrap 401, authenticated live bootstrap, Secure/HttpOnly session cookie, healthy worker heartbeat, 120 sources with embeddings, and one owner account. No old reports, sessions or pending operations were imported. The import used SSH and the temporary public PostgreSQL proxy was removed.
+
+The hosted test created [HELP-7](https://relay-saksham.atlassian.net/servicedesk/customer/portal/2/HELP-7). Replaying its submission returned the same report; one create operation and its routing update succeeded. Jira read-back confirmed readable facts, completed troubleshooting, Medium priority and Waiting for support. Routing quality failed the intended Network expectation: laptop and Wi-Fi evidence tied and the conflict gate selected Service Desk. This is a retained development regression, not a successful routing evaluation.
+
+For local operator access to the cloud, the ignored `.local/railway-deploy-key` is a dedicated SSH key registered as “Relay deployment.” The CLI is installed under `.local/railway-cli/`. Issue a fresh eight-hour owner session with:
+
+```sh
+.local/railway-cli/node_modules/.bin/railway ssh --service relay-web -i "$PWD/.local/railway-deploy-key" -- node --import tsx scripts/session.ts saksham
+```
+
+The initial cloud token is in the owner-only ignored `.local/railway-session.token`. Paste it into the hosted sign-in form; it expires after eight hours. Browser sign-in remains for the owner to complete after browser control was interrupted. Do not commit tokens or SSH private keys.
+
+Until GitHub source access is connected, deploy a clean archive of a CI-verified commit with `railway up PATH --path-as-root --service relay-web --detach`, then the same archive with `--service relay-worker`. Keep credentials exclusively in Railway variables. The checked-in infrastructure definition currently matches the CLI-managed service configuration; after connecting GitHub, run `railway config pull` without `--include-variables` to record that source change.
 
 ## Operations and limits
 
