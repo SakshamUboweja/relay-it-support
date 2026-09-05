@@ -1,6 +1,6 @@
 # Railway deployment
 
-Status: source and deployment configuration prepared; cloud services have not been provisioned. Deployment spending awaits resolution of the original no-payments constraint.
+Status: Railway provisioning is underway on the existing Hobby workspace. The owner authorized necessary spending on the cheapest plan; no plan upgrade is required.
 
 ## Architecture
 
@@ -10,11 +10,13 @@ Use one Railway project with three services in the same region:
 
 | Service | Source | Configuration | Public exposure |
 | --- | --- | --- | --- |
-| relay-web | GitHub `SakshamUboweja/relay-it-support`, main | `/railway.web.json` | Railway HTTPS domain |
-| relay-worker | Same repository and commit | `/railway.worker.json` | None |
+| relay-web | GitHub `SakshamUboweja/relay-it-support`, main | `.railway/railway.ts` | Railway HTTPS domain |
+| relay-worker | Same repository and commit | `.railway/railway.ts` | None |
 | Postgres | `pgvector/pgvector:pg16` | Persistent volume `/var/lib/postgresql/data`; database `relay` | Private networking; temporary proxy only for import if needed |
 
 The shared Docker image runs Node 22 as the unprivileged `node` user. Local credentials, mapping files and build output are excluded from the build context. The web service listens on `0.0.0.0` and Railway's `PORT`. `/api/health` checks database/schema readiness without revealing configuration. Web and worker validate live configuration before starting.
+
+Railway no longer allows new services to opt into `railway.json` / `railway.toml`. The infrastructure definition uses its current TypeScript SDK. Run `railway config plan` to review drift and `railway config apply` to apply intentional infrastructure changes. Existing secrets use `preserve()` and stay in Railway. See [Railway infrastructure configuration](https://docs.railway.com/infrastructure-as-code).
 
 ## Runtime variables
 
@@ -39,10 +41,10 @@ Do not copy the local `DATABASE_URL`, local `APP_ORIGIN`, session tokens, demo s
 
 ## Deployment order
 
-1. Resolve the authorized Railway budget. Workspace hard limits can stop unrelated existing services, so do not change them without explicit approval.
+1. Use the existing Hobby plan with one replica per service. Workspace hard limits can stop unrelated existing services, so leave those unchanged.
 2. Provision Postgres with pgvector, a generated password, private database URL and persistent volume. Enable backups within the approved budget.
-3. Connect the private GitHub repository to relay-web. Set its config path and runtime variables, allocate an HTTPS domain, then deploy. Its pre-deploy command runs the idempotent schema migration only; it does not seed demo identities.
-4. After web/schema readiness, deploy relay-worker using its own config path and the same runtime variables. Keep one replica of each application service for the MVP.
+3. Connect the private GitHub repository to relay-web. Apply its infrastructure settings and runtime variables, allocate an HTTPS domain, then deploy. Its pre-deploy command runs the idempotent schema migration only; it does not seed demo identities.
+4. After web/schema readiness, deploy relay-worker using its worker start command and the same runtime variables. Keep one replica of each application service for the MVP.
 5. Provision the owner with `npm run user:provision -- saksham 'Saksham Uboweja' operator` in the cloud runtime. Existing users are never promoted or overwritten by this command.
 6. Run `npm run sources:copy-sandbox` locally with `SOURCE_DATABASE_URL` set privately to the local live database and `DATABASE_URL` privately set to the new target. It copies only approved, public, explicitly synthetic articles/cases with their embeddings. It does not copy reports, tickets, sessions, users or pending operations. Re-running skips existing source IDs. Verify 120 sources and populated embeddings. Remove any temporary public database proxy afterward.
 7. Issue a fresh cloud session with `npm run session -- saksham` and sign in over HTTPS. Share the token only with its owner; it expires after eight hours.
