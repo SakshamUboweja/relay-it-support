@@ -1,0 +1,1202 @@
+[
+  {
+    "id": "dev-001",
+    "split": "dev",
+    "family": "vpn_password_change_authentication",
+    "text": "Corporate VPN rejects my new password after I changed my password this morning.",
+    "team": "Identity & Access",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-002",
+    "split": "dev",
+    "family": "vpn_password_change_authentication",
+    "text": "I reset my password yesterday and now the VPN says authentication failed.",
+    "team": "Identity & Access",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-003",
+    "split": "dev",
+    "family": "vpn_password_change_authentication",
+    "text": "VPN authentication stopped working immediately after my password change; the gateway is reachable.",
+    "team": "Identity & Access",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-004",
+    "split": "dev",
+    "family": "vpn_password_change_authentication",
+    "text": "My corporate VPN still rejects my credentials since the password reset. I have not tried reconnecting.",
+    "team": "Identity & Access",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-005",
+    "split": "dev",
+    "family": "vpn_password_change_authentication",
+    "text": "After updating my password, corporate VPN sign-in returns invalid credentials. My work impact is not clear yet.",
+    "team": "Identity & Access",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-006",
+    "split": "dev",
+    "family": "vpn_gateway_reachability",
+    "text": "The corporate VPN gateway times out before the sign-in screen appears.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-007",
+    "split": "dev",
+    "family": "vpn_gateway_reachability",
+    "text": "Corporate VPN says the remote server cannot be reached. My normal internet connection works.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-008",
+    "split": "dev",
+    "family": "vpn_gateway_reachability",
+    "text": "VPN cannot resolve its gateway hostname, although public websites load.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-009",
+    "split": "dev",
+    "family": "vpn_gateway_reachability",
+    "text": "My corporate VPN reports a connection timeout before asking for credentials.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-010",
+    "split": "dev",
+    "family": "vpn_gateway_reachability",
+    "text": "The VPN gateway is unreachable from my home connection. There is no authentication error.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-011",
+    "split": "dev",
+    "family": "sso_account_lockout",
+    "text": "Corporate SSO says my account is locked after several incorrect password attempts.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-012",
+    "split": "dev",
+    "family": "sso_account_lockout",
+    "text": "My SSO account has been temporarily locked and I cannot sign in.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-013",
+    "split": "dev",
+    "family": "sso_account_lockout",
+    "text": "The corporate single sign-on page displays account locked. I have not reset anything.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-014",
+    "split": "dev",
+    "family": "sso_account_lockout",
+    "text": "I mistyped my password and now SSO reports too many attempts.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-015",
+    "split": "dev",
+    "family": "sso_account_lockout",
+    "text": "SSO says my account is disabled when I try to sign in. This account worked yesterday.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-016",
+    "split": "dev",
+    "family": "wifi_join_failure",
+    "text": "My managed laptop cannot join the office Wi-Fi; it says unable to connect.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-017",
+    "split": "dev",
+    "family": "wifi_join_failure",
+    "text": "Office Wi-Fi is visible but joining the network fails on my laptop.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-018",
+    "split": "dev",
+    "family": "wifi_join_failure",
+    "text": "The office wireless network keeps refusing the connection before I get an IP address.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-019",
+    "split": "dev",
+    "family": "wifi_join_failure",
+    "text": "I cannot connect to corporate Wi-Fi at my desk. Ethernet still works.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-020",
+    "split": "dev",
+    "family": "wifi_join_failure",
+    "text": "My laptop lists office Wi-Fi but the connection never completes. I have not tried any troubleshooting.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-021",
+    "split": "dev",
+    "family": "laptop_display_failure",
+    "text": "My managed laptop screen is black, but I can hear the fan and startup sound.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-022",
+    "split": "dev",
+    "family": "laptop_display_failure",
+    "text": "The built-in display on my managed laptop flickers continuously.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-023",
+    "split": "dev",
+    "family": "laptop_display_failure",
+    "text": "My laptop display has vertical lines and is unreadable in places.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-024",
+    "split": "dev",
+    "family": "laptop_display_failure",
+    "text": "The laptop screen stopped showing an image; an external monitor still works.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-025",
+    "split": "dev",
+    "family": "laptop_display_failure",
+    "text": "My managed laptop display brightness is stuck at its lowest level.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-026",
+    "split": "dev",
+    "family": "atlas_runtime_errors",
+    "text": "Atlas loads but shows a server error whenever I open the dashboard.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-027",
+    "split": "dev",
+    "family": "atlas_runtime_errors",
+    "text": "The internal Atlas application returns HTTP 500 after I sign in successfully.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-028",
+    "split": "dev",
+    "family": "atlas_runtime_errors",
+    "text": "Atlas crashes when its project overview finishes loading.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-029",
+    "split": "dev",
+    "family": "atlas_runtime_errors",
+    "text": "I can sign into Atlas, but its dashboard is blank while the rest of the page loads.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-030",
+    "split": "dev",
+    "family": "atlas_runtime_errors",
+    "text": "Atlas shows application unavailable when I open the home page. I do not know if anyone else is affected.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-031",
+    "split": "dev",
+    "family": "vague_access_target",
+    "text": "I cannot get in.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-032",
+    "split": "dev",
+    "family": "vague_access_target",
+    "text": "It will not let me access it.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-033",
+    "split": "dev",
+    "family": "vague_access_target",
+    "text": "Something is stopping me from logging in, but I do not know what it is called.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-034",
+    "split": "dev",
+    "family": "vague_access_target",
+    "text": "The thing I normally open for work is not letting me in.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-035",
+    "split": "dev",
+    "family": "vague_access_target",
+    "text": "My access is broken. Can you help?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-036",
+    "split": "dev",
+    "family": "procurement_and_access_approval",
+    "text": "Please purchase a second monitor for my home office.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-037",
+    "split": "dev",
+    "family": "procurement_and_access_approval",
+    "text": "I need approval for a new software subscription.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-038",
+    "split": "dev",
+    "family": "procurement_and_access_approval",
+    "text": "Please order a replacement docking station for the new hire starting next month.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-039",
+    "split": "dev",
+    "family": "procurement_and_access_approval",
+    "text": "Can you approve access to the finance reporting workspace for me?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-040",
+    "split": "dev",
+    "family": "procurement_and_access_approval",
+    "text": "I would like to request a new laptop for a future employee.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-041",
+    "split": "dev",
+    "family": "unsolicited_mfa_approval",
+    "text": "I keep getting SSO MFA approval prompts even though I am not signing in.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-042",
+    "split": "dev",
+    "family": "unsolicited_mfa_approval",
+    "text": "I accidentally approved an SSO sign-in request that I did not initiate.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-043",
+    "split": "dev",
+    "family": "unsolicited_mfa_approval",
+    "text": "An unexpected SSO MFA prompt appeared while I was asleep. I did not approve it.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-044",
+    "split": "dev",
+    "family": "unsolicited_mfa_approval",
+    "text": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-045",
+    "split": "dev",
+    "family": "unsolicited_mfa_approval",
+    "text": "I approved an unsolicited corporate SSO MFA request and now I am worried my account was accessed.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-046",
+    "split": "dev",
+    "family": "explicit_individual_work_blocked",
+    "text": "My laptop keyboard has stopped working. My work is blocked and I have no usable workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-047",
+    "split": "dev",
+    "family": "explicit_individual_work_blocked",
+    "text": "The trackpad on my managed laptop will not respond. I cannot do my work and no spare mouse is available.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-048",
+    "split": "dev",
+    "family": "explicit_individual_work_blocked",
+    "text": "My laptop freezes after login. I am completely blocked with no usable workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-049",
+    "split": "dev",
+    "family": "explicit_individual_work_blocked",
+    "text": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-050",
+    "split": "dev",
+    "family": "explicit_individual_work_blocked",
+    "text": "My laptop cannot open any files. I cannot work at all and I have no workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-051",
+    "split": "dev",
+    "family": "security_reporting_information",
+    "text": "How do I report phishing? I am preparing a team training session.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-052",
+    "split": "dev",
+    "family": "security_reporting_information",
+    "text": "Where can I find instructions for reporting a suspected security incident? Nothing has happened to me.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-053",
+    "split": "dev",
+    "family": "security_reporting_information",
+    "text": "Can you explain the process for reporting a compromised account for our awareness guide?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-054",
+    "split": "dev",
+    "family": "security_reporting_information",
+    "text": "I am writing an onboarding checklist. Where should new hires report suspicious MFA requests?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-055",
+    "split": "dev",
+    "family": "security_reporting_information",
+    "text": "What is the policy for reporting data exposure? This is a general information request.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "dev-056",
+    "split": "dev",
+    "family": "multiple_unresolved_services",
+    "text": "My office Wi-Fi drops and Atlas also fails to load. I do not know which problem starts first.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-057",
+    "split": "dev",
+    "family": "multiple_unresolved_services",
+    "text": "SSO and the VPN both seem broken, but I have not seen an error message.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-058",
+    "split": "dev",
+    "family": "multiple_unresolved_services",
+    "text": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-059",
+    "split": "dev",
+    "family": "multiple_unresolved_services",
+    "text": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "dev-060",
+    "split": "dev",
+    "family": "multiple_unresolved_services",
+    "text": "I may have a VPN problem or an SSO problem. I do not know which sign-in is failing.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-001",
+    "split": "heldout",
+    "family": "vpn_established_tunnel_drops",
+    "text": "Corporate VPN authenticates successfully, connects for thirty seconds, and then disconnects.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-002",
+    "split": "heldout",
+    "family": "vpn_established_tunnel_drops",
+    "text": "My VPN tunnel drops whenever a large file transfer begins. Sign-in succeeds.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-003",
+    "split": "heldout",
+    "family": "vpn_established_tunnel_drops",
+    "text": "The corporate VPN connects but repeatedly loses its tunnel while I am browsing internal sites.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-004",
+    "split": "heldout",
+    "family": "vpn_established_tunnel_drops",
+    "text": "VPN login works, but the established connection disconnects every few minutes.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-005",
+    "split": "heldout",
+    "family": "vpn_established_tunnel_drops",
+    "text": "My corporate VPN session drops after moving between home network access points; authentication is successful.",
+    "team": "Network",
+    "service": "vpn",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-006",
+    "split": "heldout",
+    "family": "sso_redirect_session_loop",
+    "text": "SSO accepts my password and then redirects back to its own login page in a loop.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-007",
+    "split": "heldout",
+    "family": "sso_redirect_session_loop",
+    "text": "Corporate single sign-on keeps asking me to authenticate again immediately after a successful login.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-008",
+    "split": "heldout",
+    "family": "sso_redirect_session_loop",
+    "text": "The SSO login page says success, but the session disappears before any application opens.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-009",
+    "split": "heldout",
+    "family": "sso_redirect_session_loop",
+    "text": "SSO completes authentication and then repeats the sign-in flow indefinitely.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-010",
+    "split": "heldout",
+    "family": "sso_redirect_session_loop",
+    "text": "My corporate SSO session expires instantly in every supported browser after I log in.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-011",
+    "split": "heldout",
+    "family": "wifi_location_specific_coverage",
+    "text": "Office Wi-Fi works at my desk but disappears in the third-floor meeting room.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-012",
+    "split": "heldout",
+    "family": "wifi_location_specific_coverage",
+    "text": "The office wireless signal drops to zero only in the west stairwell.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-013",
+    "split": "heldout",
+    "family": "wifi_location_specific_coverage",
+    "text": "Office Wi-Fi disconnects in conference room Cedar, but works again outside the door.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-014",
+    "split": "heldout",
+    "family": "wifi_location_specific_coverage",
+    "text": "My laptop stays on office Wi-Fi everywhere except the reception area.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-015",
+    "split": "heldout",
+    "family": "wifi_location_specific_coverage",
+    "text": "The office Wi-Fi signal is unusable in the new east wing; it works in the old wing.",
+    "team": "Network",
+    "service": "wifi",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-016",
+    "split": "heldout",
+    "family": "laptop_power_boot_failure",
+    "text": "My managed laptop will not power on and its charging light stays off. I cannot work and have no usable workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-017",
+    "split": "heldout",
+    "family": "laptop_power_boot_failure",
+    "text": "The laptop stops at the manufacturer logo before the operating system loads. My work is blocked and no replacement is available.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-018",
+    "split": "heldout",
+    "family": "laptop_power_boot_failure",
+    "text": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-019",
+    "split": "heldout",
+    "family": "laptop_power_boot_failure",
+    "text": "The laptop battery is flat and it is not charging with the supplied charger. I cannot do any work and have no workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-020",
+    "split": "heldout",
+    "family": "laptop_power_boot_failure",
+    "text": "My laptop shows no bootable device immediately after powering on. I am completely blocked with no usable workaround.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "elevated",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-021",
+    "split": "heldout",
+    "family": "atlas_record_action_failure",
+    "text": "Atlas opens normally, but saving a project record returns validation failed with no field highlighted.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-022",
+    "split": "heldout",
+    "family": "atlas_record_action_failure",
+    "text": "The export button in Atlas produces an empty CSV even though the table contains records.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-023",
+    "split": "heldout",
+    "family": "atlas_record_action_failure",
+    "text": "Atlas displays the project list, but the search filter never updates the results.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-024",
+    "split": "heldout",
+    "family": "atlas_record_action_failure",
+    "text": "When I change a project owner in Atlas, the save operation fails with application error.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-025",
+    "split": "heldout",
+    "family": "atlas_record_action_failure",
+    "text": "Atlas report generation stalls indefinitely after I choose the date range.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-026",
+    "split": "heldout",
+    "family": "hr_and_business_administration",
+    "text": "I want to change my benefits enrollment for next year.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-027",
+    "split": "heldout",
+    "family": "hr_and_business_administration",
+    "text": "Please correct the mailing address on my payroll records.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-028",
+    "split": "heldout",
+    "family": "hr_and_business_administration",
+    "text": "Can you approve my vacation request for next month?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-029",
+    "split": "heldout",
+    "family": "hr_and_business_administration",
+    "text": "I need to submit a travel reimbursement claim.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-030",
+    "split": "heldout",
+    "family": "hr_and_business_administration",
+    "text": "Who can answer a question about my employment contract?",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-031",
+    "split": "heldout",
+    "family": "suspected_atlas_data_exposure",
+    "text": "Atlas let me open another department’s confidential salary export that I should not be able to see.",
+    "team": "Security Review",
+    "service": "atlas",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-032",
+    "split": "heldout",
+    "family": "suspected_atlas_data_exposure",
+    "text": "I accidentally shared an Atlas customer-data export through a public link.",
+    "team": "Security Review",
+    "service": "atlas",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-033",
+    "split": "heldout",
+    "family": "suspected_atlas_data_exposure",
+    "text": "An Atlas page is showing confidential records from another team without asking me for permission.",
+    "team": "Security Review",
+    "service": "atlas",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-034",
+    "split": "heldout",
+    "family": "suspected_atlas_data_exposure",
+    "text": "I found a publicly accessible link containing a private Atlas export. It appears to include customer details.",
+    "team": "Security Review",
+    "service": "atlas",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-035",
+    "split": "heldout",
+    "family": "suspected_atlas_data_exposure",
+    "text": "I may have sent an Atlas export with confidential employee data to the wrong external recipient.",
+    "team": "Security Review",
+    "service": "atlas",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-036",
+    "split": "heldout",
+    "family": "negated_security_during_sso_failure",
+    "text": "SSO says invalid password. I have not seen suspicious MFA requests or any sign of compromise.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-037",
+    "split": "heldout",
+    "family": "negated_security_during_sso_failure",
+    "text": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-038",
+    "split": "heldout",
+    "family": "negated_security_during_sso_failure",
+    "text": "SSO rejects my credentials. This is not a phishing report; I just need help signing in.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-039",
+    "split": "heldout",
+    "family": "negated_security_during_sso_failure",
+    "text": "The corporate SSO password entry fails. I did not click a suspicious link or approve an unknown MFA prompt.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-040",
+    "split": "heldout",
+    "family": "negated_security_during_sso_failure",
+    "text": "SSO displays authentication failed. There is no suspected data exposure and no unauthorized account activity.",
+    "team": "Identity & Access",
+    "service": "sso",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-041",
+    "split": "heldout",
+    "family": "reported_broad_critical_atlas_loss",
+    "text": "Everyone on my department’s shift cannot open Atlas and customer operations are stopped. This is what colleagues told me, not a confirmed outage.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "urgent",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-042",
+    "split": "heldout",
+    "family": "reported_broad_critical_atlas_loss",
+    "text": "All forty people on our operations team report Atlas is unavailable and cannot process orders.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "urgent",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-043",
+    "split": "heldout",
+    "family": "reported_broad_critical_atlas_loss",
+    "text": "Atlas has stopped loading for the whole company according to our team chat. I have no official outage confirmation.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "urgent",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-044",
+    "split": "heldout",
+    "family": "reported_broad_critical_atlas_loss",
+    "text": "Our entire support floor cannot use Atlas, and we cannot handle customer cases.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "urgent",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-045",
+    "split": "heldout",
+    "family": "reported_broad_critical_atlas_loss",
+    "text": "Multiple departments are reporting that Atlas is down and critical order processing has stopped. The cause is unknown.",
+    "team": "Business Applications",
+    "service": "atlas",
+    "escalation": "urgent",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-046",
+    "split": "heldout",
+    "family": "unidentified_failure_object",
+    "text": "The screen has an error but I cannot tell whether it is a website or my computer.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-047",
+    "split": "heldout",
+    "family": "unidentified_failure_object",
+    "text": "Something stopped responding while I was working. I do not know which application.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-048",
+    "split": "heldout",
+    "family": "unidentified_failure_object",
+    "text": "A red warning appeared and now it does not work. I have no other details yet.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-049",
+    "split": "heldout",
+    "family": "unidentified_failure_object",
+    "text": "I am seeing an error with the tool we use, but I cannot remember its name.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-050",
+    "split": "heldout",
+    "family": "unidentified_failure_object",
+    "text": "There is a broken thing on my desktop. I do not know whether it is a device or an application.",
+    "team": "Service Desk",
+    "service": null,
+    "escalation": "none",
+    "expectedClarification": true
+  },
+  {
+    "id": "heldout-051",
+    "split": "heldout",
+    "family": "misleading_historical_incident_mentions",
+    "text": "Last month I had a VPN problem; today the VPN is working but my laptop keyboard is missing keystrokes.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-052",
+    "split": "heldout",
+    "family": "misleading_historical_incident_mentions",
+    "text": "The old Atlas outage is resolved. My current issue is a laptop trackpad that no longer clicks.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-053",
+    "split": "heldout",
+    "family": "misleading_historical_incident_mentions",
+    "text": "I saw a Wi-Fi incident yesterday, but today wireless works and my laptop speakers produce no sound.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-054",
+    "split": "heldout",
+    "family": "misleading_historical_incident_mentions",
+    "text": "SSO was broken last week and is fine now. Today my laptop camera is not detected by any application.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-055",
+    "split": "heldout",
+    "family": "misleading_historical_incident_mentions",
+    "text": "A colleague had a security incident earlier. My own problem is only that my laptop fan rattles; I have no suspicious activity.",
+    "team": "Endpoint",
+    "service": "laptop",
+    "escalation": "none",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-056",
+    "split": "heldout",
+    "family": "phishing_credential_disclosure",
+    "text": "I entered my corporate SSO password on a fake login page linked from a suspicious email.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-057",
+    "split": "heldout",
+    "family": "phishing_credential_disclosure",
+    "text": "I typed my SSO credentials into a site I now believe was phishing. What should I do?",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-058",
+    "split": "heldout",
+    "family": "phishing_credential_disclosure",
+    "text": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-059",
+    "split": "heldout",
+    "family": "phishing_credential_disclosure",
+    "text": "I may have given my SSO password to a fraudulent sign-in form. I am not sure whether anyone used it.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  },
+  {
+    "id": "heldout-060",
+    "split": "heldout",
+    "family": "phishing_credential_disclosure",
+    "text": "I followed an email link and entered my corporate SSO credentials. The sender has since told me their account was compromised.",
+    "team": "Security Review",
+    "service": "sso",
+    "escalation": "security",
+    "expectedClarification": false
+  }
+]

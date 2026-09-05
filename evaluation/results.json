@@ -1,0 +1,2462 @@
+{
+  "runDate": "2026-09-05T04:11:25.588Z",
+  "mode": "deterministic-demo",
+  "model": "deterministic-demo-v1",
+  "promptVersion": "intake-v1",
+  "policyVersion": "northstar-1.0",
+  "policyHash": "b365566068c1000be23629803cd061a4f54c691a7df11a12602c45d27ee6767c",
+  "dataset": "120 synthetic cases; 60/60 distinct family split; agent-authored labels NOT human reviewed",
+  "allowedInformation": {
+    "keyword": "Text and catalog; first alias match; no policy, history, model or incidents",
+    "proposed": "Same text and catalog, simulated Maya profile, approved pre-existing synthetic articles/cases, deterministic policy; no active incident context in this text-only corpus"
+  },
+  "liveLLMBaseline": {
+    "status": "skipped",
+    "reason": "No authorized live model configuration. A mock is not an LLM baseline."
+  },
+  "splits": {
+    "dev": {
+      "keyword": {
+        "routingAccuracy": {
+          "numerator": 41,
+          "denominator": 60,
+          "rate": 0.6833333333333333
+        },
+        "perTeam": {
+          "Service Desk": {
+            "numerator": 12,
+            "denominator": 20,
+            "rate": 0.6
+          },
+          "Identity & Access": {
+            "numerator": 5,
+            "denominator": 10,
+            "rate": 0.5
+          },
+          "Network": {
+            "numerator": 10,
+            "denominator": 10,
+            "rate": 1
+          },
+          "Endpoint": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Business Applications": {
+            "numerator": 5,
+            "denominator": 5,
+            "rate": 1
+          },
+          "Security Review": {
+            "numerator": 0,
+            "denominator": 5,
+            "rate": 0
+          }
+        },
+        "acceptedPrecision": {
+          "numerator": 29,
+          "denominator": 48,
+          "rate": 0.6041666666666666
+        },
+        "eligibleCoverage": {
+          "numerator": 40,
+          "denominator": 40,
+          "rate": 1
+        },
+        "automaticRoutingFrequency": {
+          "numerator": 48,
+          "denominator": 60,
+          "rate": 0.8
+        },
+        "abstentions": 12,
+        "escalationRecall": {
+          "numerator": 0,
+          "denominator": 10,
+          "rate": 0
+        },
+        "escalationFalsePositives": {
+          "numerator": 0,
+          "denominator": 50,
+          "rate": 0
+        },
+        "securityRecall": {
+          "numerator": 0,
+          "denominator": 5,
+          "rate": 0
+        },
+        "securityFalsePositives": {
+          "numerator": 0,
+          "denominator": 55,
+          "rate": 0
+        },
+        "clarificationAgreement": {
+          "numerator": 50,
+          "denominator": 60,
+          "rate": 0.8333333333333334
+        },
+        "firstTurnQuestionRate": {
+          "numerator": 0,
+          "denominator": 60,
+          "rate": 0
+        },
+        "latency": {
+          "p50Ms": 0.033999999999991815,
+          "p95Ms": 0.0952920000000006,
+          "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "estimatedModelCostUSD": 0,
+        "failures": [
+          {
+            "id": "dev-001",
+            "family": "vpn_password_change_authentication",
+            "text": "Corporate VPN rejects my new password after I changed my password this morning.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 1.6935000000000002
+          },
+          {
+            "id": "dev-002",
+            "family": "vpn_password_change_authentication",
+            "text": "I reset my password yesterday and now the VPN says authentication failed.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.3199170000000038
+          },
+          {
+            "id": "dev-003",
+            "family": "vpn_password_change_authentication",
+            "text": "VPN authentication stopped working immediately after my password change; the gateway is reachable.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.06733299999999076
+          },
+          {
+            "id": "dev-004",
+            "family": "vpn_password_change_authentication",
+            "text": "My corporate VPN still rejects my credentials since the password reset. I have not tried reconnecting.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.06366599999998357
+          },
+          {
+            "id": "dev-005",
+            "family": "vpn_password_change_authentication",
+            "text": "After updating my password, corporate VPN sign-in returns invalid credentials. My work impact is not clear yet.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.09191700000002356
+          },
+          {
+            "id": "dev-031",
+            "family": "vague_access_target",
+            "text": "I cannot get in.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03008400000001643
+          },
+          {
+            "id": "dev-032",
+            "family": "vague_access_target",
+            "text": "It will not let me access it.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.0277499999999975
+          },
+          {
+            "id": "dev-033",
+            "family": "vague_access_target",
+            "text": "Something is stopping me from logging in, but I do not know what it is called.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.030333000000013044
+          },
+          {
+            "id": "dev-034",
+            "family": "vague_access_target",
+            "text": "The thing I normally open for work is not letting me in.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.028416999999990367
+          },
+          {
+            "id": "dev-035",
+            "family": "vague_access_target",
+            "text": "My access is broken. Can you help?",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.02679200000000037
+          },
+          {
+            "id": "dev-036",
+            "family": "procurement_and_access_approval",
+            "text": "Please purchase a second monitor for my home office.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.028416999999990367
+          },
+          {
+            "id": "dev-040",
+            "family": "procurement_and_access_approval",
+            "text": "I would like to request a new laptop for a future employee.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.029167000000001053
+          },
+          {
+            "id": "dev-041",
+            "family": "unsolicited_mfa_approval",
+            "text": "I keep getting SSO MFA approval prompts even though I am not signing in.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03958299999999326
+          },
+          {
+            "id": "dev-042",
+            "family": "unsolicited_mfa_approval",
+            "text": "I accidentally approved an SSO sign-in request that I did not initiate.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.030333000000013044
+          },
+          {
+            "id": "dev-043",
+            "family": "unsolicited_mfa_approval",
+            "text": "An unexpected SSO MFA prompt appeared while I was asleep. I did not approve it.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.028332999999975073
+          },
+          {
+            "id": "dev-044",
+            "family": "unsolicited_mfa_approval",
+            "text": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.02924999999999045
+          },
+          {
+            "id": "dev-045",
+            "family": "unsolicited_mfa_approval",
+            "text": "I approved an unsolicited corporate SSO MFA request and now I am worried my account was accessed.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.028750000000002274
+          },
+          {
+            "id": "dev-046",
+            "family": "explicit_individual_work_blocked",
+            "text": "My laptop keyboard has stopped working. My work is blocked and I have no usable workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.06333300000000008
+          },
+          {
+            "id": "dev-047",
+            "family": "explicit_individual_work_blocked",
+            "text": "The trackpad on my managed laptop will not respond. I cannot do my work and no spare mouse is available.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03304199999999469
+          },
+          {
+            "id": "dev-048",
+            "family": "explicit_individual_work_blocked",
+            "text": "My laptop freezes after login. I am completely blocked with no usable workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.0600419999999815
+          },
+          {
+            "id": "dev-049",
+            "family": "explicit_individual_work_blocked",
+            "text": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031374999999997044
+          },
+          {
+            "id": "dev-050",
+            "family": "explicit_individual_work_blocked",
+            "text": "My laptop cannot open any files. I cannot work at all and I have no workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.029416000000026088
+          },
+          {
+            "id": "dev-054",
+            "family": "security_reporting_information",
+            "text": "I am writing an onboarding checklist. Where should new hires report suspicious MFA requests?",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.030292000000002872
+          },
+          {
+            "id": "dev-056",
+            "family": "multiple_unresolved_services",
+            "text": "My office Wi-Fi drops and Atlas also fails to load. I do not know which problem starts first.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03233299999999417
+          },
+          {
+            "id": "dev-057",
+            "family": "multiple_unresolved_services",
+            "text": "SSO and the VPN both seem broken, but I have not seen an error message.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03733400000001552
+          },
+          {
+            "id": "dev-058",
+            "family": "multiple_unresolved_services",
+            "text": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03029199999997445
+          },
+          {
+            "id": "dev-059",
+            "family": "multiple_unresolved_services",
+            "text": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03191699999999287
+          },
+          {
+            "id": "dev-060",
+            "family": "multiple_unresolved_services",
+            "text": "I may have a VPN problem or an SSO problem. I do not know which sign-in is failing.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.034707999999994854
+          }
+        ]
+      },
+      "proposed": {
+        "routingAccuracy": {
+          "numerator": 49,
+          "denominator": 60,
+          "rate": 0.8166666666666667
+        },
+        "perTeam": {
+          "Service Desk": {
+            "numerator": 17,
+            "denominator": 20,
+            "rate": 0.85
+          },
+          "Identity & Access": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Network": {
+            "numerator": 6,
+            "denominator": 10,
+            "rate": 0.6
+          },
+          "Endpoint": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Business Applications": {
+            "numerator": 5,
+            "denominator": 5,
+            "rate": 1
+          },
+          "Security Review": {
+            "numerator": 3,
+            "denominator": 5,
+            "rate": 0.6
+          }
+        },
+        "acceptedPrecision": {
+          "numerator": 32,
+          "denominator": 37,
+          "rate": 0.8648648648648649
+        },
+        "eligibleCoverage": {
+          "numerator": 34,
+          "denominator": 40,
+          "rate": 0.85
+        },
+        "automaticRoutingFrequency": {
+          "numerator": 37,
+          "denominator": 60,
+          "rate": 0.6166666666666667
+        },
+        "abstentions": 23,
+        "escalationRecall": {
+          "numerator": 7,
+          "denominator": 10,
+          "rate": 0.7
+        },
+        "escalationFalsePositives": {
+          "numerator": 1,
+          "denominator": 50,
+          "rate": 0.02
+        },
+        "securityRecall": {
+          "numerator": 3,
+          "denominator": 5,
+          "rate": 0.6
+        },
+        "securityFalsePositives": {
+          "numerator": 1,
+          "denominator": 55,
+          "rate": 0.01818181818181818
+        },
+        "clarificationAgreement": {
+          "numerator": 47,
+          "denominator": 60,
+          "rate": 0.7833333333333333
+        },
+        "firstTurnQuestionRate": {
+          "numerator": 19,
+          "denominator": 60,
+          "rate": 0.31666666666666665
+        },
+        "latency": {
+          "p50Ms": 0.03149999999999409,
+          "p95Ms": 0.04858400000000529,
+          "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "estimatedModelCostUSD": 0,
+        "failures": [
+          {
+            "id": "dev-006",
+            "family": "vpn_gateway_reachability",
+            "text": "The corporate VPN gateway times out before the sign-in screen appears.",
+            "expected": {
+              "team": "Network",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.034874999999999545
+          },
+          {
+            "id": "dev-013",
+            "family": "sso_account_lockout",
+            "text": "The corporate single sign-on page displays account locked. I have not reset anything.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030833999999998696
+          },
+          {
+            "id": "dev-016",
+            "family": "wifi_join_failure",
+            "text": "My managed laptop cannot join the office Wi-Fi; it says unable to connect.",
+            "expected": {
+              "team": "Network",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.04008300000000986
+          },
+          {
+            "id": "dev-017",
+            "family": "wifi_join_failure",
+            "text": "Office Wi-Fi is visible but joining the network fails on my laptop.",
+            "expected": {
+              "team": "Network",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03149999999999409
+          },
+          {
+            "id": "dev-020",
+            "family": "wifi_join_failure",
+            "text": "My laptop lists office Wi-Fi but the connection never completes. I have not tried any troubleshooting.",
+            "expected": {
+              "team": "Network",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03233299999999417
+          },
+          {
+            "id": "dev-037",
+            "family": "procurement_and_access_approval",
+            "text": "I need approval for a new software subscription.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.028333000000003494
+          },
+          {
+            "id": "dev-038",
+            "family": "procurement_and_access_approval",
+            "text": "Please order a replacement docking station for the new hire starting next month.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.028750000000002274
+          },
+          {
+            "id": "dev-041",
+            "family": "unsolicited_mfa_approval",
+            "text": "I keep getting SSO MFA approval prompts even though I am not signing in.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.050208999999995285
+          },
+          {
+            "id": "dev-042",
+            "family": "unsolicited_mfa_approval",
+            "text": "I accidentally approved an SSO sign-in request that I did not initiate.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030166000000008353
+          },
+          {
+            "id": "dev-047",
+            "family": "explicit_individual_work_blocked",
+            "text": "The trackpad on my managed laptop will not respond. I cannot do my work and no spare mouse is available.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03291600000000017
+          },
+          {
+            "id": "dev-048",
+            "family": "explicit_individual_work_blocked",
+            "text": "My laptop freezes after login. I am completely blocked with no usable workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "elevated",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "explicit-work-blocked-no-workaround"
+              ]
+            },
+            "latencyMs": 0.030957999999998265
+          },
+          {
+            "id": "dev-052",
+            "family": "security_reporting_information",
+            "text": "Where can I find instructions for reporting a suspected security incident? Nothing has happened to me.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030957999999998265
+          },
+          {
+            "id": "dev-053",
+            "family": "security_reporting_information",
+            "text": "Can you explain the process for reporting a compromised account for our awareness guide?",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.039749999999997954
+          },
+          {
+            "id": "dev-054",
+            "family": "security_reporting_information",
+            "text": "I am writing an onboarding checklist. Where should new hires report suspicious MFA requests?",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Security Review",
+              "accepted": true,
+              "escalation": "security",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "possible-compromise-restricted-review"
+              ]
+            },
+            "latencyMs": 0.030583000000007132
+          },
+          {
+            "id": "dev-055",
+            "family": "security_reporting_information",
+            "text": "What is the policy for reporting data exposure? This is a general information request.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030292000000002872
+          },
+          {
+            "id": "dev-057",
+            "family": "multiple_unresolved_services",
+            "text": "SSO and the VPN both seem broken, but I have not seen an error message.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.029708999999996877
+          },
+          {
+            "id": "dev-060",
+            "family": "multiple_unresolved_services",
+            "text": "I may have a VPN problem or an SSO problem. I do not know which sign-in is failing.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.02908299999998576
+          }
+        ]
+      }
+    },
+    "heldout": {
+      "keyword": {
+        "routingAccuracy": {
+          "numerator": 44,
+          "denominator": 60,
+          "rate": 0.7333333333333333
+        },
+        "perTeam": {
+          "Service Desk": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Identity & Access": {
+            "numerator": 10,
+            "denominator": 10,
+            "rate": 1
+          },
+          "Network": {
+            "numerator": 10,
+            "denominator": 10,
+            "rate": 1
+          },
+          "Endpoint": {
+            "numerator": 6,
+            "denominator": 10,
+            "rate": 0.6
+          },
+          "Business Applications": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Security Review": {
+            "numerator": 0,
+            "denominator": 10,
+            "rate": 0
+          }
+        },
+        "acceptedPrecision": {
+          "numerator": 35,
+          "denominator": 51,
+          "rate": 0.6862745098039216
+        },
+        "eligibleCoverage": {
+          "numerator": 50,
+          "denominator": 50,
+          "rate": 1
+        },
+        "automaticRoutingFrequency": {
+          "numerator": 51,
+          "denominator": 60,
+          "rate": 0.85
+        },
+        "abstentions": 9,
+        "escalationRecall": {
+          "numerator": 0,
+          "denominator": 20,
+          "rate": 0
+        },
+        "escalationFalsePositives": {
+          "numerator": 0,
+          "denominator": 40,
+          "rate": 0
+        },
+        "securityRecall": {
+          "numerator": 0,
+          "denominator": 10,
+          "rate": 0
+        },
+        "securityFalsePositives": {
+          "numerator": 0,
+          "denominator": 50,
+          "rate": 0
+        },
+        "clarificationAgreement": {
+          "numerator": 55,
+          "denominator": 60,
+          "rate": 0.9166666666666666
+        },
+        "firstTurnQuestionRate": {
+          "numerator": 0,
+          "denominator": 60,
+          "rate": 0
+        },
+        "latency": {
+          "p50Ms": 0.03291699999999764,
+          "p95Ms": 0.04995800000000372,
+          "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "estimatedModelCostUSD": 0,
+        "failures": [
+          {
+            "id": "heldout-016",
+            "family": "laptop_power_boot_failure",
+            "text": "My managed laptop will not power on and its charging light stays off. I cannot work and have no usable workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03350000000000364
+          },
+          {
+            "id": "heldout-017",
+            "family": "laptop_power_boot_failure",
+            "text": "The laptop stops at the manufacturer logo before the operating system loads. My work is blocked and no replacement is available.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03437499999998295
+          },
+          {
+            "id": "heldout-018",
+            "family": "laptop_power_boot_failure",
+            "text": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03291699999999764
+          },
+          {
+            "id": "heldout-019",
+            "family": "laptop_power_boot_failure",
+            "text": "The laptop battery is flat and it is not charging with the supplied charger. I cannot do any work and have no workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.032874999999989996
+          },
+          {
+            "id": "heldout-020",
+            "family": "laptop_power_boot_failure",
+            "text": "My laptop shows no bootable device immediately after powering on. I am completely blocked with no usable workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.04445799999999167
+          },
+          {
+            "id": "heldout-023",
+            "family": "atlas_record_action_failure",
+            "text": "Atlas displays the project list, but the search filter never updates the results.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.042665999999996984
+          },
+          {
+            "id": "heldout-031",
+            "family": "suspected_atlas_data_exposure",
+            "text": "Atlas let me open another department’s confidential salary export that I should not be able to see.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.7007499999999993
+          },
+          {
+            "id": "heldout-032",
+            "family": "suspected_atlas_data_exposure",
+            "text": "I accidentally shared an Atlas customer-data export through a public link.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.034707999999994854
+          },
+          {
+            "id": "heldout-033",
+            "family": "suspected_atlas_data_exposure",
+            "text": "An Atlas page is showing confidential records from another team without asking me for permission.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.04995800000000372
+          },
+          {
+            "id": "heldout-034",
+            "family": "suspected_atlas_data_exposure",
+            "text": "I found a publicly accessible link containing a private Atlas export. It appears to include customer details.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03700000000000614
+          },
+          {
+            "id": "heldout-035",
+            "family": "suspected_atlas_data_exposure",
+            "text": "I may have sent an Atlas export with confidential employee data to the wrong external recipient.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.034458000000000766
+          },
+          {
+            "id": "heldout-041",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Everyone on my department’s shift cannot open Atlas and customer operations are stopped. This is what colleagues told me, not a confirmed outage.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.071124999999995
+          },
+          {
+            "id": "heldout-042",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "All forty people on our operations team report Atlas is unavailable and cannot process orders.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.044708999999983234
+          },
+          {
+            "id": "heldout-043",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Atlas has stopped loading for the whole company according to our team chat. I have no official outage confirmation.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.036708000000004404
+          },
+          {
+            "id": "heldout-044",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Our entire support floor cannot use Atlas, and we cannot handle customer cases.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03341700000001424
+          },
+          {
+            "id": "heldout-045",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Multiple departments are reporting that Atlas is down and critical order processing has stopped. The cause is unknown.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03683399999999892
+          },
+          {
+            "id": "heldout-046",
+            "family": "unidentified_failure_object",
+            "text": "The screen has an error but I cannot tell whether it is a website or my computer.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03100000000000591
+          },
+          {
+            "id": "heldout-047",
+            "family": "unidentified_failure_object",
+            "text": "Something stopped responding while I was working. I do not know which application.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03849999999999909
+          },
+          {
+            "id": "heldout-048",
+            "family": "unidentified_failure_object",
+            "text": "A red warning appeared and now it does not work. I have no other details yet.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.029541999999992186
+          },
+          {
+            "id": "heldout-049",
+            "family": "unidentified_failure_object",
+            "text": "I am seeing an error with the tool we use, but I cannot remember its name.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.030167000000005828
+          },
+          {
+            "id": "heldout-050",
+            "family": "unidentified_failure_object",
+            "text": "There is a broken thing on my desktop. I do not know whether it is a device or an application.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031207999999992353
+          },
+          {
+            "id": "heldout-051",
+            "family": "misleading_historical_incident_mentions",
+            "text": "Last month I had a VPN problem; today the VPN is working but my laptop keyboard is missing keystrokes.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031167000000010603
+          },
+          {
+            "id": "heldout-053",
+            "family": "misleading_historical_incident_mentions",
+            "text": "I saw a Wi-Fi incident yesterday, but today wireless works and my laptop speakers produce no sound.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Network",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03258300000001668
+          },
+          {
+            "id": "heldout-054",
+            "family": "misleading_historical_incident_mentions",
+            "text": "SSO was broken last week and is fine now. Today my laptop camera is not detected by any application.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031791999999995824
+          },
+          {
+            "id": "heldout-056",
+            "family": "phishing_credential_disclosure",
+            "text": "I entered my corporate SSO password on a fake login page linked from a suspicious email.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.02966699999998923
+          },
+          {
+            "id": "heldout-057",
+            "family": "phishing_credential_disclosure",
+            "text": "I typed my SSO credentials into a site I now believe was phishing. What should I do?",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031374999999997044
+          },
+          {
+            "id": "heldout-058",
+            "family": "phishing_credential_disclosure",
+            "text": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03162499999999113
+          },
+          {
+            "id": "heldout-059",
+            "family": "phishing_credential_disclosure",
+            "text": "I may have given my SSO password to a fraudulent sign-in form. I am not sure whether anyone used it.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.03191699999999287
+          },
+          {
+            "id": "heldout-060",
+            "family": "phishing_credential_disclosure",
+            "text": "I followed an email link and entered my corporate SSO credentials. The sender has since told me their account was compromised.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "first-keyword-match"
+              ]
+            },
+            "latencyMs": 0.031083999999992784
+          }
+        ]
+      },
+      "proposed": {
+        "routingAccuracy": {
+          "numerator": 43,
+          "denominator": 60,
+          "rate": 0.7166666666666667
+        },
+        "perTeam": {
+          "Service Desk": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Identity & Access": {
+            "numerator": 8,
+            "denominator": 10,
+            "rate": 0.8
+          },
+          "Network": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Endpoint": {
+            "numerator": 5,
+            "denominator": 10,
+            "rate": 0.5
+          },
+          "Business Applications": {
+            "numerator": 9,
+            "denominator": 10,
+            "rate": 0.9
+          },
+          "Security Review": {
+            "numerator": 3,
+            "denominator": 10,
+            "rate": 0.3
+          }
+        },
+        "acceptedPrecision": {
+          "numerator": 34,
+          "denominator": 43,
+          "rate": 0.7906976744186046
+        },
+        "eligibleCoverage": {
+          "numerator": 42,
+          "denominator": 50,
+          "rate": 0.84
+        },
+        "automaticRoutingFrequency": {
+          "numerator": 43,
+          "denominator": 60,
+          "rate": 0.7166666666666667
+        },
+        "abstentions": 17,
+        "escalationRecall": {
+          "numerator": 6,
+          "denominator": 20,
+          "rate": 0.3
+        },
+        "escalationFalsePositives": {
+          "numerator": 1,
+          "denominator": 40,
+          "rate": 0.025
+        },
+        "securityRecall": {
+          "numerator": 3,
+          "denominator": 10,
+          "rate": 0.3
+        },
+        "securityFalsePositives": {
+          "numerator": 1,
+          "denominator": 50,
+          "rate": 0.02
+        },
+        "clarificationAgreement": {
+          "numerator": 48,
+          "denominator": 60,
+          "rate": 0.8
+        },
+        "firstTurnQuestionRate": {
+          "numerator": 15,
+          "denominator": 60,
+          "rate": 0.25
+        },
+        "latency": {
+          "p50Ms": 0.031167000000010603,
+          "p95Ms": 0.04166599999999221,
+          "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "estimatedModelCostUSD": 0,
+        "failures": [
+          {
+            "id": "heldout-014",
+            "family": "wifi_location_specific_coverage",
+            "text": "My laptop stays on office Wi-Fi everywhere except the reception area.",
+            "expected": {
+              "team": "Network",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03149999999999409
+          },
+          {
+            "id": "heldout-017",
+            "family": "laptop_power_boot_failure",
+            "text": "The laptop stops at the manufacturer logo before the operating system loads. My work is blocked and no replacement is available.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03437499999998295
+          },
+          {
+            "id": "heldout-018",
+            "family": "laptop_power_boot_failure",
+            "text": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.031334000000015294
+          },
+          {
+            "id": "heldout-019",
+            "family": "laptop_power_boot_failure",
+            "text": "The laptop battery is flat and it is not charging with the supplied charger. I cannot do any work and have no workaround.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "elevated",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.033375000000006594
+          },
+          {
+            "id": "heldout-023",
+            "family": "atlas_record_action_failure",
+            "text": "Atlas displays the project list, but the search filter never updates the results.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.037042000000013786
+          },
+          {
+            "id": "heldout-026",
+            "family": "hr_and_business_administration",
+            "text": "I want to change my benefits enrollment for next year.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.027541000000013582
+          },
+          {
+            "id": "heldout-029",
+            "family": "hr_and_business_administration",
+            "text": "I need to submit a travel reimbursement claim.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.027375000000006366
+          },
+          {
+            "id": "heldout-030",
+            "family": "hr_and_business_administration",
+            "text": "Who can answer a question about my employment contract?",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.027457999999995764
+          },
+          {
+            "id": "heldout-031",
+            "family": "suspected_atlas_data_exposure",
+            "text": "Atlas let me open another department’s confidential salary export that I should not be able to see.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.0397920000000056
+          },
+          {
+            "id": "heldout-033",
+            "family": "suspected_atlas_data_exposure",
+            "text": "An Atlas page is showing confidential records from another team without asking me for permission.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03320899999999938
+          },
+          {
+            "id": "heldout-034",
+            "family": "suspected_atlas_data_exposure",
+            "text": "I found a publicly accessible link containing a private Atlas export. It appears to include customer details.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.034166999999996506
+          },
+          {
+            "id": "heldout-035",
+            "family": "suspected_atlas_data_exposure",
+            "text": "I may have sent an Atlas export with confidential employee data to the wrong external recipient.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.033375000000006594
+          },
+          {
+            "id": "heldout-037",
+            "family": "negated_security_during_sso_failure",
+            "text": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Security Review",
+              "accepted": true,
+              "escalation": "security",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "possible-compromise-restricted-review"
+              ]
+            },
+            "latencyMs": 0.030249999999995225
+          },
+          {
+            "id": "heldout-040",
+            "family": "negated_security_during_sso_failure",
+            "text": "SSO displays authentication failed. There is no suspected data exposure and no unauthorized account activity.",
+            "expected": {
+              "team": "Identity & Access",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.028958000000017137
+          },
+          {
+            "id": "heldout-042",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "All forty people on our operations team report Atlas is unavailable and cannot process orders.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.035291999999998325
+          },
+          {
+            "id": "heldout-043",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Atlas has stopped loading for the whole company according to our team chat. I have no official outage confirmation.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03254199999997809
+          },
+          {
+            "id": "heldout-044",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Our entire support floor cannot use Atlas, and we cannot handle customer cases.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.2771669999999915
+          },
+          {
+            "id": "heldout-045",
+            "family": "reported_broad_critical_atlas_loss",
+            "text": "Multiple departments are reporting that Atlas is down and critical order processing has stopped. The cause is unknown.",
+            "expected": {
+              "team": "Business Applications",
+              "escalation": "urgent",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Business Applications",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.04166599999999221
+          },
+          {
+            "id": "heldout-046",
+            "family": "unidentified_failure_object",
+            "text": "The screen has an error but I cannot tell whether it is a website or my computer.",
+            "expected": {
+              "team": "Service Desk",
+              "escalation": "none",
+              "clarification": true
+            },
+            "actual": {
+              "team": "Endpoint",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03212499999997931
+          },
+          {
+            "id": "heldout-051",
+            "family": "misleading_historical_incident_mentions",
+            "text": "Last month I had a VPN problem; today the VPN is working but my laptop keyboard is missing keystrokes.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030249999999995225
+          },
+          {
+            "id": "heldout-052",
+            "family": "misleading_historical_incident_mentions",
+            "text": "The old Atlas outage is resolved. My current issue is a laptop trackpad that no longer clicks.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.030209000000013475
+          },
+          {
+            "id": "heldout-053",
+            "family": "misleading_historical_incident_mentions",
+            "text": "I saw a Wi-Fi incident yesterday, but today wireless works and my laptop speakers produce no sound.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.03037500000002069
+          },
+          {
+            "id": "heldout-054",
+            "family": "misleading_historical_incident_mentions",
+            "text": "SSO was broken last week and is fine now. Today my laptop camera is not detected by any application.",
+            "expected": {
+              "team": "Endpoint",
+              "escalation": "none",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Service Desk",
+              "accepted": false,
+              "escalation": "none",
+              "clarification": true,
+              "reasons": [
+                "insufficient-or-conflicting-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.028416999999990367
+          },
+          {
+            "id": "heldout-057",
+            "family": "phishing_credential_disclosure",
+            "text": "I typed my SSO credentials into a site I now believe was phishing. What should I do?",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.0287919999999815
+          },
+          {
+            "id": "heldout-058",
+            "family": "phishing_credential_disclosure",
+            "text": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.029832999999996446
+          },
+          {
+            "id": "heldout-059",
+            "family": "phishing_credential_disclosure",
+            "text": "I may have given my SSO password to a fraudulent sign-in form. I am not sure whether anyone used it.",
+            "expected": {
+              "team": "Security Review",
+              "escalation": "security",
+              "clarification": false
+            },
+            "actual": {
+              "team": "Identity & Access",
+              "accepted": true,
+              "escalation": "none",
+              "clarification": false,
+              "reasons": [
+                "catalog-and-evidence",
+                "provisional-priority-impact-unknown"
+              ]
+            },
+            "latencyMs": 0.02812499999998863
+          }
+        ]
+      }
+    }
+  },
+  "unmeasured": [
+    "Live model performance/baseline/cost",
+    "Human-reviewed label validity",
+    "Related-incident precision/recall: text corpus lacks association labels",
+    "Fact fidelity across broad language; targeted assertions exist in tests",
+    "Real-world resolution effectiveness",
+    "Browser and provider-confirmed latency"
+  ]
+}

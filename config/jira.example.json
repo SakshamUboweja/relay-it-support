@@ -1,0 +1,20 @@
+{
+  "site": "https://YOUR-SANDBOX.atlassian.net",
+  "projectKey": "HELP",
+  "serviceDeskId": "1",
+  "requestTypeId": "1",
+  "generalRequestTypeId": "2",
+  "supportTeamFieldId": "customfield_10001",
+  "teamOptions": {
+    "Service Desk": "REPLACE",
+    "Identity & Access": "REPLACE",
+    "Network": "REPLACE",
+    "Endpoint": "REPLACE",
+    "Business Applications": "REPLACE",
+    "Security Review": "REPLACE"
+  },
+  "priorityIds": {"normal":"REPLACE","elevated":"REPLACE","urgent":"REPLACE"},
+  "defaults": {},
+  "reporterMode": "integration-account",
+  "securityEnforced": false
+}
