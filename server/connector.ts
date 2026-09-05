@@ -16,6 +16,7 @@ export class ConnectorError extends Error {
     public ambiguous = false,
     public retryAfter = 0,
     public status = 0,
+    public retryable = false,
   ) {
     super(message);
   }
@@ -172,7 +173,13 @@ export class JiraConnector implements Connector {
         redirect: 'error',
       });
     } catch {
-      throw new ConnectorError('Jira network failure or timeout.', create);
+      throw new ConnectorError(
+        'Jira network failure or timeout.',
+        create,
+        0,
+        0,
+        true,
+      );
     }
     if (!r.ok) {
       const retry = r.headers.get('retry-after');

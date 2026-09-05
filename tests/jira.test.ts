@@ -44,6 +44,19 @@ const fields = {
   ],
   canRaiseOnBehalfOf: false,
 };
+test('network errors are retryable and dispatched creates remain ambiguous', async () => {
+  const api = new JiraConnector(mapping, (async () => {
+    throw new Error('network reset');
+  }) as typeof fetch);
+  await assert.rejects(
+    api.request('/read'),
+    (e: unknown) => e instanceof ConnectorError && e.retryable && !e.ambiguous,
+  );
+  await assert.rejects(
+    api.request('/create', 'POST', {}, true),
+    (e: unknown) => e instanceof ConnectorError && e.retryable && e.ambiguous,
+  );
+});
 test('JSM create payload and actual initial fields are read; no generic issue create', async () => {
   const calls: { url: string; method: string; body: any }[] = [];
   const transport = async (url: any, init: any) => {

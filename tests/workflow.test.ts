@@ -110,6 +110,55 @@ test('timeout after accepted create reconciles on another worker invocation with
   assert.equal(calls, 1);
   assert.equal((await getReport(r.id, users[0])).state, 'created');
 });
+test('transient validation failure retries before creating exactly once', async () => {
+  const r = await create('VPN connection failure');
+  const operation = await op(r.id);
+  let validations = 0,
+    creates = 0;
+  class Transient extends DemoConnector {
+    async validate(d: Draft) {
+      if (++validations === 1)
+        throw new ConnectorError('Network reset', false, 0, 0, true);
+      return super.validate(d);
+    }
+    async create(d: Draft) {
+      creates++;
+      return super.create(d);
+    }
+  }
+  const api = new Transient();
+  await processOperation(operation.id, api);
+  assert.equal((await op(r.id)).state, 'pending');
+  assert.equal(creates, 0);
+  await pool.query(
+    'UPDATE connector_operations SET next_attempt_at=now() WHERE id=$1',
+    [operation.id],
+  );
+  await processOperation(operation.id, api);
+  assert.equal((await op(r.id)).state, 'succeeded');
+  assert.equal(creates, 1);
+});
+test('rate-limited reconciliation retains unknown state and never creates again', async () => {
+  const r = await create('VPN connection failure');
+  const operation = await op(r.id);
+  await pool.query(
+    "UPDATE connector_operations SET state='unknown',attempts=1 WHERE id=$1",
+    [operation.id],
+  );
+  let creates = 0;
+  class RateLimited extends DemoConnector {
+    async create(d: Draft) {
+      creates++;
+      return super.create(d);
+    }
+    async reconcile(): Promise<never> {
+      throw new ConnectorError('Rate limit', false, 1, 429);
+    }
+  }
+  await processOperation(operation.id, new RateLimited());
+  assert.equal((await op(r.id)).state, 'unknown');
+  assert.equal(creates, 0);
+});
 test('empty ambiguous reconciliation never retries creation', async () => {
   const r = await create('VPN connection failure');
   const operation = await op(r.id);

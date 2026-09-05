@@ -144,12 +144,17 @@ export async function processOperation(id: string, provider?: Connector) {
         );
       } else if (
         e instanceof ConnectorError &&
-        (e.status === 429 || (op.kind === 'update' && e.status >= 500)) &&
+        (e.retryable || e.status === 429 || e.status >= 500) &&
         op.attempts < 4
       ) {
         await pool.query(
-          "UPDATE connector_operations SET state='pending',attempts=attempts+1,last_error=$2,next_attempt_at=now()+($3||' seconds')::interval WHERE id=$1",
-          [id, e.message, Math.max(e.retryAfter, 2 ** op.attempts)],
+          "UPDATE connector_operations SET state=$4,attempts=attempts+1,last_error=$2,next_attempt_at=now()+($3||' seconds')::interval WHERE id=$1",
+          [
+            id,
+            e.message,
+            Math.max(e.retryAfter, 2 ** op.attempts),
+            op.state === 'unknown' ? 'unknown' : 'pending',
+          ],
         );
       } else await fail(op, e);
     }
