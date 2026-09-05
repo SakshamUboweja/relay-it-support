@@ -19,6 +19,7 @@
 - [x] Python migration: API, authentication, extraction, retrieval, routing, Jira connector, durable worker and operator commands ported. React UI and Railway infrastructure definition remain TypeScript. Existing database schema and session formats retained.
 - [x] All 120 deterministic policy outputs match the original TypeScript snapshot. Historical evaluation results remain unchanged; Python results are recorded separately in `evaluation/python-RESULTS.md`.
 - [x] Python live preflight: Jira field discovery, Terra/high structured extraction and 256-dimensional embeddings passed.
+- [x] Python release `bb71361` deployed to both existing Railway application services after GitHub CI passed. HELP-9 verified authenticated intake, Identity & Access/Medium Jira read-back, fact preservation and duplicate protection. Prior HELP-7/HELP-8 reports and existing login token remain valid. Local port 3000 also runs the Python web/worker.
 
 - [x] Railway deployment verified: HTTPS web, persistent worker, PostgreSQL 16/pgvector, 120 synthetic sources/embeddings, owner provisioning, secure session API, worker heartbeat and Jira HELP-7. Existing Hobby plan; one replica each. GitHub auto-deployment and browser sign-in await owner authentication; see DEPLOYMENT.md.
 
