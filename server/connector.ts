@@ -418,14 +418,19 @@ export async function connector(): Promise<Connector> {
   let data: unknown;
   try {
     data = JSON.parse(
-      await readFile(
-        /* turbopackIgnore: true */ join(process.cwd(), 'config', 'jira.json'),
-        'utf8',
-      ),
+      process.env.JIRA_CONFIG_JSON ||
+        (await readFile(
+          /* turbopackIgnore: true */ join(
+            process.cwd(),
+            'config',
+            'jira.json',
+          ),
+          'utf8',
+        )),
     );
   } catch {
     throw new ConnectorError(
-      'Create config/jira.json from config/jira.example.json.',
+      'Set valid JIRA_CONFIG_JSON or create config/jira.json from config/jira.example.json.',
     );
   }
   return new JiraConnector(JiraConfig.parse(data));

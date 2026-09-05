@@ -16,8 +16,10 @@
 
 ## Verified this session
 
+- [x] Railway web/worker configs, runtime guards, Docker build, readiness probe, private mapping variables, user provisioning and source copy prepared. Linux container smoke verified with PostgreSQL 16/pgvector; cloud provisioning awaits budget authorization.
+
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
-- [x] 49 passing unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
+- [x] 51 passing unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
 - [x] TypeScript and optimized Next.js build.
 - [x] Local HTTP employee/session/operator workflows and persisted demo provider request.
 - [x] Heldout synthetic results published honestly; accuracy/precision/security targets not met.

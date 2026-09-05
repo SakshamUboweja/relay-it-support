@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3000",
     "build": "next build",
-    "start": "next start --hostname 127.0.0.1 --port 3000",
+    "start": "next start --hostname 0.0.0.0",
     "lint": "oxlint",
     "format": "oxfmt",
     "worker": "tsx scripts/worker.ts",
@@ -20,6 +20,8 @@
     "live": "node scripts/live.mjs",
     "preflight": "tsx scripts/preflight.ts",
     "session": "tsx scripts/session.ts",
+    "user:provision": "tsx scripts/provision-user.ts",
+    "sources:copy-sandbox": "tsx scripts/copy-sandbox-sources.ts",
     "embed:sources": "tsx scripts/embed-sources.ts",
     "smoke:live": "tsx scripts/live-smoke.ts",
     "retention": "tsx scripts/retention.ts",

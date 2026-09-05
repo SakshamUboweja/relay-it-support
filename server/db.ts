@@ -3,7 +3,11 @@ import pg from 'pg';
 const g = globalThis as unknown as { relayPool?: pg.Pool };
 export const pool =
   g.relayPool ??
-  new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 8 });
+  new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 8,
+    connectionTimeoutMillis: 5000,
+  });
 g.relayPool = pool;
 export async function transaction<T>(fn: (db: pg.PoolClient) => Promise<T>) {
   const db = await pool.connect();

@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.env*
+!.env.example
+config/jira.json
+.local
+.openai
+outputs
+work
+coverage
+*.log
+*.tsbuildinfo
+.DS_Store
