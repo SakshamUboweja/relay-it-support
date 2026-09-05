@@ -40,3 +40,9 @@ next-env.d.ts
 /config/jira.json
 /.local/
 *.tsbuildinfo
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
