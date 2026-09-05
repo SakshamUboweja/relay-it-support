@@ -4,17 +4,17 @@ export default defineRailway(() => {
   const postgresVolume = volume("postgres-volume", { alerts: { usage: { "100": {}, "80": {}, "95": {} } }, allowOnlineResize: true, region: "sfo", sizeMB: 5000 });
   const relayWorker = service("relay-worker", {
     build: { buildEnvironment: "V3", builder: "DOCKERFILE", dockerfilePath: "Dockerfile" },
-    start: "node --import tsx scripts/deploy-worker.ts",
+    start: "python -m relay.worker",
     replicas: { "sfo": 1 },
     deploy: { restartPolicyMaxRetries: 5 },
     env: { APP_MODE: preserve(), APP_ORIGIN: preserve(), DATABASE_URL: preserve(), JIRA_API_TOKEN: preserve(), JIRA_CONFIG_JSON: preserve(), JIRA_EMAIL: preserve(), OPENAI_API_KEY: preserve(), OPENAI_EMBEDDING_MODEL: preserve(), OPENAI_MAX_OUTPUT_TOKENS: preserve(), OPENAI_MODEL: preserve(), OPENAI_REASONING_EFFORT: preserve(), SESSION_SECRET: preserve() },
   });
   const relayWeb = service("relay-web", {
     build: { buildEnvironment: "V3", builder: "DOCKERFILE", dockerfilePath: "Dockerfile" },
-    start: "node --import tsx scripts/deploy-web.ts",
+    start: "python -m relay.web",
     healthcheck: "/api/health",
     healthcheckTimeout: 120,
-    preDeploy: "node --import tsx scripts/deploy-migrate.ts",
+    preDeploy: "python -m relay.cli deploy-migrate",
     replicas: { "sfo": 1 },
     deploy: { restartPolicyMaxRetries: 5 },
     env: { APP_MODE: preserve(), APP_ORIGIN: preserve(), DATABASE_URL: preserve(), JIRA_API_TOKEN: preserve(), JIRA_CONFIG_JSON: preserve(), JIRA_EMAIL: preserve(), OPENAI_API_KEY: preserve(), OPENAI_EMBEDDING_MODEL: preserve(), OPENAI_MAX_OUTPUT_TOKENS: preserve(), OPENAI_MODEL: preserve(), OPENAI_REASONING_EFFORT: preserve(), PORT: preserve(), SESSION_SECRET: preserve() },

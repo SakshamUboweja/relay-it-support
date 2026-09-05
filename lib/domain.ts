@@ -1,4 +1,3 @@
-import { z } from 'zod';
 export const teams = [
   'Service Desk',
   'Identity & Access',
@@ -105,22 +104,3 @@ export type Operation = {
   last_error: string | null;
   next_attempt_at: string;
 };
-export const inputSchema = z
-  .object({
-    text: z.string().trim().max(6000).default(''),
-    reportId: z.string().uuid().optional(),
-    submissionKey: z.string().uuid(),
-    action: z
-      .enum(['message', 'support', 'fixed', 'broken', 'follow'])
-      .default('message'),
-  })
-  .refine((v) => v.reportId || v.text.length > 0, {
-    message: 'Describe the issue first.',
-  });
-export const correctionSchema = z.object({
-  reportId: z.string().uuid(),
-  action: z.enum(['acknowledge', 'correct', 'retry', 'refresh']),
-  team: z.enum(teams).optional(),
-  priority: z.enum(['normal', 'elevated', 'urgent']).optional(),
-  reason: z.string().max(1000).optional(),
-});

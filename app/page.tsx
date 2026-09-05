@@ -47,7 +47,7 @@ import {
   type Message,
   type Source,
   type Operation,
-} from '@/server/domain';
+} from '@/lib/domain';
 type Bootstrap = {
   user: User;
   profiles: { id: string; name: string; role: string }[];

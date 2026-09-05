@@ -6,18 +6,17 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:22-bookworm-slim AS runtime
+FROM python:3.13-slim-bookworm AS runtime
 WORKDIR /app
-ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
-COPY --from=build --chown=node:node /app/package.json /app/package-lock.json ./
-COPY --from=build --chown=node:node /app/node_modules ./node_modules
-COPY --from=build --chown=node:node /app/.next ./.next
-COPY --from=build --chown=node:node /app/public ./public
-COPY --from=build --chown=node:node /app/server ./server
-COPY --from=build --chown=node:node /app/scripts ./scripts
-COPY --from=build --chown=node:node /app/migrations ./migrations
-COPY --from=build --chown=node:node /app/config ./config
-COPY --from=build --chown=node:node /app/next.config.ts /app/tsconfig.json ./
-USER node
+ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PATH="/app/.venv/bin:$PATH"
+COPY --from=ghcr.io/astral-sh/uv:0.8.22 /uv /usr/local/bin/uv
+COPY pyproject.toml uv.lock .python-version ./
+RUN uv sync --frozen --no-dev --no-install-project
+COPY relay ./relay
+COPY migrations ./migrations
+COPY config ./config
+COPY --from=build /app/out ./out
+RUN useradd --create-home --uid 10001 relay
+USER relay
 EXPOSE 3000
-CMD ["node", "--import", "tsx", "scripts/deploy-web.ts"]
+CMD ["python", "-m", "relay.web"]
