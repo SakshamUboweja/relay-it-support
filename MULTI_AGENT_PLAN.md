@@ -12,4 +12,4 @@ Start by invoking triage and review only on ambiguous cases; use the existing mo
 
 First retained development failure: hosted HELP-7 describes Wi-Fi failure on a work laptop; equal Network/Endpoint scores trigger Service Desk fallback. A triage agent should distinguish the failed service from the affected device, and a reviewer should catch the mismatch. Fixing a deterministic scoring problem may be cheaper than extra model calls, so include that alternative in the comparison.
 
-Python can implement the same architecture. TypeScript currently keeps the Next.js UI, API contracts and worker in one language; switching languages alone will not improve agent behavior.
+The API and worker now use Python; the static React interface retains TypeScript. This language migration preserves the single-model workflow. The agents above remain a separate, unimplemented proposal.

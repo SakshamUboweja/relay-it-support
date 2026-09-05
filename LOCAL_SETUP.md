@@ -16,7 +16,7 @@ Provider mappings are in the local, Git-ignored `config/jira.json`: desk 2, Get 
 npm run live
 ```
 
-Open http://127.0.0.1:3000. This starts the local web server and background worker together. Stop another Relay server on port 3000 before running it. Ctrl-C stops the processes. PostgreSQL must be running on the existing local port 55432.
+Open http://127.0.0.1:3000. This builds the static React interface and starts the Python API server and background worker together. Install Node 22 and uv, then run `npm ci` and `uv sync --frozen` first. Stop another Relay server on port 3000 before running it. Ctrl-C stops the processes. PostgreSQL must be running on the existing local port 55432.
 
 Live data uses the separate `relay_sandbox` database. It contains the 20 synthetic articles and 100 synthetic historical cases from the original demo, plus operator `saksham`. These are demonstration data, not real Jira history or reviewed company procedures. The original `relay` demo database is preserved. No synthetic incident advisories were copied into the live database.
 
@@ -28,17 +28,17 @@ npm run session -- saksham
 
 Paste that token into Relay's sign-in form. It is a credential; do not commit or share it.
 
-`NODE_OPTIONS=--dns-result-order=ipv4first` is set in `.env` for this machine's network. `npm run live` passes it to both processes before they start. For a standalone network command, use:
+The Python runtime does not use the former Node DNS option. Verify the Python OpenAI and Jira adapters without creating a ticket:
 
 ```sh
-NODE_OPTIONS=--dns-result-order=ipv4first npm run preflight
+npm run preflight
 ```
 
 The Jira smoke test created **HELP-1**, confirmed Network routing and Medium priority, and retained the test ticket. The live browser-to-worker test created **HELP-2**, confirmed Identity & Access routing, and appeared in both Relay and the matching Jira queue. All six team queue filters were verified through Jira. OpenAI structured-output and 256-dimensional embedding preflight passed; all 120 synthetic sources are indexed.
 
-Setup testing exposed an overly broad model security extraction and a transient network validation failure. The extraction instructions now distinguish routine password changes from threats. Network validation errors now retry, while uncertain creates remain in reconciliation. The complete suite has 49 passing tests. The initial false-positive synthetic conversation remains in local operator review as a record of the test; it created no external ticket. These checks do not replace representative live evaluation.
+Setup testing exposed an overly broad model security extraction and a transient network validation failure. The extraction instructions now distinguish routine password changes from threats. Network validation errors now retry, while uncertain creates remain in reconciliation. The original suite had 49 passing tests; the Python migration now has 78 passing tests. The initial false-positive synthetic conversation remains in local operator review as a record of the test; it created no external ticket. These checks do not replace representative live evaluation.
 
-The September 5 model upgrade uses Relay's own workflow, not the Codex SDK. The versioned prompt is `server/intake-prompt.ts` (`relay-intake-v2`). Validated quotes populate impact, urgency, device, start time, workaround and attempted steps. An explicit support request or an already-tried approved procedure bypasses repeated troubleshooting. Jira descriptions are readable sections and generated summaries are complete sentences/phrases capped at 120 characters. Routing, priority, security restrictions and idempotent connector writes remain application-controlled. Historical tickets are preserved.
+The September 5 model upgrade uses Relay's own workflow, not the Codex SDK. The versioned prompt is `relay/intake_prompt.py` (`relay-intake-v2`). Validated quotes populate impact, urgency, device, start time, workaround and attempted steps. An explicit support request or an already-tried approved procedure bypasses repeated troubleshooting. Jira descriptions are readable sections and generated summaries are complete sentences/phrases capped at 120 characters. Routing, priority, security restrictions and idempotent connector writes remain application-controlled. Historical tickets are preserved.
 
 Terra account access and structured extraction were verified. The original monitor scenario and five additional live checks passed: previously attempted monitor steps without a handoff request; a new monitor issue without invented attempts; routine VPN/password change; threat evidence despite instructions to ignore it; and instructions to fabricate impact/attempts. These are focused development regressions, not a new holdout score or evidence that Terra outperforms the old model on representative data.
 

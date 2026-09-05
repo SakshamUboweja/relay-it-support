@@ -2,20 +2,21 @@
 
 A working local MVP based on `AI_TICKETING_BUILD_BRIEF.md`. Describe an IT issue, receive one approved procedure or one clarification, and retain a durable report whether it is resolved, associated with an advisory, or handed to support. The operator console exposes facts, sources, routing decisions, acknowledgements, correction jobs, and integration failures.
 
-**Status:** local application and real Jira/OpenAI sandbox handoff verified. The configured machine can run `npm run live`; see [LOCAL_SETUP.md](LOCAL_SETUP.md) for login, credential locations, token expiry and the separate sandbox database. The deterministic demo router misses the requested evaluation targets, especially security recall. This is a portfolio MVP, not an unattended production triage system. See [BUILD_STATUS.md](BUILD_STATUS.md) and [measured results](evaluation/RESULTS.md).
+**Status:** Python migration verified locally; the API, AI workflow, Jira adapter and worker now run in Python. The React interface remains TypeScript and is built to static files served by FastAPI. See [DEPLOYMENT.md](DEPLOYMENT.md) for the current Railway release and [LOCAL_SETUP.md](LOCAL_SETUP.md) for credentials and local startup. The router still misses the original evaluation targets, especially security recall; the migration preserves those measured limitations.
 
 ## Run locally
 
-Requires Node 22.13+ (tested on Node 24.16), npm, and PostgreSQL with pgvector. Dependencies are pinned in package-lock.json.
+Requires Python 3.13, uv, Node 22.13+ for frontend builds, npm, and PostgreSQL with pgvector. Dependencies are locked in uv.lock and package-lock.json.
 
 ```sh
 npm ci
+uv sync --frozen
 cp .env.example .env
 docker compose up -d --wait db
 npm run demo
 ```
 
-Open **http://127.0.0.1:3000**. `npm run demo` seeds the database and starts the Next.js app plus pg-boss worker. Ctrl-C stops the application processes; PostgreSQL data remains in the Docker volume. Do not run two web servers on port 3000.
+Open **http://127.0.0.1:3000**. `npm run demo` builds the interface, seeds the demo database, then starts the Python web and worker processes. Ctrl-C stops both; PostgreSQL data remains. The demo requires APP_MODE=demo; an existing live .env is never silently replaced or switched. Do not run two web servers on port 3000.
 
 On the build machine, Docker was installed but its daemon was stopped. A dedicated native PostgreSQL 14 cluster with pgvector was started on `127.0.0.1:55432` instead; the supplied local `.env` connects to it. The cluster lives in the parent task's `work/pgdata`, separate from the project source. Use Docker instructions above when moving the project. Native PostgreSQL is also supported: create a database named `relay`, install pgvector, and set `DATABASE_URL`.
 
@@ -23,10 +24,13 @@ Separate process commands:
 
 ```sh
 npm run setup
-npm run dev
+npm run build
+npm start
 # in a second terminal
 npm run worker
 ```
+
+`npm run live` starts both Python processes using the existing live environment. `npm run dev` does the same for the selected mode. Frontend changes require rebuilding; API-only development can use `uv run uvicorn relay.api:app --reload --host 127.0.0.1 --port 3000` with the worker in another terminal. No Node server is needed in production.
 
 The demo is deliberately loopback-only. A signed demo persona selector includes Maya (San Francisco), Jordan (London), and Alex (operator). Anyone with access to the local demo may switch to the demo operator; this is an explicit simulation, not production authentication.
 
@@ -42,10 +46,10 @@ The demo is deliberately loopback-only. A signed demo persona selector includes 
 
 ## Architecture and persistence
 
-- Next.js App Router UI and server routes; TypeScript and Zod shared schemas.
+- Static React/Next.js interface with TypeScript display contracts; Python FastAPI routes and Pydantic request/model validation.
 - PostgreSQL owns reports, messages, evidence snapshots, decisions, sources, sessions, action receipts, provider-operation outbox, and operator events. `reports` is also the conversation aggregate: messages attach to its ID rather than an additional conversations table.
 - pgvector stores 256-dimensional source embeddings in live mode. Demo retrieval uses PostgreSQL full-text ordering and seeded deterministic fixtures. Approved semantic results join lexical results in live mode.
-- A separate Node worker uses pg-boss and periodically dispatches persisted outbox operations. The report and outbox insert share a transaction; queue delivery may repeat safely. Processing states also resume after restart.
+- A separate Python worker polls the existing PostgreSQL outbox directly. The report and outbox insert share a transaction; advisory locks serialize repeated delivery. Processing states resume after restart. No Redis or additional queue service is required; old pg-boss tables can remain unused during rollback.
 - Report interaction state is separate from connector operation state. A failed routing update preserves the created request and retries only the update.
 - Durable advisory locks serialize operations across worker instances. A create is committed as `unknown` before HTTP dispatch. Lost responses reconcile an exact correlation marker; empty results never automatically authorize a new create. Multiple results or exhausted reconciliation go to review. This is tested deduplication, not a universal exactly-once guarantee.
 - Jira is authoritative for status and assignment. Polling mirrors status every 60 seconds; observed human changes do not trigger automatic rerouting. The ten-minute application reminder is deduplicated and is not a Jira SLA.
@@ -76,9 +80,9 @@ Use a **separate database** for live mode. `npm run setup` migrates only the sch
 
 Live user records must be provisioned by the operator in `users`, with appropriate role, scope and external account mapping. Demo persona switching disappears. `npm run session -- USER_ID` issues a revocable, eight-hour server session token for the login form. Session rows can be deleted by an operator to revoke access. This is minimal local sandbox authentication; SSO and self-service user administration are deferred.
 
-`npm run embed:sources` sends approved article/case text to the configured embedding model and writes vectors. Extraction uses the OpenAI Responses API with strict Zod output, exact quote validation, allowlisted evidence IDs, one bounded retry, and no tools. Live extraction may flag conflicts or security evidence; deterministic catalog policy still controls actions. This MVP has no second LLM reranker call or calibrated confidence model. Do not treat constrained JSON as proof of factual correctness.
+`npm run embed:sources` sends approved article/case text to the configured embedding model and writes vectors. Extraction uses the Python OpenAI SDK's Responses API with strict Pydantic output, exact quote validation, allowlisted evidence IDs, one bounded retry, and no tools. Live extraction may flag conflicts or security evidence; deterministic catalog policy still controls actions. This MVP has no second LLM reranker call or calibrated confidence model. Do not treat constrained JSON as proof of factual correctness.
 
-Current local configuration is `OPENAI_MODEL=gpt-5.6-terra`, `OPENAI_REASONING_EFFORT=high`, and `OPENAI_MAX_OUTPUT_TOKENS=8192`. Embeddings remain `text-embedding-3-small`. The versioned Relay prompt in `server/intake-prompt.ts` feeds extracted facts into the workflow; no Codex SDK is embedded. Known impact/urgency and reported attempts are preserved, direct support requests skip troubleshooting, and Jira receives a concise summary and readable description. Existing tickets are not rewritten. Extraction is bounded to 60 seconds per attempt. Changing models requires restarting both web and worker processes; use `npm run live`.
+Current configuration is `OPENAI_MODEL=gpt-5.6-terra`, `OPENAI_REASONING_EFFORT=high`, and `OPENAI_MAX_OUTPUT_TOKENS=8192`. Embeddings remain `text-embedding-3-small`. The versioned prompt in `relay/intake_prompt.py` feeds extracted facts into the workflow; no Codex SDK is embedded. Known impact/urgency and reported attempts are preserved, direct support requests skip troubleshooting, and Jira receives readable facts. Existing tickets are not rewritten. Extraction is bounded to 60 seconds per attempt. Changing models requires restarting web and worker.
 
 ## Data handling and limits
 
@@ -91,25 +95,27 @@ Live message text and approved sources may go to OpenAI. Model calls use `store:
 ## Verification and evaluation
 
 ```sh
-npm test
+# Set TEST_DATABASE_URL to a separate PostgreSQL database ending in _test.
+uv run python -m pytest
+uv run ruff check relay tests_python
 npm run typecheck
 npm run build
 npm run eval
 npm run preflight
-# with app + worker running; retains two synthetic demo records
+# Isolated HTTP contract tests; no live providers
 npm run smoke:http
 ```
 
-The verified suite contains 51 passing tests. The original demo HTTP smoke passed seven end-to-end checks; live browser handoff created HELP-2 and confirmed Identity & Access routing. Dependency audit at the original build reported zero known vulnerabilities. Tests need a seeded demo PostgreSQL database and APP_MODE=demo; do not point tests at relay_sandbox. Stop the demo worker while running tests because tests intentionally control operation delivery timing. Tests remove their own generated reports afterward. The suite covers policy facts, confirmation semantics, one-question fallback, authentication/origin boundaries, visibility revocation, mode isolation, source injection, persistence, duplicate submissions, lost create responses, transient validation retries, rate limiting, Jira payloads, routing failures, human updates and review timers. The quality regression tests inject model/retrieval results in an isolated test process and verify the actual workflow/outbox contract without calling live providers. Focused live Terra checks are documented in LOCAL_SETUP.md and do not replace representative evaluation.
+The Python suite covers policy facts, confirmation, one-question fallback, authentication/origin boundaries, mode isolation, concurrent duplicate submissions, lost create responses, database failure after accepted creation, validation retries, rate limiting, Jira payloads, routing failures, operator corrections and timers. Tests create and remove their own schemas in TEST_DATABASE_URL; the database name must end in _test. They never call live OpenAI or Jira. On this machine, use `uv run --env-file .local/python-test.env python -m pytest`. Existing Node-issued session hashes and signed demo cookies are tested for compatibility.
 
-The evaluation runner compares keyword/catalog and retrieval-plus-deterministic-policy methods on 60 development and 60 held-out synthetic scenarios, with families separated and held-out content excluded from retrieval. The independent scenario author did not inspect the router. Labels remain agent-authored and **not human reviewed**. See [results](evaluation/RESULTS.md), [full counts and failures](evaluation/results.json), and [dataset limitations](evaluation/DATASET.md). It records the frozen source hash; rerunning does not justify a new untouched-holdout claim after tuning against these failures.
+The evaluation runner compares keyword/catalog and retrieval-plus-deterministic-policy methods on the original 120 synthetic scenarios. All 120 frozen TypeScript decisions match Python, and all metric counts match the historical evaluation. New runs write [Python results](evaluation/python-RESULTS.md) without overwriting [historical results](evaluation/RESULTS.md). The corpus has already been observed; it is a migration regression check, not a new untouched holdout. Labels remain agent-authored and **not human reviewed**; see [dataset limitations](evaluation/DATASET.md).
 
 Initial heldout results: keyword accuracy 44/60; proposed accuracy 43/60; accepted-route precision 34/43 (79.1%); eligible coverage 42/50 (84%); security recall 3/10. The proposed demo system did not beat the keyword baseline on overall heldout routing. This is a documented failed target, not hidden behind a polished interface. Live LLM-only baseline, live routing evaluation, human label review, true related-incident precision/recall, model cost and real-world resolution effectiveness remain unmeasured. Browser interaction/accessibility testing is also pending; HTTP/API journeys and the production build were exercised.
 
 ## Implementation choices and remaining scope
 
-The initial Sites starter was used for UI components, then the runtime was changed to the brief's requested **Next.js + PostgreSQL + Node worker**. Unused Worker/Vinext runtime packages were removed after dependency audit findings. Sites hosting does not support this PostgreSQL TCP connection plus independent persistent worker architecture. This delivery is local; deployment needs a Node-capable web/worker host and managed PostgreSQL, or a separately scoped architecture adaptation. No nonfunctional hosted facade was published.
+The initial Sites starter supplied UI components. At the owner's request, the original Node API/worker was migrated to Python while retaining the interface, database and HTTP contracts. Railway still needs only web, worker and PostgreSQL. Python does not itself add multi-agent behavior; the proposed next phase is documented in MULTI_AGENT_PLAN.md.
 
 The browser includes an optional WebMCP `start_it_report` staging tool (not submission). It is feature-detected; a supported WebMCP verification context was unavailable, so this optional surface is unverified.
 
-The September 5 setup connected the user's OpenAI key and a new Jira Free test workspace, created synthetic test tickets, and enabled local live-mode operation. No payment details were added or cloud hosting provisioned. OpenAI requests consume metered API usage. See LOCAL_SETUP.md for the configured environment. Production projects were not modified.
+Railway uses the existing Hobby workspace with one replica of each service. The migration adds no hosting service or plan upgrade. OpenAI requests consume metered API usage; existing routing/security limitations remain explicit in BUILD_STATUS.md.

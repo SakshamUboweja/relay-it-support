@@ -2,12 +2,12 @@
 
 ## Implemented MVP
 
-- [x] Next.js employee chat, My requests, operator console, responsive styles.
+- [x] Static Next.js/React employee chat served by Python FastAPI, My requests, operator console, responsive styles.
 - [x] PostgreSQL migration and synthetic seed data; persistent reports/messages/facts/decisions/context/outbox/events/sessions.
 - [x] Explicit demo/live interfaces; no silent mock fallback; worker mode isolation.
 - [x] Approved one-procedure flow, confirmed resolution, one clarification maximum, immediate support bypass.
 - [x] Deterministic routing gates, unknowns/provenance, restricted local review, individual advisory reports.
-- [x] pg-boss worker, atomic outbox, repeat-delivery locks, correlation recovery, status sync, one-time review reminder.
+- [x] Python worker polling the PostgreSQL outbox, atomic outbox, repeat-delivery locks, correlation recovery, status sync, one-time review reminder.
 - [x] Jira customer-request adapter, discovery/fallback, controlled updates/read-back, rate-limit/error handling and contract tests.
 - [x] OpenAI Responses extraction and embeddings interfaces, quote/ID validation, bounded calls, model preflight command.
 - [x] Operator acknowledgement/correction/retry/refresh and server authorization boundaries.
@@ -16,10 +16,14 @@
 
 ## Verified this session
 
+- [x] Python migration: API, authentication, extraction, retrieval, routing, Jira connector, durable worker and operator commands ported. React UI and Railway infrastructure definition remain TypeScript. Existing database schema and session formats retained.
+- [x] All 120 deterministic policy outputs match the original TypeScript snapshot. Historical evaluation results remain unchanged; Python results are recorded separately in `evaluation/python-RESULTS.md`.
+- [x] Python live preflight: Jira field discovery, Terra/high structured extraction and 256-dimensional embeddings passed.
+
 - [x] Railway deployment verified: HTTPS web, persistent worker, PostgreSQL 16/pgvector, 120 synthetic sources/embeddings, owner provisioning, secure session API, worker heartbeat and Jira HELP-7. Existing Hobby plan; one replica each. GitHub auto-deployment and browser sign-in await owner authentication; see DEPLOYMENT.md.
 
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
-- [x] 51 passing unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
+- [x] 78 passing Python unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
 - [x] TypeScript and optimized Next.js build.
 - [x] Local HTTP employee/session/operator workflows and persisted demo provider request.
 - [x] Heldout synthetic results published honestly; accuracy/precision/security targets not met.
@@ -40,7 +44,7 @@
 - [ ] Live related-request linking and configurable mandatory provider logging for shared-incident reports.
 - [ ] Broad browser, keyboard, screen-reader and responsive interaction QA.
 - [ ] Supported WebMCP contract verification.
-- [x] Node web/worker + persistent PostgreSQL deployment on Railway; this architecture is not Sites Worker-compatible.
+- [x] Web/worker + persistent PostgreSQL deployment on Railway; this architecture is not Sites Worker-compatible.
 - [ ] Resolve the retained HELP-7 routing regression: laptop + Wi-Fi evidence produces a conflict and Service Desk fallback instead of Network.
 - [ ] Production SSO, operational hardening, comprehensive DLP, production incident policies (outside MVP scope).
 
