@@ -127,13 +127,16 @@ export default function Home() {
     }
   }, []);
   useEffect(() => {
-    void bootstrap();
+    const initial = setTimeout(() => void bootstrap(), 0);
+    return () => clearTimeout(initial);
   }, [bootstrap]);
   const loadDetail = useCallback(async (id: string) => {
     const d = await api<Detail>('/api/reports?id=' + id);
     setDetail(d);
     return d;
   }, []);
+  const detailId = detail?.report.id;
+  const reportState = detail?.report.state;
   const refresh = useCallback(async () => {
     if (!boot) return;
     try {
@@ -141,20 +144,27 @@ export default function Home() {
         '/api/reports' + (tab === 'ops' ? '?all=1' : ''),
       );
       setReports(rows.reports);
-      if (detail) await loadDetail(detail.report.id);
+      if (detailId) await loadDetail(detailId);
       if (tab === 'ops') setHealth(await api<Health>('/api/operations'));
     } catch (e) {
       setError((e as Error).message);
     }
-  }, [boot, tab, detail?.report.id, loadDetail]);
+  }, [boot, tab, detailId, loadDetail]);
   useEffect(() => {
-    void refresh();
+    const initial = setTimeout(() => void refresh(), 0);
     const timer = setInterval(() => void refresh(), 4000);
-    return () => clearInterval(timer);
+    return () => {
+      clearTimeout(initial);
+      clearInterval(timer);
+    };
   }, [refresh]);
   useEffect(() => {
-    scroll.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [detail?.messages.length]);
+    if (
+      reportState &&
+      ['awaiting_response', 'awaiting_clarification'].includes(reportState)
+    )
+      scroll.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [detail?.messages.length, reportState]);
   async function switchUser(id: string | null) {
     if (!id) return;
     setBusy(true);
@@ -291,6 +301,16 @@ export default function Home() {
         r.state,
       ),
     showComposer = !r || r.state === 'awaiting_clarification';
+  const hasReview =
+    !!r &&
+    r.owner_id === boot?.user.id &&
+    ([
+      'review_pending',
+      'awaiting_approval',
+      'submission_pending',
+      'created',
+    ].includes(r.state) ||
+      !!r.provider_key);
   const list = reports.filter(
     (x) =>
       filter === 'all' ||
@@ -340,14 +360,14 @@ export default function Home() {
     </div>
   );
   return (
-    <main>
+    <main className={hasReview && tab === 'chat' ? 'request-mode' : undefined}>
       <header className="topbar">
-        <a className="brand" href="/" aria-label="Relay home">
+        <button className="brand" onClick={newChat} aria-label="Relay home">
           <span className="brand-icon">
             <ArrowUpRight size={23} />
           </span>
           relay<span className="brand-label">EMPLOYEE SUPPORT</span>
-        </a>
+        </button>
         <span className="demo-pill">
           <i />
           {!boot
@@ -459,7 +479,9 @@ export default function Home() {
             </div>
           )}
           <TabsContent value="chat">
-            <div className="workspace">
+            <div
+              className={'workspace' + (hasReview ? ' request-workspace' : '')}
+            >
               <section className="intake">
                 {!r ? (
                   <>
@@ -474,7 +496,9 @@ export default function Home() {
                 ) : (
                   <>
                     <div className="section-heading">
-                      <div className="eyebrow">YOUR CONVERSATION</div>
+                      <div className="eyebrow">
+                        {hasReview ? 'YOUR ISSUE' : 'YOUR CONVERSATION'}
+                      </div>
                       <button className="text-button" onClick={newChat}>
                         <Plus size={16} />
                         New issue
@@ -493,33 +517,61 @@ export default function Home() {
                         </span>
                       )}
                     </div>
-                    <div className="messages" aria-live="polite">
-                      {detail.messages
-                        .filter(
-                          (m) =>
-                            !m.body.startsWith(
-                              'Your message is saved. Checking',
-                            ),
-                        )
-                        .map((m) => (
-                          <div key={m.id} className={'message ' + m.role}>
-                            <div className="message-label">
-                              {m.role === 'assistant' ? (
-                                <>
-                                  <span className="mini-brand">
-                                    <ArrowUpRight size={13} />
-                                  </span>
-                                  Relay
-                                </>
-                              ) : (
-                                'You'
-                              )}
+                    {hasReview && (
+                      <div className="request-original">
+                        <span className="message-label">
+                          <MessageSquare size={15} /> You reported
+                        </span>
+                        <p>
+                          {detail.messages.find((m) => m.role === 'user')?.body}
+                        </p>
+                        <a href="#ticket-request">
+                          {r.provider_key
+                            ? 'View submitted request'
+                            : 'Review your request'}{' '}
+                          <ArrowUpRight size={14} />
+                        </a>
+                      </div>
+                    )}
+                    <details
+                      className="conversation-history"
+                      open={hasReview ? undefined : true}
+                    >
+                      <summary>
+                        <MessageSquare size={15} /> Conversation history{' '}
+                        <ChevronDown size={14} />
+                      </summary>
+                      <div
+                        className="messages"
+                        aria-live={hasReview ? 'off' : 'polite'}
+                      >
+                        {detail.messages
+                          .filter(
+                            (m) =>
+                              !m.body.startsWith(
+                                'Your message is saved. Checking',
+                              ),
+                          )
+                          .map((m) => (
+                            <div key={m.id} className={'message ' + m.role}>
+                              <div className="message-label">
+                                {m.role === 'assistant' ? (
+                                  <>
+                                    <span className="mini-brand">
+                                      <ArrowUpRight size={13} />
+                                    </span>
+                                    Relay
+                                  </>
+                                ) : (
+                                  'You'
+                                )}
+                              </div>
+                              <p>{m.body}</p>
                             </div>
-                            <p>{m.body}</p>
-                          </div>
-                        ))}
-                      <div ref={scroll} />
-                    </div>
+                          ))}
+                        <div ref={scroll} />
+                      </div>
+                    </details>
                     {r.state === 'awaiting_response' && (
                       <div className="response-actions">
                         <button
@@ -556,7 +608,7 @@ export default function Home() {
                         </span>
                       </div>
                     )}
-                    {r.provider_key && (
+                    {r.provider_key && !hasReview && (
                       <div className="saved-ticket">
                         <CheckCircle2 size={22} />
                         <div>
@@ -606,22 +658,6 @@ export default function Home() {
                         Your message is saved. Checking approved sources…
                       </p>
                     )}
-                    {r.owner_id === boot.user.id &&
-                      ([
-                        'review_pending',
-                        'awaiting_approval',
-                        'submission_pending',
-                        'created',
-                      ].includes(r.state) ||
-                        !!r.provider_key) && (
-                        <TicketReview
-                          key={r.id}
-                          reportId={r.id}
-                          reportState={r.state}
-                          mode={boot.mode}
-                          onApproved={() => loadDetail(r.id)}
-                        />
-                      )}
                   </>
                 )}
                 {showComposer && (
@@ -759,74 +795,90 @@ export default function Home() {
                   </details>
                 )}
               </section>
-              <aside className="context">
-                <div className="context-heading">
-                  <Radio size={18} />
-                  <h2>Service pulse</h2>
-                  <span className="live-dot" />
-                </div>
-                {boot.incidents.length ? (
-                  boot.incidents.map((i) => (
-                    <div className="advisory" key={i.id}>
-                      <span className="tag amber">INVESTIGATING</span>
-                      <h3>{i.title}</h3>
-                      <p>{i.body}</p>
-                      <span className="small">
-                        {boot.mode === 'demo'
-                          ? 'Simulated advisory'
-                          : 'Approved advisory'}{' '}
-                        · {fmt(i.updated_at)}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="advisory">
-                    <span className="operational">
-                      <Check size={15} />
-                      No active advisories for your location
-                    </span>
+              {hasReview && r ? (
+                <TicketReview
+                  key={r.id}
+                  reportId={r.id}
+                  reportState={r.state}
+                  mode={boot.mode}
+                  requesterName={boot.user.name}
+                  providerKey={r.provider_key}
+                  providerUrl={r.provider_url}
+                  providerStatus={r.provider_status}
+                  onApproved={() => loadDetail(r.id)}
+                />
+              ) : (
+                <aside className="context">
+                  <div className="context-heading">
+                    <Radio size={18} />
+                    <h2>Service pulse</h2>
+                    <span className="live-dot" />
                   </div>
-                )}
-                <div className="service-list">
-                  {['Corporate VPN', 'Single sign-on', 'Office Wi-Fi'].map(
-                    (s) => (
-                      <div key={s}>
-                        <span>{s}</span>
-                        <span className="operational">
-                          <Check size={14} />
-                          {boot.mode === 'demo' ? 'Operational' : 'No advisory'}
+                  {boot.incidents.length ? (
+                    boot.incidents.map((i) => (
+                      <div className="advisory" key={i.id}>
+                        <span className="tag amber">INVESTIGATING</span>
+                        <h3>{i.title}</h3>
+                        <p>{i.body}</p>
+                        <span className="small">
+                          {boot.mode === 'demo'
+                            ? 'Simulated advisory'
+                            : 'Approved advisory'}{' '}
+                          · {fmt(i.updated_at)}
                         </span>
                       </div>
-                    ),
+                    ))
+                  ) : (
+                    <div className="advisory">
+                      <span className="operational">
+                        <Check size={15} />
+                        No active advisories for your location
+                      </span>
+                    </div>
                   )}
-                </div>
-                <div className="context-note">
-                  <ShieldCheck size={20} />
-                  <div>
-                    <h3>A little context. Less repetition.</h3>
+                  <div className="service-list">
+                    {['Corporate VPN', 'Single sign-on', 'Office Wi-Fi'].map(
+                      (s) => (
+                        <div key={s}>
+                          <span>{s}</span>
+                          <span className="operational">
+                            <Check size={14} />
+                            {boot.mode === 'demo'
+                              ? 'Operational'
+                              : 'No advisory'}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                  <div className="context-note">
+                    <ShieldCheck size={20} />
+                    <div>
+                      <h3>A little context. Less repetition.</h3>
+                      <p>
+                        {boot.mode === 'demo'
+                          ? 'We can use your demo profile, managed device, and approved help articles.'
+                          : 'We use only approved sources available to your account.'}{' '}
+                        Sources appear with each response.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="demo-note">
+                    <CircleHelp size={17} />
                     <p>
                       {boot.mode === 'demo'
-                        ? 'We can use your demo profile, managed device, and approved help articles.'
-                        : 'We use only approved sources available to your account.'}{' '}
-                      Sources appear with each response.
+                        ? 'You’re exploring a demo with synthetic employee and service data. No real tickets are created.'
+                        : 'Your messages are stored for support and may be processed by the configured OpenAI model.'}
                     </p>
                   </div>
-                </div>
-                <div className="demo-note">
-                  <CircleHelp size={17} />
-                  <p>
-                    {boot.mode === 'demo'
-                      ? 'You’re exploring a demo with synthetic employee and service data. No real tickets are created.'
-                      : 'Your messages are stored for support and may be processed by the configured OpenAI model.'}
-                  </p>
-                </div>
-                {waiting && (
-                  <p className="pending-note">
-                    <Clock size={15} />
-                    This stays open until you respond.
-                  </p>
-                )}
-              </aside>
+                  {waiting && (
+                    <p className="pending-note">
+                      <Clock size={15} />
+                      This stays open until you respond.
+                    </p>
+                  )}
+                </aside>
+              )}
             </div>
           </TabsContent>
           <TabsContent value="requests">
