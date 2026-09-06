@@ -9,6 +9,7 @@ import time
 from .config import validate_environment
 from .db import close_pool, mode, query
 from .jobs import process_operation, resume_intakes, review_timers, sync_requests
+from .attachments import process_attachments, expire_files
 
 
 async def tick(sync=False, stop=None):
@@ -30,7 +31,9 @@ async def tick(sync=False, stop=None):
     if stop is not None and stop.is_set():
         return
     await review_timers()
+    await process_attachments(stop=stop)
     if sync:
+        await expire_files()
         await sync_requests(stop=stop)
 
 

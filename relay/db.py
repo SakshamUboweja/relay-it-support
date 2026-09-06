@@ -120,4 +120,7 @@ def _json_default(value):
 
 async def migrate():
     async with connection() as db:
-        await db.execute((ROOT / "migrations/001_initial.sql").read_text())
+        async with db.transaction():
+            await db.execute("SELECT pg_advisory_xact_lock(726351902)")
+            for path in sorted((ROOT / "migrations").glob("*.sql")):
+                await db.execute(path.read_text())

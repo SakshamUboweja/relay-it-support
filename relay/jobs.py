@@ -50,6 +50,26 @@ async def process_operation(id, provider=None):
             report = (await query("SELECT * FROM reports WHERE id=$1", [op["report_id"]])).rows[0]
             if report["mode"] != mode():
                 return
+            if op["kind"] == "create" and report.get("requires_approval"):
+                approved = (
+                    await query(
+                        "SELECT version,approved_at,approved_payload FROM ticket_reviews WHERE report_id=$1",
+                        [report["id"]],
+                    )
+                ).rows
+                if (
+                    not approved
+                    or not approved[0]["approved_at"]
+                    or op["payload"].get("approvalVersion") != approved[0]["version"]
+                    or op["payload"].get("approvedPayload") != approved[0]["approved_payload"]
+                ):
+                    await fail(
+                        op,
+                        ValueError(
+                            "Requester approval is missing or no longer matches this operation."
+                        ),
+                    )
+                    return
             next_at = op["next_attempt_at"]
             if isinstance(next_at, str):
                 next_at = datetime.fromisoformat(next_at.replace("Z", "+00:00"))
@@ -222,9 +242,11 @@ async def sync_requests(provider=None, stop=None):
 
 
 async def resume_intakes(stop=None):
+    from .review import prepare_review
+
     reports = (
         await query(
-            "SELECT * FROM reports WHERE state='processing' AND mode=$1 ORDER BY created_at LIMIT 10",
+            "SELECT * FROM reports WHERE state IN ('processing','review_pending') AND mode=$1 ORDER BY updated_at LIMIT 10",
             [mode()],
         )
     ).rows
@@ -233,3 +255,4 @@ async def resume_intakes(stop=None):
             return
         user = (await query("SELECT * FROM users WHERE id=$1", [report["owner_id"]])).rows[0]
         await process_intake(report["id"], user)
+        await prepare_review(report["id"], user)

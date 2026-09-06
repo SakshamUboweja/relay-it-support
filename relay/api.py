@@ -15,6 +15,7 @@ from .config import ROOT, validate_environment
 from .db import close_pool, mode, open_pool, query, transaction
 from .domain import CorrectionInput, IntakeInput, SessionInput
 from .fixtures import catalog
+from .connector import ConnectorError
 
 
 @asynccontextmanager
@@ -46,9 +47,18 @@ async def bad_request(req, exc):
         if message.startswith("Forbidden")
         else 404
         if message == "Not found"
+        else 409
+        if "draft changed" in message
+        or "form changed" in message
+        or "Verification changed" in message
         else 400
     )
     return response({"error": message}, status)
+
+
+@app.exception_handler(ConnectorError)
+async def invalid_provider_fields(req, exc):
+    return response({"error": str(exc)}, 400)
 
 
 @app.exception_handler(Exception)
@@ -57,11 +67,11 @@ async def request_failed(req, exc):
     return response({"error": "Request failed. Please retry."}, 500)
 
 
-async def read_json(req):
+async def read_json(req, limit=15000):
     body = bytearray()
     async for chunk in req.stream():
         body.extend(chunk)
-        if len(body) > 15000:
+        if len(body) > limit:
             raise ValueError("Message too large")
     try:
         return json.loads(body)
@@ -73,6 +83,7 @@ async def read_json(req):
 async def health():
     try:
         await query("SELECT 1 FROM reports LIMIT 1")
+        await query("SELECT 1 FROM ticket_reviews LIMIT 1")
         return response({"status": "ok"})
     except Exception:
         return response({"status": "unavailable"}, 503)
@@ -142,6 +153,9 @@ async def intake(req: Request):
     )
     report_id = await save_intake(data, user)
     await process_intake(report_id, user)
+    from .review import prepare_review
+
+    await prepare_review(report_id, user)
     return response({"id": report_id})
 
 
@@ -330,6 +344,91 @@ async def operate(req: Request):
                 db=db,
             )
     return response({"ok": True})
+
+
+def identifier(value):
+    try:
+        return str(UUID(str(value)))
+    except (ValueError, TypeError) as exc:
+        raise ValueError("Invalid report or file ID") from exc
+
+
+def review_input(data):
+    if not isinstance(data, dict) or type(data.get("version")) is not int or data["version"] < 1:
+        raise ValueError("A valid draft version is required.")
+    return identifier(data.get("reportId")), data["version"]
+
+
+@app.get("/api/review")
+async def review_get(req: Request):
+    from .review import view_review
+
+    user = await authenticate(req)
+    return response({"review": await view_review(identifier(req.query_params.get("id")), user)})
+
+
+@app.post("/api/review")
+async def review_save(req: Request):
+    from .review import save_review
+
+    assert_origin(req)
+    user = await authenticate(req)
+    data = await read_json(req, limit=40000)
+    report_id, version = review_input(data)
+    return response({"review": await save_review(report_id, user, version, data.get("values"))})
+
+
+@app.post("/api/review/approve")
+async def review_approve(req: Request):
+    from .review import approve_review
+
+    assert_origin(req)
+    user = await authenticate(req)
+    data = await read_json(req)
+    report_id, version = review_input(data)
+    return response({"id": await approve_review(report_id, user, version)})
+
+
+@app.post("/api/review/attachments")
+async def review_upload(req: Request):
+    from .attachments import MAX_FILE, stage_file
+    from .review import owner_report
+
+    assert_origin(req)
+    user = await authenticate(req)
+    report_id = identifier(req.query_params.get("reportId"))
+    version = int(req.query_params.get("version", "0"))
+    await owner_report(report_id, user)
+    content = bytearray()
+    async for chunk in req.stream():
+        content.extend(chunk)
+        if len(content) > MAX_FILE:
+            raise ValueError("Each attachment must be no larger than 5 MiB.")
+    return response(
+        {
+            "review": await stage_file(
+                report_id, user, version, req.query_params.get("filename"), bytes(content)
+            )
+        }
+    )
+
+
+@app.delete("/api/review/attachments")
+async def review_remove(req: Request):
+    from .attachments import remove_file
+
+    assert_origin(req)
+    user = await authenticate(req)
+    return response(
+        {
+            "review": await remove_file(
+                identifier(req.query_params.get("reportId")),
+                user,
+                int(req.query_params.get("version", "0")),
+                identifier(req.query_params.get("id")),
+            )
+        }
+    )
 
 
 # API routes take precedence. Only the generated public UI directory is served.

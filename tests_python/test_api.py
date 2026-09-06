@@ -38,6 +38,51 @@ async def test_demo_http_contract_and_authorization(client):
     replay = await client.post("/api/intake", json=body)
     assert replay.json() == {"id": id}
     operations = (await query("SELECT id FROM connector_operations WHERE report_id=$1", [id])).rows
+    assert operations == []
+    preview = await client.get("/api/review", params={"id": id})
+    assert preview.status_code == 200
+    review = preview.json()["review"]
+    assert review["verification"]["status"] == "passed"
+    assert review["approvedAt"] is None
+    assert review["form"]["values"]["summary"]
+    assert review["form"]["values"]["description"]
+    assert (await client.get("/api/reports", params={"id": id})).json()["report"][
+        "provider_key"
+    ] is None
+    prior_version = review["version"]
+    verified = await client.post(
+        "/api/review",
+        json={"reportId": id, "version": prior_version, "values": review["form"]["values"]},
+    )
+    assert verified.status_code == 200
+    review = verified.json()["review"]
+    assert review["version"] == prior_version + 1
+    assert review["verification"]["status"] == "passed"
+    assert (await query("SELECT id FROM connector_operations WHERE report_id=$1", [id])).rows == []
+    assert (
+        await client.post("/api/review/approve", json={"reportId": id, "version": prior_version})
+    ).status_code == 409
+    assert (
+        await client.post(
+            "/api/review/approve",
+            json={"reportId": id, "version": review["version"]},
+            headers={"origin": "https://evil.test"},
+        )
+    ).status_code == 403
+    approved = await client.post(
+        "/api/review/approve", json={"reportId": id, "version": review["version"]}
+    )
+    assert approved.status_code == 200
+    replay_approval = await client.post(
+        "/api/review/approve", json={"reportId": id, "version": review["version"]}
+    )
+    assert replay_approval.status_code == 200
+    operations = (
+        await query(
+            "SELECT id FROM connector_operations WHERE report_id=$1 AND kind='create'", [id]
+        )
+    ).rows
+    assert len(operations) == 1
     for operation in operations:
         await process_operation(operation["id"])
     detail = (await client.get("/api/reports", params={"id": id})).json()
@@ -48,9 +93,16 @@ async def test_demo_http_contract_and_authorization(client):
     assert (await client.get("/api/reports?all=1")).status_code == 403
     assert (await client.post("/api/session", json={"userId": "jordan"})).status_code == 200
     assert (await client.get("/api/reports", params={"id": id})).status_code == 404
+    assert (await client.get("/api/review", params={"id": id})).status_code == 404
+    assert (
+        await client.post(
+            "/api/review/approve", json={"reportId": id, "version": review["version"]}
+        )
+    ).status_code == 404
     assert (await client.get("/api/bootstrap")).json()["incidents"] == []
     await client.post("/api/session", json={"userId": "alex"})
     assert (await client.get("/api/reports", params={"id": id})).status_code == 200
+    assert (await client.get("/api/review", params={"id": id})).status_code == 404
     correction = await client.post(
         "/api/operations",
         json={
@@ -141,6 +193,7 @@ async def test_invalid_input_and_restricted_correction(client):
         "action": "support",
     }
     id = (await client.post("/api/intake", json=data)).json()["id"]
+    assert (await query("SELECT id FROM connector_operations WHERE report_id=$1", [id])).rows == []
     await client.post("/api/session", json={"userId": "alex"})
     result = await client.post(
         "/api/operations",
