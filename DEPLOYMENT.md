@@ -1,8 +1,8 @@
 # Railway deployment
 
-Status: Python MVP deployed September 5, 2026 on the existing Hobby workspace, with no plan upgrade. Open https://relay-web-production-6f5f.up.railway.app. Web and worker run committed release `bb71361`, uploaded through the Railway CLI after GitHub CI passed. GitHub automatic deployment still requires the owner's authentication and granting Railway access to this private repository.
+Status: ticket review and attachments deployed September 5, 2026 on the existing Hobby workspace, with no plan upgrade. Open https://relay-web-production-6f5f.up.railway.app. Web and worker run committed release `d6af9d6`, uploaded through the Railway CLI after GitHub CI passed. GitHub automatic deployment still requires the owner's authentication and granting Railway access to this private repository.
 
-Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment `49371d2c-2cd1-464e-8eaa-44c72c2cda08`. Web deployment `018adbbb-52e4-48d6-8a06-f2e1b148fdd6`; worker deployment `f7eec1a1-61ba-48ae-8e96-90e34cb23010`. All three services are online in US West, one replica each.
+Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment `49371d2c-2cd1-464e-8eaa-44c72c2cda08`. Web deployment `341c1c26-b5c9-4960-b5d0-32cd56c245a4`; worker deployment `6f07b1d8-8f99-4753-b52e-8f4d050bc13a`. All three services are online in US West, one replica each.
 
 ## Architecture
 

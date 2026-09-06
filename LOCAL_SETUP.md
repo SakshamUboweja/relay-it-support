@@ -48,6 +48,8 @@ Security-related reports remain blocked from external delivery; a queue named Se
 
 ## Hosting
 
+The ticket review feature is live locally and on Railway. New support requests now wait for independent verification and your approval. Review/edit the real Jira fields, add files, then select **Approve and submit**. HELP-10 (local) and HELP-11 (hosted) verified exact field and attachment delivery. See TICKET_REVIEW.md for supported files and limits.
+
 The Python migration is deployed locally and on Railway. The API, OpenAI integration, Jira connector and durable worker run Python; the React interface remains TypeScript. All 78 tests and the 120-case policy parity check pass. Cloud regression HELP-9 verified Identity & Access routing, Medium priority and duplicate protection. Existing local and cloud data and session formats were retained.
 
 Relay is also live at https://relay-web-production-6f5f.up.railway.app on the existing Railway Hobby plan, with one web service, worker and PostgreSQL database. Spending was authorized; no plan upgrade was made. Usage beyond the workspace's included allowance and OpenAI API calls are billed separately. See DEPLOYMENT.md for release verification, cloud sign-in and the remaining GitHub authentication step. The local environment remains separate.

@@ -18,6 +18,8 @@
 
 ## Verified this session
 
+- [x] Ticket-review release `d6af9d6` deployed after 144 tests and GitHub CI passed. Local browser/API HELP-10 and hosted HELP-11 verified two model roles, exact approved Jira fields, zero pre-approval writes, stale/repeated approval protection, and one attachment per ticket. Existing cloud records remain intact.
+
 - [x] Python migration: API, authentication, extraction, retrieval, routing, Jira connector, durable worker and operator commands ported. React UI and Railway infrastructure definition remain TypeScript. Existing database schema and session formats retained.
 - [x] All 120 deterministic policy outputs match the original TypeScript snapshot. Historical evaluation results remain unchanged; Python results are recorded separately in `evaluation/python-RESULTS.md`.
 - [x] Python live preflight: Jira field discovery, Terra/high structured extraction and 256-dimensional embeddings passed.
