@@ -36,8 +36,10 @@ The demo is deliberately loopback-only. A signed demo persona selector includes 
 
 ## Repeatable demonstration
 
+For every support handoff, Relay now prepares a ticket for independent verification and **your approval**. Review and edit the real Jira fields, attach files, then choose **Approve and submit**. Nothing is sent to Jira before approval. See [ticket review](TICKET_REVIEW.md) for the two-agent flow, file limits, reliability guarantees and verified example.
+
 1. **Approved help:** as Maya, enter “My Wi-Fi keeps disconnecting.” One approved procedure appears. Waiting does not resolve it. Choose **Fixed it** and find the saved resolution in My requests; no provider ticket exists.
-2. **Zero-question handoff:** enter “VPN broke after I changed my password.” Catalog policy routes it to Identity & Access. The worker creates a `DEMO-...` request; impact and urgency stay unknown, cached credentials stay a hypothesis.
+2. **Zero-question handoff:** enter “VPN broke after I changed my password.” Catalog policy routes it to Identity & Access. Review and approve the prepared ticket; the worker then creates a `DEMO-...` request. Impact and urgency stay unknown, cached credentials stay a hypothesis.
 3. **Shared advisory:** enter “Atlas is loading slowly.” Maya can follow the San Francisco advisory. Her report stays separate; this is an in-app follow, not a Jira subscription. Jordan cannot see that advisory. Fixture advisories expire after 24 hours; to intentionally refresh the demo advisory, update its timestamp in the demo database or recreate the disposable demo database and run setup.
 4. **Ambiguity:** enter “I cannot get in,” then “Still no luck.” Only one question is asked before general intake. Send to support bypasses the question.
 5. **Lost response:** stop the worker, set `DEMO_LOST_CREATE_RESPONSE=1`, restart it, and submit “VPN cannot reach the server.” The mock provider persists one ticket, then throws. The operation is unknown; later reconciliation recovers that same ticket. Restore the variable to `0` afterward. Automated tests cover immediate empty searches and duplicate delivery too.
@@ -74,7 +76,7 @@ The adapter supports field discovery, truthful payload validation/fallback, JSM 
 
 ## Live model and sessions
 
-For the Railway web/worker/PostgreSQL deployment, runtime variables, data import and rollback procedure, see [DEPLOYMENT.md](DEPLOYMENT.md). Relay currently uses one model extraction step with application-controlled orchestration; it is not a multi-agent system.
+For the Railway web/worker/PostgreSQL deployment, runtime variables, data import and rollback procedure, see [DEPLOYMENT.md](DEPLOYMENT.md). Relay now uses intake and independent verification model roles with application-controlled orchestration and explicit requester approval; see [TICKET_REVIEW.md](TICKET_REVIEW.md).
 
 Use a **separate database** for live mode. `npm run setup` migrates only the schema in live mode and does not install demo fixtures. Persisted demo jobs are rejected by live dispatch and vice versa. Set `APP_MODE=live`, a fresh random `SESSION_SECRET`, `APP_ORIGIN`, `OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_EMBEDDING_MODEL`. No model name is invented or silently substituted. Preflight verifies actual configured account access, structured output, and 256-dimension embedding support. Unknown/refused/incomplete model results preserve known facts for human intake; there is no mock fallback.
 

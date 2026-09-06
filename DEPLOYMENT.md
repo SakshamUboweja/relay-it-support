@@ -6,7 +6,7 @@ Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment 
 
 ## Architecture
 
-Relay is a single-model workflow application, not a multi-agent system. A Responses API extraction call supplies validated facts; application code retrieves scoped sources, applies routing/security policy, persists the report and queues idempotent Jira operations. The separate worker is a background process, not a second AI agent. Deploying these processes does not change that distinction.
+Relay uses two model roles: intake extracts grounded facts, and an independent verifier checks the prepared Jira draft. Application code retrieves scoped sources, applies routing/security policy and validates fields. Only requester approval releases the durable Jira operation. The worker handles delivery and attachment reconciliation; it is not an AI agent. See TICKET_REVIEW.md for the implemented boundaries.
 
 Use one Railway project with three services in the same region:
 
@@ -52,7 +52,7 @@ Do not copy the local `DATABASE_URL`, local `APP_ORIGIN`, session tokens, demo s
 7. Issue a fresh cloud session with `python -m relay.cli session saksham` and sign in over HTTPS. Share the token only with its owner; it expires after eight hours.
 8. Verify authenticated intake, one synthetic Jira ticket with read-back, duplicate submission protection, My requests after reload, and worker heartbeat/status synchronization. Confirm unauthenticated API access is rejected.
 
-GitHub CI runs Ruff, 78 Python tests, TypeScript checks, static UI compilation and the Python Docker build against disposable PostgreSQL with pgvector. It uses no live API keys and sends no Jira requests.
+GitHub CI runs Ruff, the Python suite, TypeScript checks, static UI compilation and the Python Docker build against disposable PostgreSQL with pgvector. It uses no live API keys and sends no Jira requests.
 
 Python migration verification passed: 78 automated tests against isolated PostgreSQL schemas, all 120 deterministic policy outputs matching the original snapshot, TypeScript checks, static frontend build, and Linux Docker build. A disposable PostgreSQL 16/pgvector container verified schema setup, static UI, API intake, duplicate submission protection, worker completion and heartbeat. The runtime contains Python 3.13.15 and excludes Node, node_modules, local `.env` and private Jira mapping files. Live Python preflight verified Jira field discovery, Terra/high structured extraction and 256-dimensional embeddings.
 
@@ -75,6 +75,8 @@ The initial cloud token is in the owner-only ignored `.local/railway-session.tok
 Until GitHub source access is connected, deploy a clean archive of a CI-verified commit with `railway up PATH --path-as-root --service relay-web --detach`, then the same archive with `--service relay-worker`. Keep credentials exclusively in Railway variables. The checked-in infrastructure definition currently matches the CLI-managed service configuration; after connecting GitHub, run `railway config pull` without `--include-variables` to record that source change.
 
 ## Operations and limits
+
+The ticket-review release adds migration `002_ticket_review.sql`, which creates versioned reviews, bounded attachment storage and an approval trigger. Retain that trigger on rollback: an older worker must not send a new unapproved report. Older releases cannot render pending review forms, so prefer a forward fix when reviews are active. No migration removes historical records, and no object-storage or additional Railway service is required.
 
 Deploy only after CI passes. For rollback to the former Node release, first restore its web/worker start commands and web pre-deploy command from commit `d5a93f9`, then restore that deployment while retaining the database volume; do not reseed, delete the volume, or replay old connector operations. The initial migration is additive/idempotent; future destructive migrations need their own recovery plan.
 

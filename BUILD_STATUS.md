@@ -2,6 +2,8 @@
 
 ## Implemented MVP
 
+- [x] Independent verifier agent, actual Jira field preview, editable drafts and required requester approval. Versioned approval guards extend through the database and worker. Attachments are staged until approval with bounded storage, per-file delivery status and uncertain-upload reconciliation. See TICKET_REVIEW.md.
+
 - [x] Static Next.js/React employee chat served by Python FastAPI, My requests, operator console, responsive styles.
 - [x] PostgreSQL migration and synthetic seed data; persistent reports/messages/facts/decisions/context/outbox/events/sessions.
 - [x] Explicit demo/live interfaces; no silent mock fallback; worker mode isolation.
@@ -24,7 +26,7 @@
 - [x] Railway deployment verified: HTTPS web, persistent worker, PostgreSQL 16/pgvector, 120 synthetic sources/embeddings, owner provisioning, secure session API, worker heartbeat and Jira HELP-7. Existing Hobby plan; one replica each. GitHub auto-deployment and browser sign-in await owner authentication; see DEPLOYMENT.md.
 
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
-- [x] 78 passing Python unit and integration/adapter tests, including fact handoff, readable ticket descriptions, support-request/attempt handling, transient validation retries and uncertain-create preservation. Dependency audit at the original build reported zero known vulnerabilities.
+- [x] 144 passing Python unit and integration/adapter tests, including verifier grounding, requester approval, field/schema validation, durable attachments and the existing connector regressions. Dependency audit at the original build reported zero known vulnerabilities.
 - [x] TypeScript and optimized Next.js build.
 - [x] Local HTTP employee/session/operator workflows and persisted demo provider request.
 - [x] Heldout synthetic results published honestly; accuracy/precision/security targets not met.
@@ -49,4 +51,4 @@
 - [ ] Resolve the retained HELP-7 routing regression: laptop + Wi-Fi evidence produces a conflict and Service Desk fallback instead of Network.
 - [ ] Production SSO, operational hardening, comprehensive DLP, production incident policies (outside MVP scope).
 
-The local and hosted MVPs and ordinary Jira handoff are verified. Complete evaluation, remaining provider features, GitHub automatic deployment and production readiness remain incomplete. MULTI_AGENT_PLAN.md describes a proposed next step; it is not implemented.
+The local and hosted MVPs and ordinary Jira handoff are verified. Complete evaluation, remaining provider features, GitHub automatic deployment and production readiness remain incomplete. Independent verification and requester approval are implemented; MULTI_AGENT_PLAN.md proposes broader autonomous triage and investigation.
