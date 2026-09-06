@@ -602,6 +602,8 @@ input {
 .status.awaiting_response,
 .status.awaiting_clarification,
 .status.processing,
+.status.review_pending,
+.status.awaiting_approval,
 .status.submission_pending,
 .status.pending {
   background: #e9edff;
@@ -1055,6 +1057,312 @@ input {
   font-size: 11px;
   color: #8995a7;
   overflow-wrap: anywhere;
+}
+.ticket-review {
+  background: #fff;
+  border: 1px solid #cbd6eb;
+  border-radius: 14px;
+  margin-top: 28px;
+  padding: 24px;
+  overflow-wrap: anywhere;
+}
+.review-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 7px;
+  list-style: none;
+  padding: 0 0 20px;
+  margin: 0 0 23px;
+  border-bottom: 1px solid var(--border);
+}
+.review-steps li {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 11px;
+  color: #6c7b91;
+}
+.review-steps li > span:first-child {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #f0f3f8;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.review-steps .complete {
+  color: #287c5e;
+}
+.review-steps .current {
+  color: #3156df;
+  font-weight: 600;
+}
+.review-steps .current > span:first-child {
+  background: #e9edff;
+}
+.review-step-arrow {
+  color: #8b98ab;
+  margin-left: 2px;
+}
+.ticket-review h2 {
+  font-size: 21px;
+}
+.review-caption {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #63748c;
+  margin-top: 5px;
+}
+.review-version {
+  font-size: 11px;
+  color: #63748c;
+  white-space: nowrap;
+}
+.review-routing {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.8fr;
+  gap: 14px;
+  padding: 16px;
+  background: #f5f7fb;
+  border-radius: 9px;
+}
+.review-routing span {
+  display: block;
+  font-size: 11px;
+  color: #62738a;
+  margin-bottom: 5px;
+}
+.review-routing strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+.review-verification {
+  border: 1px solid #e5d6b8;
+  background: #fffaf1;
+  border-radius: 9px;
+  padding: 15px;
+  margin: 18px 0 22px;
+  font-size: 13px;
+  color: #785a29;
+}
+.review-verification.passed {
+  border-color: #cce1d9;
+  background: #f0f8f4;
+  color: #296e56;
+}
+.review-verification-heading {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.review-verification-heading svg {
+  flex-shrink: 0;
+}
+.review-verification summary {
+  cursor: pointer;
+  margin-top: 10px;
+}
+.review-verification ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+.review-verification li + li {
+  margin-top: 5px;
+}
+.review-fields {
+  display: grid;
+  gap: 20px;
+}
+.review-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 7px;
+  color: #344b69;
+}
+.review-required {
+  font-weight: 400;
+  color: #65748a;
+  font-size: 11px;
+}
+.review-field input,
+.review-field textarea,
+.review-field select {
+  width: 100%;
+  min-width: 0;
+  font:
+    14px/1.6 Arial,
+    Helvetica,
+    sans-serif;
+  color: #273c58;
+  background: #fff;
+  border: 1px solid #cbd5e5;
+  border-radius: 8px;
+  padding: 11px 12px;
+}
+.review-field textarea {
+  resize: vertical;
+}
+.review-field select[multiple] {
+  min-height: 110px;
+}
+.review-field :is(input, textarea, select):disabled {
+  opacity: 1;
+  color: #53647d;
+  background: #f5f7fb;
+}
+.review-field [aria-invalid='true'] {
+  border-color: #c28657;
+}
+.review-field :is(input, textarea, select):focus-visible {
+  outline: 3px solid #7e96f5;
+  outline-offset: 3px;
+}
+.review-field-issues {
+  color: #93542f;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.review-reference {
+  padding: 11px 12px;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f5f7fb;
+  color: #63748c;
+  font-size: 11px;
+}
+.review-reference span {
+  display: block;
+  font-weight: 600;
+}
+.review-reference code {
+  display: block;
+  color: #526580;
+  margin: 5px 0;
+  overflow-wrap: anywhere;
+}
+.review-reference p {
+  line-height: 1.6;
+}
+.review-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fff2eb;
+  border: 1px solid #efcdbd;
+  border-radius: 8px;
+  padding: 12px;
+  color: #923e2f;
+  font-size: 13px;
+  margin: 14px 0;
+}
+.review-alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.review-conflict {
+  padding: 14px;
+  border: 1px solid #e2d2b8;
+  border-radius: 8px;
+  background: #fffaf1;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.review-conflict button {
+  margin-top: 10px;
+  white-space: normal;
+}
+.review-attachments {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+.review-attachments h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+}
+.review-attachments ul {
+  list-style: none;
+  margin: 14px 0;
+  padding: 0;
+}
+.review-attachments li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.review-attachments li > div {
+  flex: 1;
+  min-width: 0;
+}
+.review-attachments li strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+.review-attachments li span {
+  display: block;
+  font-size: 11px;
+  color: #62738a;
+  margin-top: 3px;
+}
+.review-attachments > button {
+  margin-top: 12px;
+}
+.review-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 20px;
+}
+.review-footer > p {
+  font-size: 13px;
+  color: #63748c;
+}
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+.review-approved {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 13px;
+  color: #287c5e;
+  margin-top: 20px;
+}
+.review-notice {
+  display: block;
+  font-size: 12px;
+  color: #416294;
+  margin-top: 12px;
+}
+.review-notice:empty {
+  display: none;
+}
+@media (max-width: 760px) {
+  .ticket-review {
+    padding: 18px;
+  }
+  .review-routing {
+    grid-template-columns: 1fr 1fr;
+  }
+  .review-routing > div:first-child {
+    grid-column: 1 / -1;
+  }
+  .review-actions > button {
+    flex: 1;
+    white-space: normal;
+  }
 }
 .spin {
   animation: spin 1s linear infinite;

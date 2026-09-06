@@ -40,6 +40,7 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { TicketReview } from '@/components/ticket-review';
 import {
   teams,
   type Report,
@@ -76,6 +77,8 @@ const labels: Record<string, string> = {
   awaiting_clarification: 'One question',
   related_suggested: 'Related advisory',
   related_reported: 'Following advisory',
+  review_pending: 'Verifier checking',
+  awaiting_approval: 'Review ticket',
   submission_pending: 'Sending to support',
   created: 'Request created',
   resolved: 'Resolution saved',
@@ -603,6 +606,22 @@ export default function Home() {
                         Your message is saved. Checking approved sources…
                       </p>
                     )}
+                    {r.owner_id === boot.user.id &&
+                      ([
+                        'review_pending',
+                        'awaiting_approval',
+                        'submission_pending',
+                        'created',
+                      ].includes(r.state) ||
+                        !!r.provider_key) && (
+                        <TicketReview
+                          key={r.id}
+                          reportId={r.id}
+                          reportState={r.state}
+                          mode={boot.mode}
+                          onApproved={() => loadDetail(r.id)}
+                        />
+                      )}
                   </>
                 )}
                 {showComposer && (
@@ -657,8 +676,8 @@ export default function Home() {
                 {!r && (
                   <>
                     <p className="consent">
-                      If we can’t resolve this here, we may create a support
-                      request for you.
+                      If you need support, we’ll prepare a ticket for you to
+                      review, edit, and approve before it goes to Jira.
                     </p>
                     <div className="section-label">
                       START WITH SOMETHING COMMON
@@ -693,6 +712,8 @@ export default function Home() {
                     'resolved',
                     'submission_pending',
                     'operator_review',
+                    'review_pending',
+                    'awaiting_approval',
                   ].includes(r.state)) && (
                   <button
                     className="text-button"
@@ -700,7 +721,7 @@ export default function Home() {
                     onClick={() => send('support')}
                   >
                     <LifeBuoy size={17} />
-                    Send to support
+                    Prepare ticket
                   </button>
                 )}
                 {r && (
