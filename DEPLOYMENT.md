@@ -1,8 +1,8 @@
 # Railway deployment
 
-Status: ticket review and attachments deployed September 5, 2026 on the existing Hobby workspace, with no plan upgrade. Open https://relay-web-production-6f5f.up.railway.app. Web and worker run committed release `d6af9d6`, uploaded through the Railway CLI after GitHub CI passed. GitHub automatic deployment still requires the owner's authentication and granting Railway access to this private repository.
+Status: Jira-style request workspace deployed September 5, 2026 on the existing Hobby workspace, with no plan upgrade. Open https://relay-web-production-6f5f.up.railway.app. Web runs committed release `e8d659d`; worker remains on `d6af9d6` because this release changes only the frontend. Both releases were uploaded through the Railway CLI after GitHub CI passed. GitHub automatic deployment still requires the owner's authentication and granting Railway access to this private repository.
 
-Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment `49371d2c-2cd1-464e-8eaa-44c72c2cda08`. Web deployment `341c1c26-b5c9-4960-b5d0-32cd56c245a4`; worker deployment `6f07b1d8-8f99-4753-b52e-8f4d050bc13a`. All three services are online in US West, one replica each.
+Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment `49371d2c-2cd1-464e-8eaa-44c72c2cda08`. Web deployment `bce712e0-e2bd-4dbb-b600-fdc7e000bab8`; worker deployment `6f07b1d8-8f99-4753-b52e-8f4d050bc13a`. All three services are online in US West, one replica each.
 
 ## Architecture
 
@@ -83,3 +83,5 @@ Deploy only after CI passes. For rollback to the former Node release, first rest
 The hosted MVP still uses expiring session tokens, synthetic knowledge sources and local-only security review. It has no enterprise SSO, production security destination, or representative live accuracy guarantee. Broad public employee rollout is a separate hardening task.
 
 Railway bills actual resource usage; current credits do not guarantee a free ongoing deployment. OpenAI API usage is billed separately. See [Railway pricing](https://docs.railway.com/pricing/plans), [cost controls](https://docs.railway.com/pricing/cost-control), and [pgvector Docker images](https://github.com/pgvector/pgvector#docker).
+
+The frontend release passed CI run `34005836712` (144 Python tests, typecheck, static build and Docker build). Hosted verification confirmed HTTP 200 health, unauthorized access rejection, authenticated loading of the new UI assets, existing HELP-11 approval and attachment preservation, and a healthy worker. No Jira request was created for the frontend deployment check. See FRONTEND_REVIEW.md for visual and interaction checks and their limits.

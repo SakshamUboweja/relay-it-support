@@ -16,7 +16,7 @@ Reviewed and updated September 5, 2026. The visual reference was the actual **Ge
 - Chrome: created a synthetic keyboard draft, cleared its required summary with keyboard input, confirmed approval/file changes were disabled, edited the summary, saved and reverified, and reopened the persisted draft after reload. No Jira submission was made for this design test.
 - Chrome: inspected HELP-10's submitted form and existing attachment. Confirmed draft/submitted status distinctions and collapsible conversation/history.
 - A pinned action bar initially covered a field; visual inspection caught this and it was replaced with an action area after the form.
-- Screenshot evidence is local and ignored: `.local/ui-audit/01-relay-before.jpg`, `02-jira-reference.jpg`, `03-draft-desktop.png`. These contain only the scoped app/reference surfaces.
+- Screenshot evidence is local and ignored: `.local/ui-audit/01-relay-before.jpg`, `02-jira-reference.jpg`, `03-draft-desktop.png`, `04-submitted-desktop.png`. These contain only the scoped app/reference surfaces.
 
 ## Limits
 
@@ -25,3 +25,7 @@ Chrome's automation extension blocks file selection (`Not allowed`), so the actu
 Responsive styles stack the layout below 760px and wrap controls. The browser viewport override did not apply (DOM remained 1512px); no mobile screenshot is claimed. Keyboard-driven field edits and explicit labels were checked, but a full accessibility audit was not performed.
 
 More company-specific Jira fields require configuration in the actual request type. This redesign does not invent fields or alter the Jira project, request type, provider payload, AI model, database schema, or hosting plan.
+
+## Release
+
+Pushed implementation `7d05ede` and review notes `e8d659d` separately. CI run `34005836712` passed; web deployment `bce712e0-e2bd-4dbb-b600-fdc7e000bab8` is successful. Hosted asset, authentication, existing approved ticket/attachment and worker-health checks passed. The worker was not redeployed for this frontend-only change.
