@@ -12,7 +12,7 @@ export function validateImage(file: {
   size: number;
   name: string;
 }): string | null {
-  if (!IMAGE_TYPES.includes(file.type as (typeof IMAGE_TYPES)[number]))
+  if (!(IMAGE_TYPES as readonly string[]).includes(file.type))
     return 'Choose a PNG or JPEG image.';
   if (file.size > IMAGE_MAX_BYTES) return 'Images must be 5 MB or smaller.';
   if (file.size <= 0) return 'That image is empty.';

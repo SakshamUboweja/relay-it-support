@@ -163,18 +163,22 @@ export default function Home() {
   } | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const previewUrl = image?.url;
+  // A ref mirror keeps clearImage stable, so callbacks registered once (the
+  // model-context tool) still drop the current screenshot rather than a stale one.
+  const staged = useRef<ComposerImage | null>(null);
   // The preview URL is a blob handle: drop it when it is replaced or the page
   // goes away, so a long session does not pin screenshots in memory.
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    staged.current = image;
+    return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
-    },
-    [previewUrl],
-  );
-  function clearImage() {
-    if (image) URL.revokeObjectURL(image.url);
+    };
+  }, [image, previewUrl]);
+  const clearImage = useCallback(() => {
+    if (staged.current) URL.revokeObjectURL(staged.current.url);
+    staged.current = null;
     setImage(null);
-  }
+  }, []);
   const bootstrap = useCallback(async () => {
     try {
       setBoot(await api<Bootstrap>('/api/bootstrap'));
@@ -251,11 +255,18 @@ export default function Home() {
     setBusy(true);
     setError('');
     setNotice('');
+    // Only the composer can carry a screenshot. Polling can retire the composer
+    // while one is staged, and the triage buttons that replace it must not
+    // upload a file the requester can no longer see.
+    const attached =
+      !detail || detail.report.state === 'awaiting_clarification'
+        ? image
+        : null;
     const signature = JSON.stringify({
       text: content,
       action,
       reportId: detail?.report.id,
-      image: image ? imageSignature(image.file) : null,
+      image: attached ? imageSignature(attached.file) : null,
     });
     if (pending.current?.signature !== signature)
       pending.current = {
@@ -266,7 +277,7 @@ export default function Home() {
           action,
           reportId: detail?.report.id,
         },
-        image: image?.file ?? null,
+        image: attached?.file ?? null,
       };
     // The body is rebuilt per attempt because a FormData stream can only be
     // read once; the submission key is reused so a retry stays idempotent.
@@ -356,6 +367,7 @@ export default function Home() {
               throw new Error('Provide 1–6000 characters.');
             setDetail(null);
             setText(v.text);
+            clearImage();
             setTab('chat');
             return { staged: true, submitted: false };
           },
@@ -366,7 +378,7 @@ export default function Home() {
       /* Optional browser API is unavailable. */
     }
     return () => lifecycle.abort();
-  }, []);
+  }, [clearImage]);
   const r = detail?.report,
     firstUserMessage = detail?.messages.find((m) => m.role === 'user'),
     waiting =
