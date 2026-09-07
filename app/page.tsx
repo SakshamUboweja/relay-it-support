@@ -115,6 +115,7 @@ export default function Home() {
     [health, setHealth] = useState<Health | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
+    [notice, setNotice] = useState(''),
     [loginToken, setLoginToken] = useState(''),
     [filter, setFilter] = useState('all');
   const [correctionTeam, setCorrectionTeam] = useState<string>('Service Desk'),
@@ -199,6 +200,7 @@ export default function Home() {
     if (action === 'message' && !content.trim()) return;
     setBusy(true);
     setError('');
+    setNotice('');
     const signature = JSON.stringify({
       text: content,
       action,
@@ -250,6 +252,7 @@ export default function Home() {
     setDetail(null);
     setText('');
     setError('');
+    setNotice('');
     pending.current = null;
     setTab('chat');
   }
@@ -441,6 +444,18 @@ export default function Home() {
                 ×
               </button>
             </div>
+          )}
+          {notice && (
+            <output className="notice-banner">
+              <Inbox size={18} />
+              <span>{notice}</span>
+              <button
+                onClick={() => setNotice('')}
+                aria-label="Dismiss message"
+              >
+                ×
+              </button>
+            </output>
           )}
           <TabsContent value="chat">
             <div
@@ -777,10 +792,16 @@ export default function Home() {
                   reportState={r.state}
                   mode={boot.mode}
                   requesterName={boot.user.name}
+                  requesterAccount={boot.user.external_account}
                   providerKey={r.provider_key}
                   providerUrl={r.provider_url}
                   providerStatus={r.provider_status}
                   onApproved={() => loadDetail(r.id)}
+                  onCancel={() => {
+                    setDetail(null);
+                    setTab('chat');
+                    setNotice('Your draft stays in My requests.');
+                  }}
                 />
               ) : (
                 <aside className="context">

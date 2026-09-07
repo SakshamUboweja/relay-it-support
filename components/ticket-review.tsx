@@ -8,6 +8,7 @@ import {
   RefreshCw,
   ShieldCheck,
   Trash2,
+  ChevronDown,
   ChevronRight,
   ExternalLink,
   FileText,
@@ -65,19 +66,23 @@ export function TicketReview({
   reportState,
   mode,
   requesterName,
+  requesterAccount,
   providerKey,
   providerUrl,
   providerStatus,
   onApproved,
+  onCancel,
 }: {
   reportId: string;
   reportState: string;
   mode: string;
   requesterName: string;
+  requesterAccount?: string | null;
   providerKey: string | null;
   providerUrl: string | null;
   providerStatus: string | null;
   onApproved: () => Promise<unknown>;
+  onCancel: () => void;
 }) {
   const [review, setReview] = useState<TicketReviewData | null>(null);
   const [values, setValues] = useState<Record<string, ReviewValue>>({});
@@ -397,6 +402,18 @@ export function TicketReview({
       </section>
     );
   }
+  const initials =
+    requesterName
+      .split(' ')
+      .filter(Boolean)
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?';
+  const account =
+    requesterAccount && requesterAccount.includes('@')
+      ? ` (${requesterAccount})`
+      : '';
   return (
     <section
       id="ticket-request"
@@ -406,16 +423,20 @@ export function TicketReview({
       aria-busy={!!busy}
     >
       <div className="request-portal-bar">
-        <span>
-          <Headphones size={17} /> IT service desk
-        </span>
-        <span>
-          {mode === 'demo' ? 'Demo request' : 'Jira Service Management'}
+        <span className="request-portal-brand">Help Center</span>
+        <span className="request-portal-identity">
+          <span className="request-portal-avatar" aria-hidden="true">
+            {initials}
+          </span>
+          <span className="request-portal-mode">
+            {mode === 'demo' ? 'Demo request' : 'Jira Service Management'}
+          </span>
         </span>
       </div>
+      <div className="request-portal-banner" aria-hidden />
       <div className="request-form-body">
         <div className="request-breadcrumb" aria-label="Request location">
-          <span>Help center</span>
+          <span>Help Center</span>
           <ChevronRight size={13} />
           <span>IT support</span>
           <ChevronRight size={13} />
@@ -517,22 +538,44 @@ export function TicketReview({
               <div>
                 <strong>{review.form.requestTypeName}</strong>
                 <p>
-                  {mode === 'demo'
-                    ? 'Simulated request type'
-                    : 'Request type from your Jira service desk'}
+                  {review.form.requestTypeDescription ??
+                    'Get assistance for general IT problems and questions.'}
                 </p>
               </div>
-              <span className="request-type-fixed">
-                <LockKeyhole size={12} /> Request type
-              </span>
+              <ChevronDown
+                size={18}
+                className="request-type-chevron"
+                aria-hidden="true"
+              />
             </div>
+            <p className="request-type-fixed">
+              <LockKeyhole size={12} aria-hidden="true" /> Request type is fixed
+              by Relay.
+            </p>
+            <p className="request-required-note">
+              Required fields are marked with an asterisk{' '}
+              <span aria-hidden="true">*</span>
+            </p>
             <div className="request-person-routing">
-              <div className="request-person">
-                <span className="request-type-label">Requested by</span>
-                <strong>
-                  <UserRound size={16} /> {requesterName}
-                </strong>
-                <span className="review-caption">Your Relay account</span>
+              <div className="request-on-behalf">
+                <label className="request-type-label" htmlFor="request-behalf">
+                  Raise this request on behalf of{' '}
+                  <span className="review-required" aria-hidden="true">
+                    *
+                  </span>
+                </label>
+                <div className="request-on-behalf-box">
+                  <UserRound size={16} aria-hidden="true" />
+                  <input
+                    id="request-behalf"
+                    readOnly
+                    value={requesterName + account}
+                  />
+                </div>
+                <span className="review-caption">
+                  Your Relay account. Relay cannot raise requests for other
+                  people.
+                </span>
               </div>
               <dl className="review-routing">
                 <div>
@@ -629,11 +672,6 @@ export function TicketReview({
               }}
               noValidate
             >
-              <p className="request-required-note">
-                Required fields are marked with{' '}
-                <span aria-hidden="true">*</span>
-                <span className="sr-only">an asterisk</span>
-              </p>
               <div className="review-fields">
                 {review.form.fields.map((field) => {
                   const issues = review.verification.issues.filter(
@@ -816,7 +854,7 @@ export function TicketReview({
                       >
                         <Upload size={24} />
                         <p>
-                          Drag a file here or{' '}
+                          Drag and drop files, or{' '}
                           <button
                             type="button"
                             className="attachment-browse"
@@ -828,7 +866,7 @@ export function TicketReview({
                             }
                             onClick={() => fileInput.current?.click()}
                           >
-                            browse files
+                            browse
                           </button>
                         </p>
                         <span>
@@ -853,18 +891,46 @@ export function TicketReview({
               </div>
               {!approved && (
                 <div className="review-footer">
-                  <div className="review-submit-note">
-                    <LockKeyhole size={16} />
-                    <p>
-                      {dirty
-                        ? 'You have unsaved changes.'
-                        : canApprove
-                          ? 'Ready for your approval.'
-                          : 'Review the checks above before submitting.'}
-                      <span>Only you can approve and send this request.</span>
-                    </p>
-                  </div>
                   <div className="review-actions">
+                    <button
+                      type="button"
+                      className="primary"
+                      disabled={!canApprove}
+                      onClick={() =>
+                        void mutate(
+                          'Approving',
+                          '/api/review/approve',
+                          json({ reportId, version: review.version }),
+                          true,
+                        )
+                      }
+                    >
+                      {busy === 'Approving' && (
+                        <RefreshCw size={16} className="spin" />
+                      )}
+                      {busy === 'Approving'
+                        ? 'Submitting…'
+                        : mode === 'demo'
+                          ? 'Send (demo)'
+                          : 'Send'}
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary"
+                      disabled={!!busy}
+                      onClick={() => {
+                        if (!dirty) {
+                          onCancel();
+                          return;
+                        }
+                        latest.current.dirty = false;
+                        setValues(review.form.values);
+                        setDirty(false);
+                        setNotice('Your edits were discarded.');
+                      }}
+                    >
+                      Cancel
+                    </button>
                     {(dirty || review.verification.status !== 'passed') && (
                       <button
                         type="submit"
@@ -881,32 +947,20 @@ export function TicketReview({
                           : 'Save and recheck'}
                       </button>
                     )}
-                    <button
-                      type="button"
-                      className="primary"
-                      disabled={!canApprove}
-                      onClick={() =>
-                        void mutate(
-                          'Approving',
-                          '/api/review/approve',
-                          json({ reportId, version: review.version }),
-                          true,
-                        )
-                      }
-                    >
-                      <CheckCircle2 size={16} />
-                      {busy === 'Approving'
-                        ? 'Submitting…'
-                        : mode === 'demo'
-                          ? 'Approve demo request'
-                          : 'Approve and send to Jira'}
-                    </button>
                   </div>
-                  {dirty && (
-                    <p className="review-caption">
-                      You have unsaved edits. Save and recheck before approval.
+                  <div className="review-submit-note">
+                    <LockKeyhole size={16} aria-hidden="true" />
+                    <p>
+                      Sending approves and creates the Jira request. Only you
+                      can do this.
+                      {dirty && (
+                        <span>
+                          You have unsaved edits. Save and recheck before
+                          sending.
+                        </span>
+                      )}
                     </p>
-                  )}
+                  </div>
                 </div>
               )}
             </form>

@@ -75,6 +75,7 @@
   --jsm-shadow: #091e4208;
   --jsm-shadow-subtle: #091e4205;
   --jsm-header: #1868db;
+  --jsm-header-pill: rgb(255 255 255 / 0.22);
   --jsm-focus: #388bff;
   --jsm-font:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
@@ -603,6 +604,26 @@ input {
   flex: 1;
 }
 .error-banner button {
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+}
+.notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 5% 0;
+  padding: 13px 18px;
+  background: var(--jsm-selected-bg);
+  border: 1px solid var(--jsm-border);
+  color: var(--jsm-text);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.notice-banner > span {
+  flex: 1;
+}
+.notice-banner button {
   border: 0;
   background: transparent;
   font-size: 22px;
@@ -1457,6 +1478,7 @@ input {
   background: var(--jsm-surface);
   border: 1px solid var(--jsm-border);
   border-radius: 8px;
+  font-family: var(--jsm-font);
   overflow-wrap: anywhere;
   min-width: 0;
   box-shadow: 0 2px 5px var(--jsm-shadow);
@@ -1468,19 +1490,41 @@ input {
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  background: var(--jsm-surface-sunken);
-  padding: 15px 28px;
-  border-bottom: 1px solid var(--jsm-border);
+  background: var(--jsm-header);
+  padding: 13px 28px;
   border-radius: 8px 8px 0 0;
-  color: var(--jsm-text-subtle);
+  color: var(--jsm-text-inverse);
+  font-size: 13px;
+}
+.request-portal-brand {
+  font-weight: 700;
+  letter-spacing: -0.1px;
+}
+.request-portal-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.request-portal-avatar {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--jsm-surface);
+  color: var(--jsm-header);
+  font-size: 11px;
+  font-weight: 700;
+}
+.request-portal-mode {
+  background: var(--jsm-header-pill);
+  border-radius: 999px;
+  padding: 4px 11px;
   font-size: 12px;
 }
-.request-portal-bar > span:first-child {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  color: var(--jsm-text);
-  font-weight: 600;
+.request-portal-banner {
+  height: 48px;
+  background: var(--jsm-header);
 }
 .request-form-body {
   padding: 24px 32px 0;
@@ -1493,6 +1537,10 @@ input {
   font-size: 12px;
   color: var(--jsm-text-subtlest);
   margin-bottom: 19px;
+}
+.request-breadcrumb span:not(:last-child) {
+  color: var(--jsm-link);
+  font-weight: 500;
 }
 .request-breadcrumb span:last-child {
   color: var(--jsm-text);
@@ -1581,7 +1629,7 @@ input {
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1px solid var(--jsm-border-bold);
+  border: 2px solid var(--jsm-link);
   border-radius: 4px;
   padding: 17px;
 }
@@ -1597,7 +1645,12 @@ input {
 }
 .request-type-card strong {
   font-size: 15px;
-  color: var(--jsm-text);
+  font-weight: 500;
+  color: var(--jsm-link);
+}
+.request-type-chevron {
+  flex-shrink: 0;
+  color: var(--jsm-text-subtle);
 }
 .request-type-card p {
   font-size: 12px;
@@ -1607,9 +1660,13 @@ input {
 .request-type-fixed {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 5px;
+  font-size: 11px;
   color: var(--jsm-text-subtlest);
+  margin: 8px 0 0;
+}
+.request-type-fixed > svg {
+  flex-shrink: 0;
 }
 .request-person-routing {
   display: flex;
@@ -1618,13 +1675,45 @@ input {
   gap: 18px;
   padding: 23px 0 0;
 }
-.request-person strong {
+.request-on-behalf {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.request-on-behalf-box {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 13px;
+  border: 2px solid var(--jsm-border-input);
+  border-radius: 3px;
+  background: var(--jsm-surface);
+  padding: 8px 11px;
+  font-size: 14px;
   color: var(--jsm-text);
-  font-weight: 500;
+}
+.request-on-behalf-box > svg {
+  flex-shrink: 0;
+  color: var(--jsm-text-subtle);
+}
+.request-on-behalf-box input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-overflow: ellipsis;
+}
+.request-on-behalf-box:hover {
+  background: var(--jsm-surface-sunken);
+}
+.request-on-behalf-box:focus-within {
+  border-color: var(--jsm-focus);
+  outline: 2px solid var(--jsm-focus);
+  outline-offset: 1px;
+}
+.request-on-behalf-box input:focus-visible {
+  outline: 0;
 }
 .review-routing {
   display: flex;
@@ -1725,9 +1814,9 @@ input {
   margin-top: 5px;
 }
 .request-required-note {
-  color: var(--jsm-text-subtlest);
-  font-size: 12px;
-  margin: 0 0 19px;
+  color: var(--jsm-text-subtle);
+  font-size: 13px;
+  margin: 19px 0 0;
 }
 .request-required-note > span:first-child,
 .review-required {
@@ -1739,10 +1828,10 @@ input {
 }
 .review-field label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   margin-bottom: 7px;
-  color: var(--jsm-text-subtle);
+  color: var(--jsm-text-subtlest);
 }
 .review-field input,
 .review-field textarea,
@@ -1755,9 +1844,12 @@ input {
     sans-serif;
   color: var(--jsm-text);
   background: var(--jsm-surface);
-  border: 1px solid var(--jsm-border-input);
-  border-radius: 4px;
+  border: 2px solid var(--jsm-border-input);
+  border-radius: 3px;
   padding: 8px 11px;
+}
+.review-field :is(input, textarea, select):hover:not(:disabled) {
+  background: var(--jsm-surface-sunken);
 }
 .review-field textarea {
   resize: vertical;
@@ -1776,7 +1868,8 @@ input {
   border-color: var(--jsm-danger-border);
 }
 .review-field :is(input, textarea, select):focus-visible {
-  outline: 2px solid var(--jsm-link);
+  border-color: var(--jsm-focus);
+  outline: 2px solid var(--jsm-focus);
   outline-offset: 1px;
 }
 .review-field-issues {
@@ -1911,10 +2004,9 @@ input {
   margin: 28px -32px 0;
   padding: 18px 32px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
   box-shadow: 0 -4px 12px var(--jsm-shadow-subtle);
   border-radius: 0 0 8px 8px;
 }
@@ -2066,9 +2158,6 @@ input {
   }
   .ticket-review h2 {
     font-size: 23px;
-  }
-  .request-type-fixed {
-    display: none;
   }
   .request-type-card {
     padding: 13px;
