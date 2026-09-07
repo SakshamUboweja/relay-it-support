@@ -10,6 +10,8 @@ from .policy import decide
 from .verifier import verify_ticket
 from .sanitize import sanitize
 
+SCREENSHOT_NOT_SENT = "Your screenshot was used to understand the issue but this Jira request type does not accept attachments, so it will not be sent."
+
 
 def pending_check():
     return {
@@ -190,6 +192,20 @@ async def prepare_review(report_id, user, provider=None, verifier=None):
                     [report_id],
                     db=db,
                 )
+                if not form.get("attachmentsAllowed"):
+                    # The screenshot informed intake; a request type without attachments
+                    # cannot carry it, so the local copy goes before anything is sent.
+                    dropped = await query(
+                        "DELETE FROM report_attachments WHERE report_id=$1 AND origin='intake_image'",
+                        [report_id],
+                        db=db,
+                    )
+                    if dropped.rowcount:
+                        await query(
+                            "INSERT INTO messages VALUES($1,$2,'assistant',$3,now())",
+                            [str(uuid4()), report_id, SCREENSHOT_NOT_SENT],
+                            db=db,
+                        )
                 await query(
                     "INSERT INTO messages VALUES($1,$2,'assistant',$3,now())",
                     [

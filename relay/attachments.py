@@ -9,6 +9,7 @@ from .db import connection, mode, query, transaction
 from .review import editable, owner_report, row_for, view_review
 
 MAX_FILE = 5 * 1024 * 1024
+IMAGE_TYPES = {"image/png", "image/jpeg"}
 TYPES = {
     ".png": "image/png",
     ".jpg": "image/jpeg",
@@ -50,32 +51,97 @@ def validate_file(filename, content):
     return mime
 
 
+async def reserve_slot(db, report_id, user, size):
+    """Hold the quota lock for the caller's transaction and check one more file fits.
+
+    Callers lock the report row first, so the order is always row, then quota lock.
+    """
+    # Bound total local storage and serialize quota checks across reports.
+    await query("SELECT pg_advisory_xact_lock(726351903)", db=db)
+    quota = (
+        await query(
+            "SELECT count(*) FILTER (WHERE a.report_id=$1) files,coalesce(sum(a.size) FILTER (WHERE r.owner_id=$2 AND a.content IS NOT NULL),0) owner_bytes,coalesce(sum(a.size) FILTER (WHERE a.content IS NOT NULL),0) total_bytes FROM report_attachments a JOIN reports r ON r.id=a.report_id",
+            [report_id, user["id"]],
+            db=db,
+        )
+    ).rows[0]
+    if quota["files"] >= 3:
+        raise ValueError("You can attach up to three files per ticket.")
+    if (
+        quota["owner_bytes"] + size > 50 * 1024 * 1024
+        or quota["total_bytes"] + size > 500 * 1024 * 1024
+    ):
+        raise ValueError("Attachment storage is full. Remove unused draft files before uploading.")
+
+
+async def stage_intake_image(db, report_id, user, message_id, filename, content):
+    """Stage the screenshot sent with a chat message, inside the caller's intake transaction.
+
+    No review row or version exists yet; the file waits locally like any staged upload.
+    """
+    mime = validate_file(filename, content)
+    if mime not in IMAGE_TYPES:
+        raise ValueError("Attach a PNG or JPEG screenshot with your message.")
+    await reserve_slot(db, report_id, user, len(content))
+    file_id = str(uuid4())
+    provider_name = file_id + "-" + filename
+    await query(
+        "INSERT INTO report_attachments(id,report_id,filename,provider_filename,content_type,size,content,state,origin,message_id) VALUES($1,$2,$3,$4,$5,$6,$7,'staged','intake_image',$8)",
+        [file_id, report_id, filename, provider_name, mime, len(content), content, message_id],
+        db=db,
+    )
+    return {
+        "id": file_id,
+        "filename": filename,
+        "content_type": mime,
+        "size": len(content),
+        "provider_filename": provider_name,
+    }
+
+
+async def attachment_bytes(report_id, attachment_id, user):
+    """The stored file for its owner or an operator, while the local copy still exists."""
+    rows = (
+        await query(
+            "SELECT a.content_type,a.content FROM report_attachments a JOIN reports r ON r.id=a.report_id WHERE a.id=$1 AND a.report_id=$2 AND (r.owner_id=$3 OR $4='operator') AND r.mode=$5 AND a.content IS NOT NULL",
+            [attachment_id, report_id, user["id"], user["role"], mode()],
+        )
+    ).rows
+    if not rows:
+        return None
+    return rows[0]["content_type"], bytes(rows[0]["content"])
+
+
+async def intake_images(report_id):
+    """Screenshots sent with chat messages, oldest first, with whether bytes are still local."""
+    rows = (
+        await query(
+            "SELECT id,filename,content_type,size,message_id,content IS NOT NULL has_content FROM report_attachments WHERE report_id=$1 AND origin='intake_image' ORDER BY created_at,id",
+            [report_id],
+        )
+    ).rows
+    return [
+        {
+            "id": r["id"],
+            "filename": r["filename"],
+            "contentType": r["content_type"],
+            "size": r["size"],
+            "messageId": r["message_id"],
+            "hasContent": r["has_content"],
+        }
+        for r in rows
+    ]
+
+
 async def stage_file(report_id, user, version, filename, content):
     mime = validate_file(filename, content)
     async with transaction() as db:
-        # Bound total local storage and serialize quota checks across reports.
-        await query("SELECT pg_advisory_xact_lock(726351903)", db=db)
         report = await owner_report(report_id, user, db=db, lock=True)
         row = await row_for(report_id, db=db)
         editable(row, report, version)
         if not row["content"]["form"].get("attachmentsAllowed"):
             raise ValueError("This Jira request type does not accept attachments.")
-        quota = (
-            await query(
-                "SELECT count(*) FILTER (WHERE a.report_id=$1) files,coalesce(sum(a.size) FILTER (WHERE r.owner_id=$2 AND a.content IS NOT NULL),0) owner_bytes,coalesce(sum(a.size) FILTER (WHERE a.content IS NOT NULL),0) total_bytes FROM report_attachments a JOIN reports r ON r.id=a.report_id",
-                [report_id, user["id"]],
-                db=db,
-            )
-        ).rows[0]
-        if quota["files"] >= 3:
-            raise ValueError("You can attach up to three files per ticket.")
-        if (
-            quota["owner_bytes"] + len(content) > 50 * 1024 * 1024
-            or quota["total_bytes"] + len(content) > 500 * 1024 * 1024
-        ):
-            raise ValueError(
-                "Attachment storage is full. Remove unused draft files before uploading."
-            )
+        await reserve_slot(db, report_id, user, len(content))
         file_id = str(uuid4())
         provider_name = file_id + "-" + filename
         await query(

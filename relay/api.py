@@ -6,14 +6,18 @@ from uuid import UUID, uuid4
 
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
+from starlette.datastructures import UploadFile
+from starlette.exceptions import HTTPException
+from starlette.formparsers import MultiPartException
 
 from .agents import select_pipeline
 from .agents.confidence import has_calibration
 from .agents.pricing import pricing_version
 from .agents.traces import load_traces
+from .attachments import MAX_FILE, attachment_bytes, intake_images
 from .auth import assert_origin, authenticate, demo_cookie, validate_session_token
 from .config import ROOT, validate_environment
 from .db import close_pool, mode, open_pool, query, transaction
@@ -86,6 +90,38 @@ async def read_json(req, limit=15000):
         raise ValueError("Invalid JSON request") from exc
 
 
+MAX_INTAKE_BODY = MAX_FILE + 32 * 1024
+
+
+async def read_intake(req):
+    """The intake JSON and, for a multipart request, the one screenshot sent with it.
+
+    A multipart body must declare its length up front so the file cap holds before parsing.
+    """
+    if not req.headers.get("content-type", "").lower().startswith("multipart/form-data"):
+        return await read_json(req), None
+    length = req.headers.get("content-length", "")
+    if not length.isdigit() or int(length) > MAX_INTAKE_BODY:
+        raise ValueError("Message too large")
+    try:
+        form = await req.form(max_files=1, max_fields=2)
+    except (HTTPException, MultiPartException) as exc:
+        raise ValueError("Invalid multipart request") from exc
+    payload = form.get("payload")
+    if not isinstance(payload, str):
+        raise ValueError("Invalid JSON request")
+    if len(payload.encode()) > 15000:
+        raise ValueError("Message too large")
+    try:
+        data = json.loads(payload)
+    except ValueError as exc:
+        raise ValueError("Invalid JSON request") from exc
+    upload = form.get("image")
+    if not isinstance(upload, UploadFile):
+        return data, None
+    return data, (upload.filename, await upload.read(), upload.content_type)
+
+
 @app.get("/api/health")
 async def health():
     try:
@@ -155,10 +191,9 @@ async def intake(req: Request):
 
     assert_origin(req)
     user = await authenticate(req)
-    data = IntakeInput.model_validate(await read_json(req)).model_dump(
-        mode="json", exclude_none=True
-    )
-    report_id = await save_intake(data, user)
+    raw, image = await read_intake(req)
+    data = IntakeInput.model_validate(raw).model_dump(mode="json", exclude_none=True)
+    report_id = await save_intake(data, user, image=image)
     if (
         select_pipeline() == "multi"
         and mode() == "live"
@@ -192,6 +227,21 @@ async def reports(req: Request):
                 "SELECT * FROM messages WHERE report_id=$1 ORDER BY created_at,id", [report_id]
             )
         ).rows
+        images = {image["messageId"]: image for image in await intake_images(report_id)}
+        for message in messages:
+            image = images.get(message["id"])
+            message["image"] = (
+                {
+                    "id": image["id"],
+                    "filename": image["filename"],
+                    "contentType": image["contentType"],
+                    "size": image["size"],
+                    "url": f"/api/attachments?reportId={report_id}&id={image['id']}",
+                    "hasContent": image["hasContent"],
+                }
+                if image
+                else None
+            )
         ids = (
             report["decision"]["sources"]
             + report["offered"]
@@ -434,6 +484,25 @@ async def review_upload(req: Request):
                 report_id, user, version, req.query_params.get("filename"), bytes(content)
             )
         }
+    )
+
+
+@app.get("/api/attachments")
+async def attachment(req: Request):
+    from .workflow import get_report
+
+    user = await authenticate(req)
+    report_id = identifier(req.query_params.get("reportId"))
+    file_id = identifier(req.query_params.get("id"))
+    await get_report(report_id, user)
+    found = await attachment_bytes(report_id, file_id, user)
+    if found is None:
+        raise ValueError("Not found")
+    content_type, content = found
+    return Response(
+        content,
+        media_type=content_type,
+        headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
     )
 
 

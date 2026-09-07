@@ -11,6 +11,7 @@ from .agents.compose import compose_decision
 from .agents.runtime import ModelRuntime
 from .agents.schemas import PipelineContext, PipelineResult
 from .agents.traces import persist_run
+from .attachments import stage_intake_image
 from .connector import draft
 from .db import connection, mode, query, transaction
 from .domain import fact
@@ -67,7 +68,8 @@ async def get_report(id, user):
     return rows[0]
 
 
-async def intake(raw, user):
+async def intake(raw, user, image=None):
+    """Save one chat turn; `image` is `(filename, content, content_type)` for a screenshot."""
     data = {"text": "", "action": "message", **raw}
     text = data["text"].strip()
     if len(text) > 6000 or data["action"] not in {
@@ -78,6 +80,8 @@ async def intake(raw, user):
         "follow",
     }:
         raise ValueError("Invalid intake")
+    if image is not None and not text:
+        raise ValueError("Describe the issue in words as well as the screenshot.")
     UUID(data["submissionKey"])
     if data.get("reportId"):
         UUID(str(data["reportId"]))
@@ -204,6 +208,10 @@ async def intake(raw, user):
                 [message_id, id, text],
                 db=db,
             )
+            if image is not None:
+                # Staged now, in this transaction, so a rejected screenshot saves nothing.
+                filename, content, _ = image
+                await stage_intake_image(db, id, user, message_id, filename, content)
         if action == "fixed":
             if not report["offered"] or report["state"] != "awaiting_response":
                 raise ValueError("No offered procedure is awaiting confirmation.")
