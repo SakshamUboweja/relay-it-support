@@ -20,8 +20,8 @@ the caveats are in [ARMS-RESULTS.md](ARMS-RESULTS.md); the design behind the arm
 [../MULTI_AGENT_PLAN.md](../MULTI_AGENT_PLAN.md).
 
 Confidence calibration is fitted on the **dev split only**, after the restricted-confidence change,
-and the published numbers come from a run made under the shipped defaults (routing scoring v2,
-`RELAY_PIPELINE=single`). The dev-split ECE of 0.000 is therefore **in-sample** and is not evidence of
+and the published numbers come from a run made with routing scoring v2, the shipped default.
+The dev-split ECE of 0.000 is therefore **in-sample** and is not evidence of
 calibration quality; only the heldout ECE is out-of-fit, and even that split was already inspected
 during development, so it is a holdout-informed regression comparison rather than a clean holdout
 claim. `--arm rules-v1` on its own runs the legacy deterministic runner, which stays pinned to routing

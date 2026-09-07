@@ -39,7 +39,7 @@ Set these on both application services through Railway variables, never in Git o
 | OPENAI_REASONING_EFFORT | `high` |
 | OPENAI_MAX_OUTPUT_TOKENS | `8192` |
 | OPENAI_EMBEDDING_MODEL | `text-embedding-3-small` |
-| RELAY_PIPELINE | `single` — the shipped intake arm; `deterministic` and `multi` are the alternatives |
+| RELAY_PIPELINE | `multi` — the shipped intake arm; `single` and `deterministic` are the alternatives |
 | RELAY_IMAGE_DETAIL | Unset (`auto`) — detail level for a chat screenshot sent to the intake role |
 | RELAY_INTAKE_INLINE | Unset — leave unset in the cloud so the multi arm runs on the worker |
 | OPENAI_PRICE_INPUT_PER_M | Unset — overrides the configured model's input price from `config/pricing.json` |

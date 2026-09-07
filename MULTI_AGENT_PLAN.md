@@ -60,8 +60,8 @@ agreement signals are dropped, because the rules decided that route without them
 
 The raw score is then calibrated by piecewise-linear interpolation over isotonic breakpoints in
 `config/calibration.json`, fitted per arm. **Calibration was fitted after the restricted-confidence
-change, on the dev split only**, and the published numbers below come from a run made under the
-shipped defaults (scoring v2, `RELAY_PIPELINE=single`). Bands are high ≥ 0.80 and medium ≥ 0.50. Each
+change, on the dev split only**, and the published numbers below come from a run made with routing
+scoring v2, the shipped default. Bands are high ≥ 0.80 and medium ≥ 0.50. Each
 signal carries a plain-language label, and `why()` joins them into the sentence the requester sees
 under "Why this team?".
 
@@ -140,13 +140,19 @@ fitted on dev.
 
 ## Decision
 
-`RELAY_PIPELINE=single` and scoring v2 are the live defaults. The single arm matched or beat the
-multi arm on routing accuracy and security recall, had the best calibration, and was 2.3× faster and
-2.4× cheaper. The multi arm's escalation edge is one case in twenty and within noise, and it
-restricted one extra routine case. The multi arm remains a `RELAY_PIPELINE` option, as does
-`deterministic`, but not on the strength of tool-grounded evidence: in this run it made one
-`lookup_catalog` call (on `heldout-029`) and cited no sources in any of its 120 cases, so its routing
-was not tool-grounded. Making the first triage turn require a tool call is a follow-up, not shipped.
+`RELAY_PIPELINE=multi` and scoring v2 are the live defaults. The multi arm is what Relay is: intake,
+a triage agent with read-only tools, and an independent reviewer that can send a proposal back once
+or hand it to a human. It matched the single arm on security recall (10/10), took every escalation
+(20/20), and routed 58 of 60 held-out cases against the single arm's 59.
+
+That accuracy parity is bought with latency and spend — about 2.3× the p50 and 2.4× the cost per
+request — which the async worker path absorbs, and the reviewer verdict and the tool timeline are
+what operators read on the decision record. The `single` arm stays a one-variable switch for anyone
+who wants the cheaper route, as does `deterministic`. One caveat travels with the multi arm: in the
+published run it made one `lookup_catalog` call (on `heldout-029`) and cited no sources across its
+120 cases, so its routing was not tool-grounded. Requiring a tool call on the first triage turn is a
+follow-up, not shipped.
+
 The two rules arms are not pipelines: they exist only as harness `--arm` values, kept as no-model
 baselines.
 
