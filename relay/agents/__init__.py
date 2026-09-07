@@ -12,7 +12,7 @@ PIPELINES = ("deterministic", "single", "multi")
 
 
 def select_pipeline() -> str:
-    name = os.getenv("RELAY_PIPELINE") or "deterministic"
+    name = os.getenv("RELAY_PIPELINE") or "single"
     if name not in PIPELINES:
         raise ValueError("RELAY_PIPELINE must be one of deterministic, single, multi")
     return name

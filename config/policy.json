@@ -5,7 +5,7 @@
   "criticalServices": ["sso", "atlas"],
   "routingMinimum": 3,
   "routingMargin": 2,
-  "routingScoring": "v1",
+  "routingScoring": "v2",
   "proposalMinConfidence": 0.6,
   "contextMaxAgeHours": 24,
   "relatedWindowHours": 24,

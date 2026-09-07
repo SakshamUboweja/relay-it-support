@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from relay.fixtures import users
-from relay.policy import decide, security_evidence, vpn_auth
+from relay.policy import decide, policy, security_evidence, vpn_auth
 from relay.sanitize import sanitize
 
 
@@ -128,9 +128,15 @@ def test_frozen_typescript_policy_parity_for_all_120_scenarios():
 
 
 def test_scoring_v2_frozen_hash():
-    """Companion fingerprint for the opt-in scoring; v1 above stays the shipped default."""
+    """Companion fingerprint for the shipped scoring; v1 above stays reachable for comparison."""
     expected = "a9461301232006a5ee219d5ed38cd6fe54185285b17e5d7722d3dd503001e7a7"
     assert _scenario_hash("v2") == expected
+
+
+def test_the_configured_default_scoring_is_v2():
+    """The measured winner is the live default; `decide()` without `scoring` must resolve to it."""
+    assert policy["routingScoring"] == "v2"
+    assert _scenario_hash(None) == _scenario_hash("v2")
 
 
 @pytest.mark.parametrize(

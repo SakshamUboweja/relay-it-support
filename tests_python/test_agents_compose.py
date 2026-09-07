@@ -12,6 +12,9 @@ from relay.policy import catalog_candidates, decide, vpn_auth
 
 TIE = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
 CLEAR = "Corporate VPN connection failure since this morning."
+# TIE only ties under scoring v1; v2 (the shipped default) demotes the laptop row, so the
+# tie-break lane below is exercised with v1 named explicitly.
+V1 = "v1"
 
 
 def proposal(**overrides):
@@ -49,8 +52,8 @@ def extraction(**overrides):
     }
 
 
-def applied(text, /, raw=0.9, **overrides):
-    d = decide(text, [], users[0])
+def applied(text, /, raw=0.9, scoring=None, **overrides):
+    d = decide(text, [], users[0], scoring=scoring)
     return d, apply_proposal(
         d,
         proposal(**overrides),
@@ -74,10 +77,10 @@ def test_validate_proposal_checks_quotes_team_and_cited_sources():
 
 
 def test_unknown_or_security_review_team_is_rejected_without_other_change():
-    d, out = applied(TIE, team="Platform Ops")
+    d, out = applied(TIE, scoring=V1, team="Platform Ops")
     assert "proposal-rejected-unknown-team" in out["reasons"]
     assert (out["team"], out["accepted"]) == ("Service Desk", False)
-    d, out = applied(TIE, team="Security Review", service=None)
+    d, out = applied(TIE, scoring=V1, team="Security Review", service=None)
     assert "proposal-rejected-unknown-team" in out["reasons"]
     assert (out["team"], out["escalation"], out["visibility"]) == (
         "Service Desk",
@@ -109,7 +112,7 @@ def test_restricted_decisions_ignore_the_proposal():
 
 
 def test_team_must_match_the_catalog_team_of_the_named_service():
-    d, out = applied(TIE, service="wifi", team="Endpoint")
+    d, out = applied(TIE, scoring=V1, service="wifi", team="Endpoint")
     assert "proposal-team-service-mismatch" in out["reasons"]
     assert (out["team"], out["accepted"]) == ("Service Desk", False)
     password = "Corporate VPN rejects my new password after I changed my password."
@@ -121,7 +124,7 @@ def test_team_must_match_the_catalog_team_of_the_named_service():
 
 
 def test_tie_break_routes_only_when_every_gate_passes():
-    d, out = applied(TIE)
+    d, out = applied(TIE, scoring=V1)
     assert (out["team"], out["service"], out["accepted"]) == ("Network", "wifi", True)
     assert out["question"] is None
     assert out["reasons"][-1] == "model-tie-break"
@@ -134,15 +137,15 @@ def test_tie_break_routes_only_when_every_gate_passes():
     d, out = applied(CLEAR, service="vpn", team="Network")
     assert "model-tie-break" not in out["reasons"] and out["team"] == "Network"
     # A service the deterministic scan never saw is not a candidate.
-    d, out = applied(TIE, service="atlas", team="Business Applications")
+    d, out = applied(TIE, scoring=V1, service="atlas", team="Business Applications")
     assert "model-tie-break" not in out["reasons"] and out["team"] == "Service Desk"
     # Below the configured minimum confidence.
-    d, out = applied(TIE, raw=0.59)
+    d, out = applied(TIE, raw=0.59, scoring=V1)
     assert "model-tie-break" not in out["reasons"] and out["team"] == "Service Desk"
-    d, out = applied(TIE, raw=0.6)
+    d, out = applied(TIE, raw=0.6, scoring=V1)
     assert "model-tie-break" in out["reasons"]
     # The model abstained.
-    d, out = applied(TIE, abstain=True)
+    d, out = applied(TIE, scoring=V1, abstain=True)
     assert "model-tie-break" not in out["reasons"]
 
 
@@ -283,7 +286,7 @@ def test_security_quote_restricts_even_when_the_proposal_names_security_review()
 
 
 def test_tie_break_service_fact_cites_the_extraction_evidence_ids():
-    d = decide(TIE, [], users[0])
+    d = decide(TIE, [], users[0], scoring=V1)
     out = apply_proposal(
         d,
         proposal(),
@@ -325,7 +328,7 @@ def test_tie_break_never_fires_after_a_model_catalog_conflict():
     assert (out["team"], out["accepted"]) == ("Service Desk", False)
     # On a tie the catalog named no service, so an extracted service is not a conflict and
     # the proposal may still break the tie.
-    d = decide(TIE, [], users[0])
+    d = decide(TIE, [], users[0], scoring=V1)
     apply_extraction(d, extraction(service="wifi", serviceQuote="office Wi-Fi"))
     assert "model-catalog-conflict" not in d["reasons"]
     out = apply_proposal(
@@ -335,11 +338,11 @@ def test_tie_break_never_fires_after_a_model_catalog_conflict():
 
 
 def test_an_abstaining_proposal_keeps_its_service_and_its_team_is_ignored():
-    d, out = applied(TIE, service="wifi", team="Service Desk", abstain=True)
+    d, out = applied(TIE, scoring=V1, service="wifi", team="Service Desk", abstain=True)
     assert "proposal-team-service-mismatch" not in out["reasons"]
     assert "model-tie-break" not in out["reasons"]
     assert (out["team"], out["accepted"]) == ("Service Desk", False)
-    d, out = applied(TIE, service="wifi", team="Endpoint", abstain=True)
+    d, out = applied(TIE, scoring=V1, service="wifi", team="Endpoint", abstain=True)
     assert "proposal-team-service-mismatch" not in out["reasons"]
     assert out["team"] == "Service Desk"
 

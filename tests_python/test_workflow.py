@@ -15,6 +15,7 @@ from relay.agents import build_pipeline
 from relay.agents.schemas import ReviewerOutput, RoutingProposal, SingleAgentOutput
 from relay.agents.tools import CasesArgs
 from relay.model import Extraction
+from relay.policy import policy
 from relay.connector import ConnectorError, DemoConnector, draft
 from relay.db import query
 from relay.jobs import process_operation, review_timers, sync_requests
@@ -370,6 +371,7 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
     monkeypatch,
 ):
     monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
     monkeypatch.setenv("OPENAI_MODEL", "test-model")
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
     text = "My external monitor flickers. I reconnected the cables. Only I am affected. Please send this to IT support."
@@ -424,7 +426,7 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
     assert candidate["summary"] == report["summary"]
     assert "I reconnected the cables." in candidate["description"]
     decision = report["decision"]
-    assert decision["pipeline"] == "deterministic" and decision["scoring"] == "v1"
+    assert decision["pipeline"] == "deterministic" and decision["scoring"] == "v2"
     assert decision["model"] == "test-model" and decision["costUsd"] is None
     assert decision["promptVersions"] == {"intake": "relay-intake-v3"}
     assert 0 <= decision["confidence"]["value"] <= 1
@@ -457,6 +459,7 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
 
 async def test_live_model_failure_preserves_original_message_and_restricted_security(monkeypatch):
     monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
 
     async def unavailable(*args):
         raise RuntimeError("Provider unavailable")
@@ -507,7 +510,7 @@ async def test_live_model_failure_preserves_original_message_and_restricted_secu
 async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
     report = await create("VPN connection failure")
     decision = report["decision"]
-    assert decision["pipeline"] == "deterministic"
+    assert decision["pipeline"] == "single"
     assert decision["model"] == "deterministic-demo-v1"
     assert decision["usage"] == {"input": 0, "output": 0}
     assert decision["costUsd"] == 0.0 and decision["promptVersions"] == {}
@@ -515,7 +518,7 @@ async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
     assert decision["confidence"]["signals"][0]["kind"] == "deterministicMargin"
     runs = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [report["id"]])).rows
     assert len(runs) == 1
-    assert (runs[0]["status"], runs[0]["pipeline"]) == ("skipped", "deterministic")
+    assert (runs[0]["status"], runs[0]["pipeline"]) == ("skipped", "single")
     assert runs[0]["id"] == decision["agentRunId"]
     steps = (
         await query("SELECT kind,role,status FROM agent_steps WHERE run_id=$1", [runs[0]["id"]])
@@ -594,6 +597,9 @@ async def test_single_pipeline_run_records_the_arm_and_its_routing_proposal(monk
     monkeypatch.setenv("APP_MODE", "live")
     monkeypatch.setenv("OPENAI_MODEL", "test-model")
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
+    # The Wi-Fi/laptop text is a tie under scoring v1 only; v2 (the default) resolves it,
+    # so pin v1 here to keep exercising the proposal tie-break lane.
+    monkeypatch.setitem(policy, "routingScoring", "v1")
     text = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
 
     async def parse(**kwargs):
@@ -675,6 +681,9 @@ async def test_multi_pipeline_run_records_every_role_and_the_review(monkeypatch)
     monkeypatch.setenv("APP_MODE", "live")
     monkeypatch.setenv("OPENAI_MODEL", "test-model")
     monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
+    # The Wi-Fi/laptop text is a tie under scoring v1 only; v2 (the default) resolves it,
+    # so pin v1 here to keep exercising the proposal tie-break lane.
+    monkeypatch.setitem(policy, "routingScoring", "v1")
     from relay.agents.prompts import REVIEWER_PROMPT, TRIAGE_PROMPT
 
     text = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."

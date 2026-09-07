@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from relay.agents import select_pipeline
 from relay.config import validate_environment
 
 
@@ -60,3 +61,10 @@ def test_pipeline_selection_fails_at_boot(monkeypatch):
     for available in ("deterministic", "single", "multi"):
         monkeypatch.setenv("RELAY_PIPELINE", available)
         validate_environment()
+
+
+def test_the_default_pipeline_is_the_measured_single_arm(monkeypatch):
+    """The single arm won the live comparison, so an unset RELAY_PIPELINE selects it."""
+    monkeypatch.delenv("RELAY_PIPELINE", raising=False)
+    assert select_pipeline() == "single"
+    assert "RELAY_PIPELINE=single" in Path(".env.example").read_text()

@@ -20,6 +20,7 @@ from relay.agents.schemas import Budget, PipelineContext, ReviewerOutput, Routin
 from relay.agents.tools import CasesArgs
 from relay.intake_prompt import INTAKE_PROMPT, INTAKE_PROMPT_VERSION
 from relay.model import Extraction
+from relay.policy import policy
 
 TIE = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
 SETTINGS = {"effort": "high", "maxOutputTokens": 4096}
@@ -187,6 +188,9 @@ def roles(rt):
 @pytest.fixture(autouse=True)
 def live(monkeypatch):
     monkeypatch.setenv("APP_MODE", "live")
+    # Every case here is the Wi-Fi/laptop tie, which scoring v2 (the default) resolves; the
+    # compose calls below name v1 for the same reason, so the ranked candidates must match.
+    monkeypatch.setitem(policy, "routingScoring", "v1")
 
 
 async def test_accept_path_routes_the_tie_through_a_tool_grounded_proposal():

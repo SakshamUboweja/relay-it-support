@@ -560,6 +560,7 @@ def patch_runtime(monkeypatch, parse):
 
 
 async def test_the_deterministic_arm_hands_the_staged_screenshot_to_extraction(live, monkeypatch):
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
     monkeypatch.setenv("RELAY_IMAGE_DETAIL", "low")
     id, staged = await staged_live(live)
     calls = []
@@ -585,7 +586,8 @@ async def test_the_deterministic_arm_hands_the_staged_screenshot_to_extraction(l
     assert report["state"] == "review_pending"
 
 
-async def test_the_deterministic_arm_calls_extraction_as_before_without_a_screenshot(live):
+async def test_the_deterministic_arm_calls_extraction_as_before_without_a_screenshot(live, monkeypatch):
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
     id = await intake({"text": MESSAGE, "submissionKey": str(uuid4())}, live)
     calls = []
 
@@ -680,7 +682,8 @@ async def test_only_the_intake_role_sees_the_screenshot_in_the_multi_arm(live, m
     assert (decision["team"], decision["service"]) == ("Network", "vpn")
 
 
-async def test_a_cleared_screenshot_is_not_shown_to_the_model(live):
+async def test_a_cleared_screenshot_is_not_shown_to_the_model(live, monkeypatch):
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
     id, staged = await staged_live(live)
     await query(
         "UPDATE report_attachments SET content=NULL,state='expired' WHERE id=$1", [staged["id"]]
@@ -775,6 +778,7 @@ async def test_the_parsed_multipart_form_is_closed_after_intake(client, monkeypa
 
 
 async def test_the_screenshot_is_only_loaded_for_the_live_pipeline(owner, monkeypatch):
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
     calls = []
     real = workflow.intake_image
 

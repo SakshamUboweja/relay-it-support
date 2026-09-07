@@ -222,14 +222,15 @@ async def test_model_arms_require_live_mode_a_key_and_a_model(monkeypatch):
 
 
 async def test_rules_arms_never_call_a_model_and_match_the_legacy_numbers(legacy_outputs, tmp_path):
-    result = await evaluate_arms(EvalOptions(arm="rules-v1", split="dev"), client_factory=never)
+    # The legacy runner calls `decide()` with the configured default, which is now scoring v2.
+    result = await evaluate_arms(EvalOptions(arm="rules-v2", split="dev"), client_factory=never)
     legacy = await evaluate()
     [row] = result["rows"]
     proposed = legacy["splits"]["dev"]["proposed"]
     for key in ROUTING_KEYS:
         assert row[key] == proposed[key], key
     assert [f["id"] for f in row["failures"]] == [f["id"] for f in proposed["failures"]]
-    assert row["scoring"] == "v1" and row["cases"] == 60
+    assert row["scoring"] == "v2" and row["cases"] == 60
     assert row["estimatedCostUSD"] == 0
     assert row["tokens"] == {"input": 0, "output": 0, "cached": 0, "reasoning": 0}
     assert row["cacheHits"] == 0 and not (tmp_path / "cache").exists()
@@ -238,9 +239,9 @@ async def test_rules_arms_never_call_a_model_and_match_the_legacy_numbers(legacy
     assert row["fidelity"]["quoteValidityRate"] == rate(0, 0)
     assert result["model"] is None and result["promptVersions"] == {}
     assert len(result["caveats"]) == 3 and not any("effort" in c for c in result["caveats"])
-    v2 = await evaluate_arms(EvalOptions(arm="rules-v2", split="dev"), client_factory=never)
-    assert v2["rows"][0]["scoring"] == "v2"
-    assert v2["rows"][0]["routingAccuracy"] != row["routingAccuracy"]
+    v1 = await evaluate_arms(EvalOptions(arm="rules-v1", split="dev"), client_factory=never)
+    assert v1["rows"][0]["scoring"] == "v1"
+    assert v1["rows"][0]["routingAccuracy"] != row["routingAccuracy"]
 
 
 # --- calibration --------------------------------------------------------------------------
@@ -377,7 +378,7 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
         "The single arm saw the first eight seeded sources by id (no retrieval on this text-only"
         " corpus).",
     ]
-    assert (result["scoring"], result["candidateScoring"]) == ("v2", "v1")
+    assert (result["scoring"], result["candidateScoring"]) == ("v2", "v2")
     saved = json.loads((tmp_path / "arms-results.json").read_text())
     assert saved["rows"] == result["rows"] and saved["cases"] == result["cases"]
     markdown = (tmp_path / "ARMS-RESULTS.md").read_text()
@@ -565,11 +566,11 @@ async def test_the_multi_arm_runs_and_replays_from_the_cache(monkeypatch, tmp_pa
     assert replayed["run"]["modelCalls"] == 4
     assert replayed["confidence"]["raw"] == case["confidence"]["raw"]
     # Triage ranked its candidates with the configured scoring; flipping it misses the cache.
-    assert entry["candidateScoring"] == "v1" and again["candidateScoring"] == "v1"
-    monkeypatch.setitem(policy, "routingScoring", "v2")
+    assert entry["candidateScoring"] == "v2" and again["candidateScoring"] == "v2"
+    monkeypatch.setitem(policy, "routingScoring", "v1")
     flipped = await evaluate_arms(options(arm="multi", ids=["dev-001"]), client_factory=factory)
     assert parse.await_count == 8 and flipped["cacheHits"] == 0
-    assert flipped["candidateScoring"] == "v2" and flipped["scoring"] == "v2"
+    assert flipped["candidateScoring"] == "v1" and flipped["scoring"] == "v2"
     assert len(list((tmp_path / "cache/multi").glob("dev-001.*"))) == 2
 
 
