@@ -1,3 +1,4 @@
+import type { Confidence, Pipeline } from './domain';
 type OptionValue = string | { id: string } | { value: string };
 export type ReviewValue = OptionValue | number | OptionValue[] | null;
 export type ReviewField = {
@@ -15,6 +16,8 @@ export type TicketReviewData = {
   form: {
     requestTypeId: string;
     requestTypeName: string;
+    requestTypeDescription?: string;
+    groupName?: string;
     fields: ReviewField[];
     values: Record<string, ReviewValue>;
     attachmentsAllowed: boolean;
@@ -23,6 +26,8 @@ export type TicketReviewData = {
   };
   team: string;
   priority: string;
+  pipeline?: Pipeline;
+  confidence?: Confidence;
   verification: {
     status: 'passed' | 'needs_changes' | 'unavailable';
     issues: { field: string; message: string }[];

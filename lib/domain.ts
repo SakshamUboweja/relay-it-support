@@ -19,6 +19,71 @@ export const fact = <T>(
   origin: Fact<T>['origin'] = 'unknown',
   evidenceIds: string[] = [],
 ): Fact<T> => ({ value, origin, evidenceIds });
+export type Pipeline = 'single' | 'multi' | 'deterministic';
+export type ConfidenceSignal = {
+  kind: string;
+  label: string;
+  value: number | null;
+};
+export type Confidence = {
+  value: number;
+  band: 'high' | 'medium' | 'low';
+  raw: number;
+  calibrated: boolean;
+  degraded: boolean;
+  signals: ConfidenceSignal[];
+  why: string;
+  agentRationale?: string | null;
+};
+export type TokenUsage = {
+  input: number;
+  output: number;
+  cached?: number;
+  reasoning?: number;
+};
+export type TraceStep = {
+  seq: number;
+  role: string;
+  kind: 'model_call' | 'tool_call' | 'policy';
+  model: string | null;
+  promptVersion: string | null;
+  inputSummary: string;
+  outputSummary: string;
+  toolName: string | null;
+  usage: TokenUsage;
+  costUsd: number | null;
+  latencyMs: number;
+  status: 'ok' | 'error' | 'timeout' | 'rejected' | 'skipped';
+  toolArgs?: Record<string, unknown> | null;
+  toolResultSummary?: string | null;
+  error?: string | null;
+  detail?: Record<string, unknown>;
+};
+export type TraceRun = {
+  id: string;
+  pipeline: Pipeline;
+  scoring: string;
+  status: 'completed' | 'failed' | 'budget_exhausted' | 'skipped';
+  model: string | null;
+  reasoningEffort: string | null;
+  usage: TokenUsage;
+  costUsd: number | null;
+  latencyMs: number;
+  createdAt: string;
+  steps: TraceStep[];
+  outcome?: Record<string, unknown>;
+  budget?: Record<string, unknown>;
+  pricingVersion?: string;
+};
+export type Trace = { runs: TraceRun[] };
+export type MessageImage = {
+  id: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  url: string;
+  hasContent: boolean;
+};
 export type User = {
   id: string;
   name: string;
@@ -59,6 +124,11 @@ export type Decision = {
   promptVersion?: string;
   reasoningEffort?: string;
   supportRequested?: boolean;
+  pipeline?: Pipeline;
+  confidence?: Confidence;
+  scoring?: string;
+  costUsd?: number | null;
+  agentRunId?: string;
   version: string;
   latencyMs: number;
   usage: { input: number; output: number };
@@ -90,6 +160,7 @@ export type Message = {
   role: 'user' | 'assistant';
   body: string;
   created_at: string;
+  image?: MessageImage | null;
 };
 export type Operation = {
   id: string;

@@ -16,6 +16,7 @@
     "test": "uv run python -m pytest",
     "eval": "uv run python -m relay.cli eval",
     "typecheck": "tsc --noEmit",
+    "test:web": "node --import tsx --test lib/*.test.ts",
     "demo": "npm run build && uv run python -m relay.local demo",
     "live": "npm run build && uv run python -m relay.local live",
     "preflight": "uv run python -m relay.cli preflight",
