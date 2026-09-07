@@ -1,12 +1,18 @@
 """PostgreSQL-backed state machine and durable delivery regression tests."""
 
 import asyncio
+import json
 from datetime import datetime, timezone
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
 import pytest_asyncio
 
+from relay import workflow
+from relay.agents import build_pipeline
+from relay.agents.schemas import SingleAgentOutput
 from relay.connector import ConnectorError, DemoConnector, draft
 from relay.db import query
 from relay.jobs import process_operation, review_timers, sync_requests
@@ -580,3 +586,84 @@ async def test_create_error_boundary_distinguishes_safe_rejection_from_uncertain
 
     await process_operation(op["id"], Failing())
     assert (await operation(report["id"]))["state"] == expected
+
+
+async def test_single_pipeline_run_records_the_arm_and_its_routing_proposal(monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
+    text = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
+
+    async def parse(**kwargs):
+        sent = json.loads(kwargs["input"][1]["content"][0]["text"])
+        return SimpleNamespace(
+            status="completed",
+            usage=SimpleNamespace(input_tokens=30, output_tokens=40),
+            output_parsed=SingleAgentOutput(
+                summary="Managed laptop cannot join the office Wi-Fi",
+                service="wifi",
+                serviceQuote="office Wi-Fi",
+                symptomQuote="cannot join the office Wi-Fi",
+                impactQuote=None,
+                urgencyQuote=None,
+                deviceQuote="managed laptop",
+                startedQuote=None,
+                workaroundQuote=None,
+                attemptedStepsQuotes=[],
+                supportRequestQuote=None,
+                procedureAttemptedQuote=None,
+                securityQuote=None,
+                evidenceIds=sent["evidenceIds"],
+                team="Network",
+                abstain=False,
+                blockedQuote=None,
+                broadImpactQuote=None,
+                rationale="The message names the office Wi-Fi.",
+                probability=0.9,
+                citedSourceIds=[],
+            ),
+        )
+
+    client = AsyncMock()
+    client.__aenter__.return_value = SimpleNamespace(responses=SimpleNamespace(parse=parse))
+    runtime = workflow.ModelRuntime
+    monkeypatch.setattr(
+        workflow,
+        "ModelRuntime",
+        lambda *args, **kwargs: runtime(*args, **kwargs, client_factory=lambda: client),
+    )
+    id = await intake({"text": text, "submissionKey": str(uuid4())}, USER)
+    await process_intake(
+        id,
+        USER,
+        {"retrieve": no_sources, "pipeline": build_pipeline("single", extract=None)},
+    )
+    decision = (await get_report(id, USER))["decision"]
+    assert decision["pipeline"] == "single"
+    assert (decision["team"], decision["service"]) == ("Network", "wifi")
+    assert "model-tie-break" in decision["reasons"]
+    assert decision["proposal"] == {
+        "team": "Network",
+        "service": "wifi",
+        "abstain": False,
+        "probability": 0.9,
+        "rationale": "The message names the office Wi-Fi.",
+        "citedSourceIds": [],
+    }
+    assert decision["promptVersions"]["single"] == "relay-single-v1"
+    assert decision["promptVersion"] == "relay-single-v1"
+    assert decision["confidence"]["agentRationale"] == "The message names the office Wi-Fi."
+    run = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows[0]
+    assert (run["pipeline"], run["status"], run["model"]) == ("single", "completed", "test-model")
+    assert run["id"] == decision["agentRunId"]
+    steps = (
+        await query(
+            "SELECT role,kind,prompt_version FROM agent_steps WHERE run_id=$1 ORDER BY seq",
+            [run["id"]],
+        )
+    ).rows
+    assert [(s["role"], s["kind"]) for s in steps] == [
+        ("intake", "model_call"),
+        ("policy", "policy"),
+    ]
+    assert steps[0]["prompt_version"] == "relay-single-v1"

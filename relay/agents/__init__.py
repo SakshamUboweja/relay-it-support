@@ -6,6 +6,7 @@ from functools import partial
 from ..policy import policy
 from .orchestrator import run_deterministic
 from .schemas import Budget
+from .single import run_single_agent
 
 PIPELINES = ("deterministic", "single", "multi")
 
@@ -17,10 +18,23 @@ def select_pipeline() -> str:
     return name
 
 
-def build_pipeline(name: str, *, extract):
+class Pipeline:
+    """A named `async (ctx, rt) -> PipelineResult`; the name travels with the injected arm."""
+
+    def __init__(self, name: str, run):
+        self.name = name
+        self.run = run
+
+    def __call__(self, ctx, rt):
+        return self.run(ctx, rt)
+
+
+def build_pipeline(name: str, *, extract) -> Pipeline:
     """An `async (ctx, rt) -> PipelineResult`; arms that have not shipped fail at boot."""
     if name == "deterministic":
-        return partial(run_deterministic, extract=extract)
+        return Pipeline(name, partial(run_deterministic, extract=extract))
+    if name == "single":
+        return Pipeline(name, run_single_agent)
     if name in PIPELINES:
         raise ValueError(f"Pipeline '{name}' is not available in this release")
     raise ValueError("RELAY_PIPELINE must be one of deterministic, single, multi")

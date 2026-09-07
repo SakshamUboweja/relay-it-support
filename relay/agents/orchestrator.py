@@ -3,6 +3,7 @@
 from ..db import mode
 from ..intake_prompt import INTAKE_PROMPT_VERSION
 from ..policy import policy
+from ..sanitize import sanitize
 from . import pricing
 from .runtime import ModelRuntime
 from .schemas import PipelineContext, PipelineResult, Usage
@@ -39,7 +40,7 @@ async def run_deterministic(ctx: PipelineContext, rt: ModelRuntime, extract) -> 
         kind="model_call",
         model=rt.model,
         promptVersion=INTAKE_PROMPT_VERSION,
-        inputSummary=f"{ctx.text[:200]} [{len(ctx.message_ids)} evidence ids]",
+        inputSummary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]",
     )
     try:
         result = await extract(ctx.text, ctx.message_ids, ctx.procedure)

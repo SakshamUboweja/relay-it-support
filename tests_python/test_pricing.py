@@ -1,5 +1,7 @@
 """Cost estimates are comparisons, never invented: unknown prices yield None, not zero."""
 
+import json
+
 import pytest
 
 from relay.agents.pricing import cost, load_pricing, pricing_version
@@ -54,3 +56,38 @@ def test_env_overrides_apply_to_the_configured_model(monkeypatch):
     monkeypatch.setenv("OPENAI_PRICE_OUTPUT_PER_M", "free")
     with pytest.raises(ValueError, match="OPENAI_PRICE_OUTPUT_PER_M"):
         load_pricing()
+
+
+def test_the_price_file_is_parsed_once_and_reread_when_it_changes(monkeypatch, tmp_path):
+    import os
+    from pathlib import Path
+
+    from relay.agents import pricing
+
+    path = tmp_path / "pricing.json"
+    path.write_text(json.dumps({"version": "test-1", "models": {}}))
+    monkeypatch.setattr(pricing, "PRICING_PATH", path)
+    reads = []
+    original = Path.read_text
+
+    def counted(self, *args, **kwargs):
+        if self == path:
+            reads.append(self)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", counted)
+    assert load_pricing()["version"] == "test-1"
+    assert load_pricing()["version"] == "test-1"
+    assert len(reads) == 1
+    path.write_text(json.dumps({"version": "test-2", "models": {}}))
+    os.utime(path, (1e9, 1e9))
+    assert load_pricing()["version"] == "test-2"
+    assert len(reads) == 2
+
+
+def test_env_overrides_never_mutate_the_cached_price_file(monkeypatch):
+    monkeypatch.setenv("OPENAI_MODEL", "gpt-5.6-terra")
+    monkeypatch.setenv("OPENAI_PRICE_OUTPUT_PER_M", "99")
+    assert load_pricing()["models"]["gpt-5.6-terra"]["outputPerMillion"] == 99.0
+    monkeypatch.delenv("OPENAI_PRICE_OUTPUT_PER_M")
+    assert load_pricing()["models"]["gpt-5.6-terra"]["outputPerMillion"] == 12.0

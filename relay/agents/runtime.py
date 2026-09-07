@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import uuid4
 
-from openai import APIStatusError, APITimeoutError
+from openai import APIConnectionError, APIStatusError, APITimeoutError
 
 from ..model import live_client
 from . import pricing
@@ -42,9 +42,10 @@ def _usage(response) -> Usage:
 
 
 def _retryable(error: Exception) -> bool:
+    """Only a transient failure or an unusable answer earns a second paid call."""
     if isinstance(error, APIStatusError):
         return error.status_code >= 500 or error.status_code == 429
-    return True
+    return isinstance(error, (APIConnectionError, TimeoutError, Rejected))
 
 
 def _status(error: Exception) -> str:
@@ -161,7 +162,12 @@ class ModelRuntime:
                     response = await client.responses.parse(**args)
                 usage = _usage(response)
                 if response.status != "completed" or response.output_parsed is None:
-                    raise Rejected("Model response incomplete or refused")
+                    details = getattr(response, "incomplete_details", None)
+                    raise Rejected(
+                        "Model response incomplete or refused "
+                        f"(status={getattr(response, 'status', None)}, "
+                        f"reason={getattr(details, 'reason', None)})"
+                    )
                 parsed = response.output_parsed
                 if validator is not None:
                     try:
@@ -213,7 +219,7 @@ class ModelRuntime:
             id=self.id,
             pipeline=pipeline,
             scoring=scoring,
-            model=self.model,
+            model=self.model if self.model_calls else None,
             reasoningEffort=self.settings.get("effort"),
             status=status,
             budget=self.budget.model_dump(),

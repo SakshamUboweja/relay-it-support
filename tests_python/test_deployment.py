@@ -62,5 +62,6 @@ def test_pipeline_selection_fails_at_boot(monkeypatch, value, message):
     monkeypatch.setenv("RELAY_PIPELINE", value)
     with pytest.raises(ValueError, match=re.escape(message)):
         validate_environment()
-    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
-    validate_environment()
+    for available in ("deterministic", "single"):
+        monkeypatch.setenv("RELAY_PIPELINE", available)
+        validate_environment()

@@ -281,10 +281,10 @@ async def intake(raw, user):
 
 async def process_intake(id, user, dependencies=None):
     dependencies = {"retrieve": retrieve, "extract_live": extract_live, **(dependencies or {})}
-    name = select_pipeline()
     pipeline = dependencies.get("pipeline") or build_pipeline(
-        name, extract=dependencies["extract_live"]
+        select_pipeline(), extract=dependencies["extract_live"]
     )
+    name = getattr(pipeline, "name", None) or select_pipeline()
     async with connection() as lock:
         acquired = (
             await query(

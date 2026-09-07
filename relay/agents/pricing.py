@@ -1,7 +1,9 @@
 """Token prices for cost estimates; a missing price yields None rather than a false zero."""
 
+import functools
 import json
 import os
+from pathlib import Path
 
 from ..config import ROOT
 from .schemas import Usage
@@ -14,9 +16,16 @@ ENV_PRICES = {
 }
 
 
+@functools.lru_cache(maxsize=8)
+def _read_pricing(path: str, mtime: float) -> dict:
+    """Parsed once per file version: `cost` is called for every step of every run."""
+    return json.loads(Path(path).read_text())
+
+
 def load_pricing(model: str | None = None) -> dict:
     """The shipped price list, with environment overrides applied to the configured model."""
-    pricing = json.loads(PRICING_PATH.read_text())
+    shipped = _read_pricing(str(PRICING_PATH), PRICING_PATH.stat().st_mtime)
+    pricing = {**shipped, "models": {**shipped["models"]}}
     model = model or os.getenv("OPENAI_MODEL")
     overrides = {}
     for key, name in ENV_PRICES.items():

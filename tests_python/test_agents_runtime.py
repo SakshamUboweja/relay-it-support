@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import httpx
 import pytest
-from openai import APIStatusError
+from openai import APIConnectionError, APIStatusError
 from pydantic import BaseModel
 
 from relay.agents.runtime import BudgetExceeded, ModelRuntime
@@ -278,3 +278,67 @@ def test_step_summaries_are_sanitized_and_capped():
     assert "sk-abcdefghijklmnop" not in step.inputSummary
     assert "[REDACTED API KEY]" in step.inputSummary
     assert len(step.inputSummary) == 500
+
+
+async def test_only_transient_failures_are_retried():
+    parse = AsyncMock(side_effect=RuntimeError("boom"))
+    rt = runtime(parse)
+    with pytest.raises(RuntimeError, match="boom"):
+        await call(rt)
+    assert parse.await_count == 1
+    assert [s.status for s in rt.steps] == ["error"]
+    request = httpx.Request("POST", "https://api.test/responses")
+    parse = AsyncMock(side_effect=[APIConnectionError(request=request), completed()])
+    rt = runtime(parse)
+    assert (await call(rt)).parsed.answer == "ok"
+    assert parse.await_count == 2
+
+
+async def test_an_incomplete_response_reports_its_status_and_reason():
+    parse = AsyncMock(
+        return_value=SimpleNamespace(
+            status="incomplete",
+            output_parsed=None,
+            usage=SimpleNamespace(input_tokens=7, output_tokens=3),
+            incomplete_details=SimpleNamespace(reason="max_output_tokens"),
+        )
+    )
+    rt = runtime(parse)
+    with pytest.raises(ValueError, match="max_output_tokens"):
+        await call(rt)
+    assert "incomplete" in rt.steps[0].error
+
+
+def test_a_skipped_run_records_no_model():
+    rt = runtime(AsyncMock(), model="gpt-test")
+    run = rt.finish(pipeline="single", scoring="v1", status="skipped", outcome={})
+    assert run.model is None and run.steps == []
+
+
+async def test_the_deterministic_arm_sanitizes_before_truncating_the_input_summary(monkeypatch):
+    from relay.agents.orchestrator import run_deterministic
+    from relay.agents.schemas import PipelineContext
+
+    monkeypatch.setenv("APP_MODE", "live")
+
+    # The key straddles the 200-character cut: truncating first would leave a partial secret.
+    text = "x" * 189 + " sk-abcdefghijklmnop and more"
+
+    async def extract(*args):
+        raise RuntimeError("Provider unavailable")
+
+    ctx = PipelineContext(
+        report_id="r1",
+        text=text,
+        message_ids=["m1"],
+        sources=[],
+        user={},
+        clarifications=0,
+        procedure=None,
+        settings=SETTINGS,
+        pipeline="deterministic",
+    )
+    rt = runtime(AsyncMock())
+    await run_deterministic(ctx, rt, extract)
+    assert "sk-abcdef" not in rt.steps[0].inputSummary
+    assert "[REDACTED" in rt.steps[0].inputSummary
