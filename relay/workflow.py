@@ -374,7 +374,12 @@ async def process_intake(id, user, dependencies=None):
                 report["decision"].get("supportRequested", False) or result.requested_support
             )
             procedure_tried = result.procedure_tried
-            if mode() == "live" and result.run.status == "failed":
+            # A failed run, or one whose budget ran out before anything validated, leaves the
+            # rules-only decision: the requester is told the report awaits human intake.
+            if mode() == "live" and (
+                result.run.status == "failed"
+                or (result.run.status == "budget_exhausted" and result.extraction is None)
+            ):
                 model_error = "Live model failed. Report saved for human intake."
             for item in decision["facts"].values():
                 item["evidenceIds"] = [

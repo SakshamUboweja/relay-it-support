@@ -23,6 +23,17 @@ def image_marker(image) -> str:
     return IMAGE_MARKER if image else ""
 
 
+def redact_tree(value):
+    """`sanitize` applied to every string leaf of a nested dict/list; other leaves untouched."""
+    if isinstance(value, str):
+        return sanitize(value)
+    if isinstance(value, dict):
+        return {key: redact_tree(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [redact_tree(item) for item in value]
+    return value
+
+
 class Usage(BaseModel):
     model_config = ConfigDict(extra="forbid")
     input: int = 0
@@ -75,6 +86,12 @@ class AgentStep(BaseModel):
     def redact(cls, value):
         return summary(value) if value is not None else None
 
+    @field_validator("toolArgs", "detail")
+    @classmethod
+    def redact_nested(cls, value):
+        """Model-composed tool arguments and policy detail are stored redacted, like summaries."""
+        return redact_tree(value)
+
 
 class AgentRun(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -91,6 +108,12 @@ class AgentRun(BaseModel):
     latencyMs: int
     outcome: dict
     steps: list[AgentStep]
+
+    @field_validator("outcome")
+    @classmethod
+    def redact_outcome(cls, value):
+        """An outcome may carry an error message; every string in it is stored redacted."""
+        return redact_tree(value)
 
 
 class RoutingProposal(BaseModel):

@@ -102,6 +102,38 @@ async def test_persist_run_inside_transaction_and_load_by_role():
     assert operator["steps"][0]["error"] is None and operator["steps"][0]["toolArgs"] is None
 
 
+async def test_persisted_tool_arguments_are_redacted():
+    report_id = await saved_report()
+    run = run_with_steps()
+    run.steps.insert(
+        1,
+        AgentStep(
+            seq=2,
+            role="triage",
+            kind="tool_call",
+            toolName="search_knowledge",
+            toolArgs={"query": "vpn password: hunter2", "nested": ["sk-abcdefghijklmnopq"]},
+            inputSummary='{"query": "vpn password: hunter2"}',
+            outputSummary="[]",
+            toolResultSummary="[]",
+            costUsd=0.0,
+            latencyMs=3,
+        ),
+    )
+    run.steps[2].seq = 3
+    async with transaction() as db:
+        await persist_run(db, report_id, None, run)
+    [row] = (
+        await query("SELECT tool_args FROM agent_steps WHERE run_id=$1 AND seq=2", [run.id])
+    ).rows
+    assert row["tool_args"] == {
+        "query": "vpn password: [REDACTED]",
+        "nested": ["[REDACTED API KEY]"],
+    }
+    operator = (await load_traces(report_id, "operator"))["runs"][0]
+    assert "hunter2" not in str(operator["steps"][1]["toolArgs"])
+
+
 async def test_persist_run_rolls_back_with_the_transaction():
     report_id = await saved_report()
     run = run_with_steps()

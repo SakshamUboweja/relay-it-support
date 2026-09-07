@@ -424,7 +424,14 @@ async def test_budget_exhaustion_keeps_what_validated_and_degrades_confidence():
     d = compose_decision(ctx, result, rt, scoring="v1")
     assert "agent-budget-exhausted" in d["reasons"] and "triage-unavailable" not in d["reasons"]
     assert d["confidence"]["degraded"] is True
+    # The proposal never received its review, so the rules decision stands: the tie is not
+    # broken, but the extraction's validated facts and the proposal itself remain visible.
+    assert (d["team"], d["accepted"]) == ("Service Desk", False)
+    assert "model-tie-break" not in d["reasons"]
+    assert d["facts"]["service"]["value"] == "wifi"
     assert d["proposal"]["team"] == "Network" and "reviewer" not in d
+    signals = {s["kind"]: s for s in d["confidence"]["signals"]}
+    assert signals["agentProbability"]["label"] == "Agent proposed Network, overruled by policy"
 
 
 async def test_tool_budget_exhaustion_inside_triage_leaves_no_proposal():
@@ -457,8 +464,12 @@ async def test_a_revise_that_never_got_its_revision_becomes_human_review():
     assert result.reviewer["verdict"] == "human_review" and result.proposal["abstain"] is True
     d = compose_decision(ctx, result, rt, scoring="v1")
     assert d["team"] == "Service Desk"
-    assert "reviewer-requested-human-review" in d["reasons"]
+    # Neither the proposal nor the review is applied once the budget ran out; the verdict is
+    # still shown, and confidence reads the hand-off.
+    assert "reviewer-requested-human-review" not in d["reasons"]
     assert "agent-budget-exhausted" in d["reasons"]
+    assert d["reviewer"]["verdict"] == "human_review" and d["proposal"]["abstain"] is True
+    assert d["confidence"]["degraded"] is True
 
 
 async def test_intake_failure_yields_the_live_failed_fallback():

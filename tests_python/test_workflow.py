@@ -507,6 +507,44 @@ async def test_live_model_failure_preserves_original_message_and_restricted_secu
         assert "Provider unavailable" in steps[0]["error"]
 
 
+async def test_budget_exhaustion_without_an_extraction_reads_like_a_failed_model(monkeypatch):
+    from relay.agents import Pipeline
+    from relay.agents.schemas import PipelineResult
+
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+
+    async def exhausted(ctx, rt):
+        run = rt.finish(
+            pipeline=ctx.pipeline,
+            scoring="v2",
+            status="budget_exhausted",
+            outcome={"extraction": "skipped", "error": "Time budget of 75s exceeded"},
+        )
+        return PipelineResult(run=run)
+
+    id = await intake({"text": "VPN cannot connect", "submissionKey": str(uuid4())}, USER)
+    await process_intake(
+        id, USER, {"retrieve": no_sources, "pipeline": Pipeline("single", exhausted)}
+    )
+    report = await get_report(id, USER)
+    assert report["state"] == "review_pending"
+    assert report["decision"]["model"] == "live-failed"
+    assert {"model-unavailable", "agent-budget-exhausted"} <= set(report["decision"]["reasons"])
+    reply = (
+        await query(
+            "SELECT body FROM messages WHERE report_id=$1 AND role='assistant' ORDER BY created_at DESC LIMIT 1",
+            [id],
+        )
+    ).rows[0]["body"]
+    assert (
+        reply
+        == "Live model failed. Report saved for human intake. Your original message is preserved."
+    )
+    run = (await query("SELECT status FROM agent_runs WHERE report_id=$1", [id])).rows[0]
+    assert run["status"] == "budget_exhausted"
+
+
 async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
     report = await create("VPN connection failure")
     decision = report["decision"]

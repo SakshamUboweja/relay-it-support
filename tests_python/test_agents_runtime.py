@@ -548,3 +548,48 @@ async def test_the_model_call_budget_bounds_the_tool_loop():
         await call(rt, tools=tools, tool_impls=impls)
     assert parse.await_count == 2
     assert [s.kind for s in rt.steps] == ["model_call", "tool_call", "model_call", "tool_call"]
+
+
+async def test_tool_arguments_and_tool_errors_are_stored_redacted():
+    from relay.agents.schemas import AgentRun, redact_tree
+
+    def impl(args):
+        raise RuntimeError("token sk-abcdefghijklmnopqrstuv rejected")
+
+    parse = AsyncMock(
+        side_effect=[calling(function_call(service="vpn password: hunter2")), completed()]
+    )
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools(impl)
+    await call(rt, tools=tools, tool_impls=impls)
+    step = rt.steps[1]
+    assert step.kind == "tool_call" and step.status == "error"
+    assert step.toolArgs == {"service": "vpn password: [REDACTED]"}
+    assert "hunter2" not in step.inputSummary
+    assert "sk-abcdef" not in step.error and "[REDACTED API KEY]" in step.error
+    assert "sk-abcdef" not in step.toolResultSummary
+    run = AgentRun(
+        id="run-1",
+        pipeline="multi",
+        scoring="v2",
+        model="gpt-test",
+        reasoningEffort="high",
+        status="failed",
+        budget={},
+        usage=Usage(),
+        costUsd=0.0,
+        pricingVersion="test",
+        latencyMs=1,
+        outcome={"extraction": "failed", "error": "Bearer abc.def rejected: password=hunter2"},
+        steps=[],
+    )
+    assert run.outcome == {
+        "extraction": "failed",
+        "error": "Bearer [REDACTED] rejected: password: [REDACTED]",
+    }
+    assert redact_tree(
+        {"a": ["sk-abcdefghijklmnopq", {"b": "MFA code 123456", "n": 3, "none": None}], "t": True}
+    ) == {
+        "a": ["[REDACTED API KEY]", {"b": "MFA code [REDACTED]", "n": 3, "none": None}],
+        "t": True,
+    }

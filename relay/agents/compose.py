@@ -95,27 +95,31 @@ def compose_decision(
             )
             apply_extraction(d, extraction, attachment_id=(ctx.image or {}).get("attachmentId"))
             if result.proposal is not None:
-                # The gate scores the proposal before the lanes judge it, so a tie-break is
-                # weighed on the agent's own confidence rather than on the route it lost.
-                gate = confidence.proposal_gate(
-                    pipeline=ctx.pipeline,
-                    decision=d,
-                    ranked=d["alternatives"],
-                    sources=ctx.sources,
-                    extraction_ok=_extraction_ok(result, rt, live),
-                    proposal=result.proposal,
-                )
-                apply_proposal(
-                    d,
-                    result.proposal,
-                    candidates=catalog_candidates(ctx.text, supplemental),
-                    text=ctx.text,
-                    raw_confidence=gate,
-                    evidence_ids=extraction["evidenceIds"],
-                )
+                # A proposal from a run that ran out of budget never received its review, so
+                # the rules decision stands: it is shown, but neither it nor its review applies.
+                if result.run.status != "budget_exhausted":
+                    # The gate scores the proposal before the lanes judge it, so a tie-break is
+                    # weighed on the agent's own confidence rather than on the route it lost.
+                    gate = confidence.proposal_gate(
+                        pipeline=ctx.pipeline,
+                        decision=d,
+                        ranked=d["alternatives"],
+                        sources=ctx.sources,
+                        extraction_ok=_extraction_ok(result, rt, live),
+                        proposal=result.proposal,
+                    )
+                    apply_proposal(
+                        d,
+                        result.proposal,
+                        candidates=catalog_candidates(ctx.text, supplemental),
+                        text=ctx.text,
+                        raw_confidence=gate,
+                        evidence_ids=extraction["evidenceIds"],
+                    )
+                    if result.reviewer is not None:
+                        apply_reviewer(d, result.reviewer, evidence_ids=extraction["evidenceIds"])
                 d["proposal"] = _proposal_view(result.proposal)
                 if result.reviewer is not None:
-                    apply_reviewer(d, result.reviewer, evidence_ids=extraction["evidenceIds"])
                     d["reviewer"] = _reviewer_view(result.reviewer)
             elif ctx.pipeline == "multi":
                 d["reasons"].append("triage-unavailable")
