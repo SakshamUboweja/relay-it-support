@@ -51,7 +51,7 @@ async def test_demo_http_contract_and_authorization(client):
     assert review["approvedAt"] is None
     assert review["form"]["values"]["summary"]
     assert review["form"]["values"]["description"]
-    assert review["pipeline"] == "single"
+    assert review["pipeline"] == "multi"
     assert 0 <= review["confidence"]["value"] <= 1 and review["confidence"]["why"]
     assert (await client.get("/api/reports", params={"id": id})).json()["report"][
         "provider_key"
@@ -98,7 +98,7 @@ async def test_demo_http_contract_and_authorization(client):
     assert detail["operations"] == []
     assert [r["status"] for r in detail["trace"]["runs"]] == ["skipped"]
     run = detail["trace"]["runs"][0]
-    assert run["pipeline"] == "single" and run["createdAt"]
+    assert run["pipeline"] == "multi" and run["createdAt"]
     assert not {"outcome", "budget", "pricingVersion"} & set(run)
     assert [s["kind"] for s in run["steps"]] == ["policy"]
     assert not {"toolArgs", "toolResultSummary", "error", "detail"} & set(run["steps"][0])
@@ -126,7 +126,7 @@ async def test_demo_http_contract_and_authorization(client):
         "scoring": "v2",
         "prompt": "relay-intake-v3",
         "verifier": "ticket-verifier-v1",
-        "pipeline": "single",
+        "pipeline": "multi",
         "pricing": "2026-09-06-openrouter",
     }
     correction = await client.post(

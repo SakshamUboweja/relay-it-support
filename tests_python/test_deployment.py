@@ -63,8 +63,8 @@ def test_pipeline_selection_fails_at_boot(monkeypatch):
         validate_environment()
 
 
-def test_the_default_pipeline_is_the_measured_single_arm(monkeypatch):
-    """The single arm won the live comparison, so an unset RELAY_PIPELINE selects it."""
+def test_the_default_pipeline_is_the_multi_agent_arm(monkeypatch):
+    """Relay ships the multi-agent arm, so an unset RELAY_PIPELINE selects it."""
     monkeypatch.delenv("RELAY_PIPELINE", raising=False)
-    assert select_pipeline() == "single"
-    assert "RELAY_PIPELINE=single" in Path(".env.example").read_text()
+    assert select_pipeline() == "multi"
+    assert "RELAY_PIPELINE=multi" in Path(".env.example").read_text()

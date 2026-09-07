@@ -548,7 +548,7 @@ async def test_budget_exhaustion_without_an_extraction_reads_like_a_failed_model
 async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
     report = await create("VPN connection failure")
     decision = report["decision"]
-    assert decision["pipeline"] == "single"
+    assert decision["pipeline"] == "multi"
     assert decision["model"] == "deterministic-demo-v1"
     assert decision["usage"] == {"input": 0, "output": 0}
     assert decision["costUsd"] == 0.0 and decision["promptVersions"] == {}
@@ -556,7 +556,7 @@ async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
     assert decision["confidence"]["signals"][0]["kind"] == "deterministicMargin"
     runs = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [report["id"]])).rows
     assert len(runs) == 1
-    assert (runs[0]["status"], runs[0]["pipeline"]) == ("skipped", "single")
+    assert (runs[0]["status"], runs[0]["pipeline"]) == ("skipped", "multi")
     assert runs[0]["id"] == decision["agentRunId"]
     steps = (
         await query("SELECT kind,role,status FROM agent_steps WHERE run_id=$1", [runs[0]["id"]])
