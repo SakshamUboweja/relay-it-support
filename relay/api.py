@@ -10,12 +10,19 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
+from .agents import select_pipeline
+from .agents.confidence import has_calibration
+from .agents.pricing import pricing_version
+from .agents.traces import load_traces
 from .auth import assert_origin, authenticate, demo_cookie, validate_session_token
 from .config import ROOT, validate_environment
 from .db import close_pool, mode, open_pool, query, transaction
 from .domain import CorrectionInput, IntakeInput, SessionInput
 from .fixtures import catalog
 from .connector import ConnectorError
+from .intake_prompt import INTAKE_PROMPT_VERSION
+from .policy import policy
+from .verifier import PROMPT_VERSION as VERIFIER_PROMPT_VERSION
 
 
 @asynccontextmanager
@@ -215,6 +222,7 @@ async def reports(req: Request):
                 sources=sources,
                 operations=operations,
                 events=events,
+                trace=await load_traces(report_id, user["role"]),
             )
         )
     all_reports = req.query_params.get("all") == "1"
@@ -261,7 +269,15 @@ async def operations(req: Request):
             if os.getenv("OPENAI_API_KEY")
             else "Missing credentials",
             "security": "Local restricted review only",
-            "versions": {"policy": "northstar-1.0", "prompt": "relay-intake-v2"},
+            "versions": {
+                "policy": policy["version"],
+                "scoring": policy["routingScoring"],
+                "prompt": INTAKE_PROMPT_VERSION,
+                "verifier": VERIFIER_PROMPT_VERSION,
+                "pipeline": select_pipeline(),
+                "pricing": pricing_version(),
+                "calibration": has_calibration(),
+            },
         }
     )
 

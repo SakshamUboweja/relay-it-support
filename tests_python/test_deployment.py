@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -45,3 +46,21 @@ def test_production_runtime_is_python_and_static_ui_only():
         json.loads(Path("package.json").read_text())["scripts"]["worker"]
         == "uv run python -m relay.worker"
     )
+
+
+@pytest.mark.parametrize(
+    "value,message",
+    [
+        ("bogus", "RELAY_PIPELINE must be one of deterministic, single, multi"),
+        ("multi", "Pipeline 'multi' is not available in this release"),
+    ],
+)
+def test_pipeline_selection_fails_at_boot(monkeypatch, value, message):
+    monkeypatch.setenv("DATABASE_URL", "postgresql://test.invalid/test")
+    monkeypatch.setenv("APP_MODE", "demo")
+    monkeypatch.setenv("SESSION_SECRET", "x" * 32)
+    monkeypatch.setenv("RELAY_PIPELINE", value)
+    with pytest.raises(ValueError, match=re.escape(message)):
+        validate_environment()
+    monkeypatch.setenv("RELAY_PIPELINE", "deterministic")
+    validate_environment()

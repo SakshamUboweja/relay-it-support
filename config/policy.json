@@ -11,5 +11,10 @@
   "relatedWindowHours": 24,
   "retentionDays": 30,
   "maxOutputTokens": 1800,
-  "maxModelRetries": 1
+  "maxModelRetries": 1,
+  "agentBudget": {
+    "deterministic": { "maxModelCalls": 2, "maxToolCalls": 0, "maxTotalTokens": 20000, "maxSeconds": 75 },
+    "single": { "maxModelCalls": 2, "maxToolCalls": 0, "maxTotalTokens": 25000, "maxSeconds": 75 },
+    "multi": { "maxModelCalls": 5, "maxToolCalls": 4, "maxTotalTokens": 60000, "maxSeconds": 150 }
+  }
 }

@@ -6,13 +6,16 @@ import os
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
+from .agents import budget_for, build_pipeline, select_pipeline
+from .agents.compose import compose_decision
+from .agents.runtime import ModelRuntime
+from .agents.schemas import PipelineContext, PipelineResult
+from .agents.traces import persist_run
 from .connector import draft
 from .db import connection, mode, query, transaction
 from .domain import fact
-from .intake_evidence import apply_extraction
-from .intake_prompt import INTAKE_PROMPT_VERSION
 from .model import extract_live, model_settings
-from .policy import decide
+from .policy import decide, policy
 from .retrieval import retrieve
 from .sanitize import sanitize
 
@@ -277,7 +280,11 @@ async def intake(raw, user):
 
 
 async def process_intake(id, user, dependencies=None):
-    dependencies = dependencies or {"retrieve": retrieve, "extract_live": extract_live}
+    dependencies = {"retrieve": retrieve, "extract_live": extract_live, **(dependencies or {})}
+    name = select_pipeline()
+    pipeline = dependencies.get("pipeline") or build_pipeline(
+        name, extract=dependencies["extract_live"]
+    )
     async with connection() as lock:
         acquired = (
             await query(
@@ -302,40 +309,44 @@ async def process_intake(id, user, dependencies=None):
                 sources = await dependencies["retrieve"](text, user)
             except Exception:
                 model_error = "Model/retrieval unavailable; known facts saved for general intake."
-            decision = decide(text, sources, user, report["clarifications"])
-            summary = report["summary"]
-            requested_support = report["decision"].get("supportRequested", False)
-            procedure_tried = False
-            if mode() == "live":
-                decision["facts"].update(device=fact(None), location=fact(None))
-                try:
-                    if model_error:
-                        raise ValueError(model_error)
-                    procedure = decision.get("procedure")
-                    result = await dependencies["extract_live"](
-                        text,
-                        [str(m["id"]) for m in messages],
-                        {"id": procedure["id"], "body": procedure["body"]} if procedure else None,
+            # The approved procedure from a preliminary decision is passed to extraction.
+            procedure = decide(text, sources, user, report["clarifications"]).get("procedure")
+            ctx = PipelineContext(
+                report_id=id,
+                text=text,
+                message_ids=[str(m["id"]) for m in messages],
+                sources=sources,
+                user=user,
+                clarifications=report["clarifications"],
+                procedure={"id": procedure["id"], "body": procedure["body"]} if procedure else None,
+                settings=model_settings(),
+                pipeline=name,
+            )
+            rt = ModelRuntime(
+                ctx.settings,
+                budget_for(name),
+                model=os.getenv("OPENAI_MODEL", "deterministic-demo-v1"),
+            )
+            if model_error and mode() == "live":
+                # Retrieval and the model share a provider: skip the model call, as before.
+                result = PipelineResult(
+                    run=rt.finish(
+                        pipeline=name,
+                        scoring=policy["routingScoring"],
+                        status="failed",
+                        outcome={"extraction": "skipped", "error": "retrieval-unavailable"},
                     )
-                    decision.update(
-                        model=os.environ["OPENAI_MODEL"],
-                        usage=result["usage"],
-                        promptVersion=INTAKE_PROMPT_VERSION,
-                        reasoningEffort=model_settings()["effort"],
-                    )
-                    apply_extraction(decision, result["data"])
-                    summary = result["data"]["summary"]
-                    requested_support = requested_support or bool(
-                        result["data"].get("supportRequestQuote")
-                    )
-                    procedure_tried = bool(result["data"].get("procedureAttemptedQuote"))
-                except Exception:
-                    model_error = "Live model failed. Report saved for human intake."
-                    decision["model"] = "live-failed"
-                    if decision["visibility"] != "restricted":
-                        decision.update(team="Service Desk", accepted=False)
-                    decision.update(procedure=None, question=None)
-                    decision["reasons"].append("model-unavailable")
+                )
+            else:
+                result = await pipeline(ctx, rt)
+            decision = compose_decision(ctx, result, rt)
+            summary = result.summary or report["summary"]
+            requested_support = (
+                report["decision"].get("supportRequested", False) or result.requested_support
+            )
+            procedure_tried = result.procedure_tried
+            if mode() == "live" and result.run.status == "failed":
+                model_error = "Live model failed. Report saved for human intake."
             for item in decision["facts"].values():
                 item["evidenceIds"] = [
                     evidence
@@ -386,11 +397,13 @@ async def process_intake(id, user, dependencies=None):
                     [id, state, decision, clarification, json.dumps(offered), summary],
                     db=db,
                 )
+                decision_id = str(uuid4())
                 await query(
                     "INSERT INTO decisions VALUES($1,$2,$3,now())",
-                    [str(uuid4()), id, decision],
+                    [decision_id, id, decision],
                     db=db,
                 )
+                await persist_run(db, id, decision_id, result.run)
                 await query(
                     "INSERT INTO context_snapshots VALUES($1,$2,$3,now())",
                     [

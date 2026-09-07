@@ -46,6 +46,8 @@ async def test_demo_http_contract_and_authorization(client):
     assert review["approvedAt"] is None
     assert review["form"]["values"]["summary"]
     assert review["form"]["values"]["description"]
+    assert review["pipeline"] == "deterministic"
+    assert 0 <= review["confidence"]["value"] <= 1 and review["confidence"]["why"]
     assert (await client.get("/api/reports", params={"id": id})).json()["report"][
         "provider_key"
     ] is None
@@ -89,6 +91,12 @@ async def test_demo_http_contract_and_authorization(client):
     assert detail["report"]["provider_key"].startswith("DEMO-")
     assert detail["report"]["provider_team"] == "Identity & Access"
     assert detail["operations"] == []
+    assert [r["status"] for r in detail["trace"]["runs"]] == ["skipped"]
+    run = detail["trace"]["runs"][0]
+    assert run["pipeline"] == "deterministic" and run["createdAt"]
+    assert not {"outcome", "budget", "pricingVersion"} & set(run)
+    assert [s["kind"] for s in run["steps"]] == ["policy"]
+    assert not {"toolArgs", "toolResultSummary", "error", "detail"} & set(run["steps"][0])
     assert (await client.get("/api/operations")).status_code == 403
     assert (await client.get("/api/reports?all=1")).status_code == 403
     assert (await client.post("/api/session", json={"userId": "jordan"})).status_code == 200
@@ -103,6 +111,19 @@ async def test_demo_http_contract_and_authorization(client):
     await client.post("/api/session", json={"userId": "alex"})
     assert (await client.get("/api/reports", params={"id": id})).status_code == 200
     assert (await client.get("/api/review", params={"id": id})).status_code == 404
+    operator_trace = (await client.get("/api/reports", params={"id": id})).json()["trace"]
+    assert "outcome" in operator_trace["runs"][0]
+    assert "detail" in operator_trace["runs"][0]["steps"][0]
+    versions = (await client.get("/api/operations")).json()["versions"]
+    assert versions["calibration"] in (True, False)
+    assert {k: v for k, v in versions.items() if k != "calibration"} == {
+        "policy": "northstar-1.0",
+        "scoring": "v1",
+        "prompt": "relay-intake-v2",
+        "verifier": "ticket-verifier-v1",
+        "pipeline": "deterministic",
+        "pricing": "2026-09-06-openrouter",
+    }
     correction = await client.post(
         "/api/operations",
         json={

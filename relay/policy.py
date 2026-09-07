@@ -13,6 +13,13 @@ from .domain import fact
 from .fixtures import catalog
 
 
+class AgentBudget(BaseModel):
+    maxModelCalls: int = Field(ge=0)
+    maxToolCalls: int = Field(ge=0)
+    maxTotalTokens: int = Field(gt=0)
+    maxSeconds: float = Field(gt=0)
+
+
 class Policy(BaseModel):
     version: str
     defaultPriority: str
@@ -27,6 +34,7 @@ class Policy(BaseModel):
     retentionDays: float = Field(gt=0)
     maxOutputTokens: int = Field(gt=0)
     maxModelRetries: int = Field(ge=0, le=1)
+    agentBudget: dict[str, AgentBudget]
 
 
 policy = Policy.model_validate(

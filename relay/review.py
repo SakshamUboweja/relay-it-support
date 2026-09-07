@@ -46,7 +46,7 @@ async def row_for(report_id, db=None):
 
 
 async def view_review(report_id, user):
-    await owner_report(report_id, user)
+    report = await owner_report(report_id, user)
     row = await row_for(report_id)
     content = row["content"]
     files = (
@@ -64,6 +64,8 @@ async def view_review(report_id, user):
         "priority": content["candidate"]["priority"],
         "verification": content["verification"],
         "approvedAt": row["approved_at"],
+        "pipeline": report["decision"].get("pipeline"),
+        "confidence": report["decision"].get("confidence"),
         "attachments": [
             {
                 "id": f["id"],

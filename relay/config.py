@@ -18,6 +18,9 @@ def validate_environment(cloud: bool = False) -> None:
     secret = os.getenv("SESSION_SECRET", "")
     if len(secret) < 32 or (current == "live" and secret.startswith("local-demo")):
         raise ValueError("Set SESSION_SECRET to at least 32 random characters")
+    from .agents import build_pipeline, select_pipeline
+
+    build_pipeline(select_pipeline(), extract=None)
     if cloud:
         if current != "live":
             raise ValueError("Cloud deployment requires APP_MODE=live.")

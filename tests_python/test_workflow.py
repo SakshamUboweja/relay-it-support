@@ -415,6 +415,36 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
     candidate = draft(report, USER["external_account"])
     assert candidate["summary"] == report["summary"]
     assert "I reconnected the cables." in candidate["description"]
+    decision = report["decision"]
+    assert decision["pipeline"] == "deterministic" and decision["scoring"] == "v1"
+    assert decision["model"] == "test-model" and decision["costUsd"] is None
+    assert decision["promptVersions"] == {"intake": "relay-intake-v2"}
+    assert 0 <= decision["confidence"]["value"] <= 1
+    assert decision["confidence"]["band"] in {"high", "medium", "low"}
+    assert decision["confidence"]["signals"]
+    runs = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows
+    assert len(runs) == 1
+    run = runs[0]
+    assert (run["status"], run["pipeline"], run["model"]) == (
+        "completed",
+        "deterministic",
+        "test-model",
+    )
+    assert run["id"] == decision["agentRunId"]
+    assert run["usage"] == {"input": 30, "output": 40, "cached": 0, "reasoning": 0}
+    linked = (await query("SELECT decision FROM decisions WHERE id=$1", [run["decision_id"]])).rows
+    assert linked[0]["decision"]["pipeline"] == "deterministic"
+    steps = (
+        await query(
+            "SELECT kind,status,prompt_version,usage,output_summary FROM agent_steps WHERE run_id=$1 ORDER BY seq",
+            [run["id"]],
+        )
+    ).rows
+    assert [(s["kind"], s["status"]) for s in steps] == [("model_call", "ok"), ("policy", "ok")]
+    assert steps[0]["prompt_version"] == "relay-intake-v2"
+    assert steps[0]["usage"]["input"] == 30
+    assert "supportRequestQuote" in steps[0]["output_summary"]
+    assert "Endpoint" in steps[1]["output_summary"]
 
 
 async def test_live_model_failure_preserves_original_message_and_restricted_security(monkeypatch):
@@ -436,9 +466,53 @@ async def test_live_model_failure_preserves_original_message_and_restricted_secu
         assert report["decision"]["model"] == "live-failed"
         assert report["decision"]["procedure"] is None
         assert report["decision"]["facts"]["device"]["value"] is None
+        assert "model-unavailable" in report["decision"]["reasons"]
+        assert report["decision"]["pipeline"] == "deterministic"
         assert (
             await query("SELECT body FROM messages WHERE report_id=$1 AND role='user'", [id])
         ).rows[0]["body"] == text
+        assert (
+            (
+                await query(
+                    "SELECT body FROM messages WHERE report_id=$1 AND role='assistant' ORDER BY created_at DESC LIMIT 1",
+                    [id],
+                )
+            )
+            .rows[0]["body"]
+            .startswith("Live model failed.")
+        )
+        run = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows[0]
+        assert run["status"] == "failed"
+        steps = (
+            await query(
+                "SELECT kind,status,error FROM agent_steps WHERE run_id=$1 ORDER BY seq",
+                [run["id"]],
+            )
+        ).rows
+        assert [(s["kind"], s["status"]) for s in steps] == [
+            ("model_call", "error"),
+            ("policy", "ok"),
+        ]
+        assert "Provider unavailable" in steps[0]["error"]
+
+
+async def test_demo_intake_persists_a_skipped_run_with_a_policy_step():
+    report = await create("VPN connection failure")
+    decision = report["decision"]
+    assert decision["pipeline"] == "deterministic"
+    assert decision["model"] == "deterministic-demo-v1"
+    assert decision["usage"] == {"input": 0, "output": 0}
+    assert decision["costUsd"] == 0.0 and decision["promptVersions"] == {}
+    assert decision["confidence"]["band"] in {"high", "medium", "low"}
+    assert decision["confidence"]["signals"][0]["kind"] == "deterministicMargin"
+    runs = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [report["id"]])).rows
+    assert len(runs) == 1
+    assert (runs[0]["status"], runs[0]["pipeline"]) == ("skipped", "deterministic")
+    assert runs[0]["id"] == decision["agentRunId"]
+    steps = (
+        await query("SELECT kind,role,status FROM agent_steps WHERE run_id=$1", [runs[0]["id"]])
+    ).rows
+    assert steps == [{"kind": "policy", "role": "policy", "status": "ok"}]
 
 
 async def test_accepted_create_database_save_failure_reconciles_without_duplicate(monkeypatch):
