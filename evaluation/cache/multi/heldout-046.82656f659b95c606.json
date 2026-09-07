@@ -1,0 +1,334 @@
+{
+  "arm": "multi",
+  "id": "heldout-046",
+  "key": "82656f659b95c606",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:39:07.383052+00:00",
+  "result": {
+    "run": {
+      "id": "838d4af9-0ee3-45c9-b53c-4ef7fafffc94",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2914,
+        "output": 218,
+        "cached": 1057,
+        "reasoning": 0
+      },
+      "costUsd": 0.006541,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 4721,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "proposal": "validated",
+        "team": "Service Desk",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "The screen has an error but I cannot tell whether it is a website or my computer. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Screen displays an unspecified error\", \"service\": null, \"serviceQuote\": null, \"symptomQuote\": \"screen has an error\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1060,
+            "output": 108,
+            "cached": 1057,
+            "reasoning": 0
+          },
+          "costUsd": 0.001513,
+          "latencyMs": 1651,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "The screen has an error but I cannot tell whether it is a website or my computer. [1 candidates]",
+          "outputSummary": "{\"service\": null, \"team\": \"Service Desk\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The requester cannot determine whether the error is from a website or their computer, so no supported service route is available.\", \"probability\": 0.35, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1114,
+            "output": 80,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003188,
+          "latencyMs": 1862,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "The screen has an error but I cannot tell whether it is a website or my computer. [proposal Service Desk, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.9, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 740,
+            "output": 30,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00184,
+          "latencyMs": 1199,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=catalog-and-evidence, provisional-priority-impact-unknown, model-abstain, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Screen displays an unspecified error",
+      "service": null,
+      "serviceQuote": null,
+      "symptomQuote": "screen has an error",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": null,
+      "team": "Service Desk",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The requester cannot determine whether the error is from a website or their computer, so no supported service route is available.",
+      "probability": 0.35,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.9,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Screen displays an unspecified error",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown",
+      "model-abstain",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The screen has an error but I cannot tell whether it is a website or my computer.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.9684170072432607,
+    "usage": {
+      "input": 2914,
+      "output": 218
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Service Desk",
+      "service": null,
+      "abstain": true,
+      "probability": 0.35,
+      "rationale": "The requester cannot determine whether the error is from a website or their computer, so no supported service route is available.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.9,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.4031,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 35% that Service Desk is right",
+          "value": 0.35
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Endpoint by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 35% that Service Desk is right; reviewer requested human review; catalog evidence favoured Endpoint by a clear margin; extraction validated on the first attempt.",
+      "agentRationale": "The requester cannot determine whether the error is from a website or their computer, so no supported service route is available."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006541,
+    "agentRunId": "838d4af9-0ee3-45c9-b53c-4ef7fafffc94"
+  }
+}

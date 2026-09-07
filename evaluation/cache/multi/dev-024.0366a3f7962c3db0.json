@@ -1,0 +1,362 @@
+{
+  "arm": "multi",
+  "id": "dev-024",
+  "key": "0366a3f7962c3db0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:17.505325+00:00",
+  "result": {
+    "run": {
+      "id": "f10770a0-b2ae-421e-b7bc-2cfc43f7af9a",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2943,
+        "output": 232,
+        "cached": 1053,
+        "reasoning": 0
+      },
+      "costUsd": 0.006775,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 7351,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "The laptop screen stopped showing an image; an external monitor still works. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Laptop screen stopped showing an image; external monitor works\", \"service\": \"laptop\", \"serviceQuote\": \"laptop screen\", \"symptomQuote\": \"screen stopped showing an image\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"laptop\", \"startedQuote\": null, \"workaroundQuote\": \"an external monitor still works\", \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"i",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1056,
+            "output": 122,
+            "cached": 1053,
+            "reasoning": 0
+          },
+          "costUsd": 0.001681,
+          "latencyMs": 1666,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "The laptop screen stopped showing an image; an external monitor still works. [1 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The laptop\\u2019s built-in screen no longer displays an image, while an external monitor works, indicating a device display issue.\", \"probability\": 0.97, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1128,
+            "output": 81,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003228,
+          "latencyMs": 3451,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "The laptop screen stopped showing an image; an external monitor still works. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 759,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001866,
+          "latencyMs": 2228,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop screen stopped showing an image; external monitor works",
+      "service": "laptop",
+      "serviceQuote": "laptop screen",
+      "symptomQuote": "screen stopped showing an image",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "laptop",
+      "startedQuote": null,
+      "workaroundQuote": "an external monitor still works",
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The laptop\u2019s built-in screen no longer displays an image, while an external monitor works, indicating a device display issue.",
+      "probability": 0.97,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Laptop screen stopped showing an image; external monitor works",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The laptop screen stopped showing an image; an external monitor still works.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "workaround": {
+        "value": "an external monitor still works",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": {
+      "id": "kb-2",
+      "kind": "article",
+      "title": "Check your external display connection",
+      "body": "Save your work. Reconnect the display cable at both ends, then select the correct monitor input. Stop if a cable or device feels hot.",
+      "service": "laptop",
+      "visibility": "all",
+      "location": null,
+      "status": "approved",
+      "metadata": {
+        "procedure": "display",
+        "synthetic": true
+      },
+      "embedding": "[-0.010643005,-0.00730896,-0.013786316,-0.070129395,-0.13024902,0.060760498,0.034179688,-0.021621704,-0.015975952,0.0028743744,0.13549805,0.05883789,-0.036071777,0.06640625,0.07800293,-0.032928467,-0.08660889,0.03363037,-0.06201172,0.05496216,0.029418945,0.093811035,0.055877686,0.14550781,0.091308594,-0.012374878,-0.017303467,-0.011199951,0.060913086,-0.01184845,0.037597656,-0.05795288,-0.021728516,-0.04928589,0.00043082237,0.025115967,-0.07421875,0.042053223,-0.018997192,0.026947021,-0.0016088486,-0.012512207,0.06774902,0.051086426,0.07891846,-0.06762695,-0.06213379,0.016036987,0.123168945,0.025924683,-0.009033203,0.05947876,0.035308838,0.079589844,-0.033416748,0.025650024,0.066711426,-0.09484863,-0.030700684,-0.07373047,0.017425537,0.0345459,-0.0036640167,0.10089111,0.0046844482,0.06677246,-0.070251465,0.046295166,0.016281128,-0.124572754,-0.064697266,0.011436462,0.12042236,0.025802612,-0.020477295,-0.066833496,0.04248047,-0.18200684,-0.10144043,0.03503418,-0.095336914,-0.047302246,0.0126571655,0.042663574,0.046875,0.04043579,-0.12487793,-0.019134521,-0.02973938,-0.04272461,-0.0019235611,0.10253906,0.09173584,-0.008331299,0.032104492,0.08642578,-0.020309448,-0.12158203,-0.08984375,0.13842773,0.032318115,0.07525635,-0.054718018,-0.035614014,-0.011398315,-0.064208984,-0.049224854,0.03274536,0.005657196,0.0021152496,0.06414795,0.06555176,-0.019973755,-0.022781372,0.004547119,-0.04611206,-0.08343506,-0.0317688,0.072753906,-0.1920166,-0.02859497,0.12402344,-0.011039734,-0.1116333,-0.06222534,0.040618896,0.0020008087,0.071777344,-0.020339966,-0.08703613,-0.017623901,-0.104003906,0.1274414,-0.092041016,0.01574707,-1.04904175e-05,-0.050476074,-0.01965332,-0.09777832,0.10595703,-0.01096344,-0.003501892,0.04812622,-0.01158905,-0.056884766,0.07598877,0.046875,0.04849243,0.003824234,-0.05050659,0.026535034,0.018341064,0.027069092,-0.021759033,-0.061645508,-0.017990112,0.03942871,-0.0016431808,-0.13098145,-0.074035645,-0.008964539,-0.0051574707,-0.024246216,0.12225342,-0.032836914,0.099487305,-0.016464233,0.002658844,-0.10443115,0.069885254,-0.0637207,0.033996582,0.0036182404,-0.041992188,0.054534912,0.103027344,-0.0032444,-0.048675537,-0.010284424,0.0018920898,-0.11230469,-0.08770752,0.016342163,0.031433105,0.030349731,-0.0970459,-0.0027217865,0.015304565,-0.009918213,-0.13110352,-0.043121338,-0.033050537,-0.046417236,-0.01133728,-0.09637451,-0.02368164,0.0020198822,-0.014038086,-0.048736572,-0.09942627,-0.016326904,0.038360596,0.10296631,-0.02142334,-0.068481445,-0.0020065308,-0.07141113,0.0501709,-0.04647827,0.012451172,0.07019043,-0.046936035,-0.015388489,0.04949951,0.048950195,-0.06915283,-0.005317688,-0.046966553,0.022537231,0.047027588,-0.056243896,0.021240234,0.06506348,0.09637451,0.054229736,0.07879639,0.1315918,-0.020111084,0.004573822,0.043823242,-0.08099365,0.101257324,0.115356445,0.038024902,0.06756592,0.03439331,0.039764404,-0.020309448,-0.0054626465,0.07055664,-0.03515625,0.010093689,-0.0758667,-0.048919678,0.023071289,0.029190063,0.00045728683,-0.042419434,-0.13256836,0.047576904,-0.031219482,-0.016204834,0.021072388,-0.06591797,0.010620117,-0.12194824]",
+      "created_at": "2026-08-05T20:47:07.734000-07:00",
+      "updated_at": "2026-09-04T20:47:07.734000-07:00"
+    },
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.6115829746704549,
+    "usage": {
+      "input": 2943,
+      "output": 232
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.97,
+      "rationale": "The laptop\u2019s built-in screen no longer displays an image, while an external monitor works, indicating a device display issue.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9845,
+      "band": "high",
+      "raw": 0.9845,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 97% that Endpoint is right",
+          "value": 0.97
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Managed laptops by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 97% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence favoured Managed laptops by a clear margin; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The laptop\u2019s built-in screen no longer displays an image, while an external monitor works, indicating a device display issue."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006775,
+    "agentRunId": "f10770a0-b2ae-421e-b7bc-2cfc43f7af9a"
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "arm": "multi",
+  "id": "dev-049",
+  "key": "d615a12ea0fd9cf0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:52.817150+00:00",
+  "result": {
+    "run": {
+      "id": "12454d50-f05a-45bf-9229-2d8d46a66485",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2972,
+        "output": 237,
+        "cached": 2197,
+        "reasoning": 0
+      },
+      "costUsd": 0.004833,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5966,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Laptop crashes when opening programs, blocking work\", \"service\": \"laptop\", \"serviceQuote\": \"laptop\", \"symptomQuote\": \"crashes every time I open any program\", \"impactQuote\": \"My work is blocked and I have no alternative device.\", \"urgencyQuote\": null, \"deviceQuote\": \"laptop\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1063,
+            "output": 127,
+            "cached": 1060,
+            "reasoning": 0
+          },
+          "costUsd": 0.001742,
+          "latencyMs": 2683,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device. [1 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": \"My work is blocked and I have no alternative device.\", \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The laptop crashes whenever any program is opened, indicating an endpoint device failure.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1140,
+            "output": 81,
+            "cached": 1137,
+            "reasoning": 0
+          },
+          "costUsd": 0.001205,
+          "latencyMs": 1868,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.99, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 769,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001886,
+          "latencyMs": 1408,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=catalog-and-evidence, explicit-work-blocked-no-workaround",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "elevated",
+            "escalation": "elevated",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop crashes when opening programs, blocking work",
+      "service": "laptop",
+      "serviceQuote": "laptop",
+      "symptomQuote": "crashes every time I open any program",
+      "impactQuote": "My work is blocked and I have no alternative device.",
+      "urgencyQuote": null,
+      "deviceQuote": "laptop",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": "My work is blocked and I have no alternative device.",
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The laptop crashes whenever any program is opened, indicating an endpoint device failure.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Laptop crashes when opening programs, blocking work",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "explicit-work-blocked-no-workaround"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "elevated",
+    "escalation": "elevated",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The laptop crashes every time I open any program. My work is blocked and I have no alternative device.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "My work is blocked and I have no alternative device.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "work blocked; no workaround reported",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "device": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "elevated",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.9194170124828815,
+    "usage": {
+      "input": 2972,
+      "output": 237
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The laptop crashes whenever any program is opened, indicating an endpoint device failure.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9905,
+      "band": "high",
+      "raw": 0.9905,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Endpoint is right",
+          "value": 0.98
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Managed laptops by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence favoured Managed laptops by a clear margin; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The laptop crashes whenever any program is opened, indicating an endpoint device failure."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.004833,
+    "agentRunId": "12454d50-f05a-45bf-9229-2d8d46a66485"
+  }
+}

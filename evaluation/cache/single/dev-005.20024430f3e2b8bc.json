@@ -1,0 +1,289 @@
+{
+  "arm": "single",
+  "id": "dev-005",
+  "key": "20024430f3e2b8bc",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:05.846372+00:00",
+  "result": {
+    "run": {
+      "id": "2ed4423a-626d-4fd0-9480-337009af733b",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1702,
+        "output": 192,
+        "cached": 1699,
+        "reasoning": 0
+      },
+      "costUsd": 0.00265,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2463,
+      "outcome": {
+        "extraction": "validated",
+        "service": "vpn",
+        "team": "Identity & Access",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "After updating my password, corporate VPN sign-in returns invalid credentials. My work impact is not clear yet. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Corporate VPN sign-in returns invalid credentials after password update.\", \"service\": \"vpn\", \"serviceQuote\": \"corporate VPN\", \"symptomQuote\": \"sign-in returns invalid credentials\", \"impactQuote\": \"My work impact is not clear yet.\", \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": \"After updating my password\", \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\"",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1702,
+            "output": 192,
+            "cached": 1699,
+            "reasoning": 0
+          },
+          "costUsd": 0.00265,
+          "latencyMs": 2460,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=catalog-vpn-password-exception, normal-priority-reported-impact",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate VPN sign-in returns invalid credentials after password update.",
+      "service": "vpn",
+      "serviceQuote": "corporate VPN",
+      "symptomQuote": "sign-in returns invalid credentials",
+      "impactQuote": "My work impact is not clear yet.",
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": "After updating my password",
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "vpn",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "Corporate VPN sign-in returns invalid credentials after a password update; VPN authentication failures route to Identity & Access.",
+      "probability": 0.98,
+      "citedSourceIds": [
+        "case-1"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Corporate VPN sign-in returns invalid credentials after password update.",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "vpn",
+    "accepted": true,
+    "reasons": [
+      "catalog-vpn-password-exception",
+      "normal-priority-reported-impact"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "After updating my password, corporate VPN sign-in returns invalid credentials. My work impact is not clear yet.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "My work impact is not clear yet.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "rootCause": {
+        "value": "cached credentials may be involved",
+        "origin": "hypothesis",
+        "evidenceIds": [
+          "catalog-vpn-password-exception"
+        ]
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "started": {
+        "value": "After updating my password",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.6411669892258942,
+    "usage": {
+      "input": 1702,
+      "output": 192
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "vpn",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "Corporate VPN sign-in returns invalid credentials after a password update; VPN authentication failures route to Identity & Access.",
+      "citedSourceIds": [
+        "case-1"
+      ]
+    },
+    "confidence": {
+      "value": 0.8573,
+      "band": "high",
+      "raw": 0.8573,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Identity & Access is right",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Corporate VPN by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "10 of 20 similar reviewed cases went to Identity & Access",
+          "value": 0.5
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Identity & Access is right; catalog evidence favoured Corporate VPN by a clear margin; 10 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "Corporate VPN sign-in returns invalid credentials after a password update; VPN authentication failures route to Identity & Access."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.00265,
+    "agentRunId": "2ed4423a-626d-4fd0-9480-337009af733b"
+  }
+}

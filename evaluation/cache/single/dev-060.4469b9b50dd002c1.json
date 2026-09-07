@@ -1,0 +1,268 @@
+{
+  "arm": "single",
+  "id": "dev-060",
+  "key": "4469b9b50dd002c1",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:41.316186+00:00",
+  "result": {
+    "run": {
+      "id": "5c512f6f-3b1b-4b22-8bb8-19c98048c130",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1703,
+        "output": 188,
+        "cached": 0,
+        "reasoning": 0
+      },
+      "costUsd": 0.005662,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2095,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "team": "Identity & Access",
+        "abstain": true
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "I may have a VPN problem or an SSO problem. I do not know which sign-in is failing. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Unclear whether VPN or SSO sign-in is failing\", \"service\": null, \"serviceQuote\": null, \"symptomQuote\": \"I do not know which sign-in is failing.\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}, \"p",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1703,
+            "output": 188,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.005662,
+          "latencyMs": 2092,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=catalog-and-evidence, provisional-priority-impact-unknown, model-abstain",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Unclear whether VPN or SSO sign-in is failing",
+      "service": null,
+      "serviceQuote": null,
+      "symptomQuote": "I do not know which sign-in is failing.",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": null,
+      "team": "Identity & Access",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The report names both VPN and SSO and does not identify which sign-in is failing, so no single service can be routed confidently.",
+      "probability": 0.5,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Unclear whether VPN or SSO sign-in is failing",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown",
+      "model-abstain"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "I may have a VPN problem or an SSO problem. I do not know which sign-in is failing.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 1.530458015622571,
+    "usage": {
+      "input": 1703,
+      "output": 188
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": null,
+      "abstain": true,
+      "probability": 0.5,
+      "rationale": "The report names both VPN and SSO and does not identify which sign-in is failing, so no single service can be routed confidently.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 0.6818,
+      "band": "medium",
+      "raw": 0.6818,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent proposed Identity & Access, overruled by policy",
+          "value": 0.5
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Network by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Medium confidence: agent proposed Identity & Access, overruled by policy; catalog evidence favoured Network by a clear margin; extraction validated on the first attempt.",
+      "agentRationale": "The report names both VPN and SSO and does not identify which sign-in is failing, so no single service can be routed confidently."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.005662,
+    "agentRunId": "5c512f6f-3b1b-4b22-8bb8-19c98048c130"
+  }
+}

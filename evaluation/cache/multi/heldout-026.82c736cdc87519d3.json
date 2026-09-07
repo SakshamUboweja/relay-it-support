@@ -1,0 +1,331 @@
+{
+  "arm": "multi",
+  "id": "heldout-026",
+  "key": "82c736cdc87519d3",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:38:39.310262+00:00",
+  "result": {
+    "run": {
+      "id": "1345818b-5ecc-4c1e-ad95-746df98087e5",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2866,
+        "output": 256,
+        "cached": 1050,
+        "reasoning": 0
+      },
+      "costUsd": 0.006914,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 4952,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "proposal": "validated",
+        "team": "Service Desk",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "I want to change my benefits enrollment for next year. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Benefits enrollment change request for next year\", \"service\": null, \"serviceQuote\": null, \"symptomQuote\": null, \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1053,
+            "output": 107,
+            "cached": 1050,
+            "reasoning": 0
+          },
+          "costUsd": 0.0015,
+          "latencyMs": 1586,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "I want to change my benefits enrollment for next year. [0 candidates]",
+          "outputSummary": "{\"service\": null, \"team\": \"Service Desk\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"Benefits enrollment is not a supported catalog service; no named service supports a first-line route.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1087,
+            "output": 75,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003074,
+          "latencyMs": 1623,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "I want to change my benefits enrollment for next year. [proposal Service Desk, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.35, \"issues\": [{\"field\": \"service\", \"message\": \"The message requests a benefits enrollment change, which is outside the supported IT services and does not identify a supported first-line team.\", \"evidenceQuote\": \"change my benefits enrollment for next year\"}], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 726,
+            "output": 74,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00234,
+          "latencyMs": 1739,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: none; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Benefits enrollment change request for next year",
+      "service": null,
+      "serviceQuote": null,
+      "symptomQuote": null,
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": null,
+      "team": "Service Desk",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "Benefits enrollment is not a supported catalog service; no named service supports a first-line route.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.35,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message requests a benefits enrollment change, which is outside the supported IT services and does not identify a supported first-line team.",
+          "evidenceQuote": "change my benefits enrollment for next year"
+        }
+      ],
+      "securityQuote": null
+    },
+    "summary": "Benefits enrollment change request for next year",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "I want to change my benefits enrollment for next year.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": "Which service is affected: VPN, sign-in, Wi-Fi, your laptop, or Atlas?",
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.3017089911736548,
+    "usage": {
+      "input": 2866,
+      "output": 256
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Service Desk",
+      "service": null,
+      "abstain": true,
+      "probability": 0.98,
+      "rationale": "Benefits enrollment is not a supported catalog service; no named service supports a first-line route.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.35,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message requests a benefits enrollment change, which is outside the supported IT services and does not identify a supported first-line team."
+        }
+      ]
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.4912,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Service Desk is right",
+          "value": 0.98
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "No catalog match in the message",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Service Desk is right; reviewer requested human review; no catalog match in the message; extraction validated on the first attempt.",
+      "agentRationale": "Benefits enrollment is not a supported catalog service; no named service supports a first-line route."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006914,
+    "agentRunId": "1345818b-5ecc-4c1e-ad95-746df98087e5"
+  }
+}

@@ -1,0 +1,348 @@
+{
+  "arm": "multi",
+  "id": "dev-001",
+  "key": "9e7ebbd3b92ba3a0",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:47.937646+00:00",
+  "result": {
+    "run": {
+      "id": "458c93ac-ae0a-411d-93bd-fc442b3f6931",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2914,
+        "output": 252,
+        "cached": 2167,
+        "reasoning": 32
+      },
+      "costUsd": 0.004952,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5737,
+      "outcome": {
+        "extraction": "validated",
+        "service": "vpn",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "Corporate VPN rejects my new password after I changed my password this morning. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Corporate VPN rejects new password\", \"service\": \"vpn\", \"serviceQuote\": \"Corporate VPN\", \"symptomQuote\": \"rejects my new password\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": \"this morning\", \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1056,
+            "output": 111,
+            "cached": 1053,
+            "reasoning": 0
+          },
+          "costUsd": 0.001549,
+          "latencyMs": 1838,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "Corporate VPN rejects my new password after I changed my password this morning. [1 candidates]",
+          "outputSummary": "{\"service\": \"vpn\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The Corporate VPN is rejecting a newly changed password, a VPN authentication failure routed to Identity & Access.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1117,
+            "output": 112,
+            "cached": 1114,
+            "reasoning": 32
+          },
+          "costUsd": 0.001573,
+          "latencyMs": 2111,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "Corporate VPN rejects my new password after I changed my password this morning. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.95, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 741,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00183,
+          "latencyMs": 1782,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=catalog-vpn-password-exception, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate VPN rejects new password",
+      "service": "vpn",
+      "serviceQuote": "Corporate VPN",
+      "symptomQuote": "rejects my new password",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": "this morning",
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "vpn",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The Corporate VPN is rejecting a newly changed password, a VPN authentication failure routed to Identity & Access.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.95,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Corporate VPN rejects new password",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "vpn",
+    "accepted": true,
+    "reasons": [
+      "catalog-vpn-password-exception",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Corporate VPN rejects my new password after I changed my password this morning.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": "password change reported",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "rootCause": {
+        "value": "cached credentials may be involved",
+        "origin": "hypothesis",
+        "evidenceIds": [
+          "catalog-vpn-password-exception"
+        ]
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "started": {
+        "value": "this morning",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.9563330095261335,
+    "usage": {
+      "input": 2914,
+      "output": 252
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "vpn",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The Corporate VPN is rejecting a newly changed password, a VPN authentication failure routed to Identity & Access.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.95,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.8805,
+      "band": "high",
+      "raw": 0.8805,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Identity & Access is right",
+          "value": 0.98
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Identity & Access",
+          "value": 0.95
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Corporate VPN by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "10 of 20 similar reviewed cases went to Identity & Access",
+          "value": 0.5
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Identity & Access is right; triage and reviewer agree on Identity & Access; catalog evidence favoured Corporate VPN by a clear margin; 10 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "The Corporate VPN is rejecting a newly changed password, a VPN authentication failure routed to Identity & Access."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.004952,
+    "agentRunId": "458c93ac-ae0a-411d-93bd-fc442b3f6931"
+  }
+}

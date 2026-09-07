@@ -1,0 +1,281 @@
+{
+  "arm": "single",
+  "id": "heldout-044",
+  "key": "d15aff29bb6f12fe",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:49.967067+00:00",
+  "result": {
+    "run": {
+      "id": "9b7448be-ec01-4560-bc69-0b1e47de824d",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1696,
+        "output": 189,
+        "cached": 1693,
+        "reasoning": 0
+      },
+      "costUsd": 0.002613,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2283,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "team": "Business Applications",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "Our entire support floor cannot use Atlas, and we cannot handle customer cases. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Atlas unavailable for the entire support floor\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"cannot use Atlas\", \"impactQuote\": \"we cannot handle customer cases\", \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageServic",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1696,
+            "output": 189,
+            "cached": 1693,
+            "reasoning": 0
+          },
+          "costUsd": 0.002613,
+          "latencyMs": 2279,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Business Applications=4; scoring v2",
+          "outputSummary": "team=Business Applications; accepted=True; reasons=catalog-and-evidence, normal-priority-reported-impact, user-reported-broad-critical-loss",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "urgent",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas unavailable for the entire support floor",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "cannot use Atlas",
+      "impactQuote": "we cannot handle customer cases",
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": "Our entire support floor cannot use Atlas",
+      "securityQuote": null,
+      "rationale": "The entire support floor cannot use Atlas, preventing customer case handling. Route Atlas availability issue to Business Applications.",
+      "probability": 0.99,
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Atlas unavailable for the entire support floor",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Business Applications",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "normal-priority-reported-impact",
+      "user-reported-broad-critical-loss"
+    ],
+    "alternatives": [
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "urgent",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Our entire support floor cannot use Atlas, and we cannot handle customer cases.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "Our entire support floor cannot use Atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-10",
+      "case-100",
+      "case-15",
+      "case-20",
+      "case-25"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 1.4801250072196126,
+    "usage": {
+      "input": 1696,
+      "output": 189
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "The entire support floor cannot use Atlas, preventing customer case handling. Route Atlas availability issue to Business Applications.",
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.9953,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Business Applications is right",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Atlas by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Business Applications",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 99% that Business Applications is right; catalog evidence favoured Atlas by a clear margin; 20 of 20 similar reviewed cases went to Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "The entire support floor cannot use Atlas, preventing customer case handling. Route Atlas availability issue to Business Applications."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002613,
+    "agentRunId": "9b7448be-ec01-4560-bc69-0b1e47de824d"
+  }
+}

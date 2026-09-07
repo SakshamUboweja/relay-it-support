@@ -1,0 +1,339 @@
+{
+  "arm": "multi",
+  "id": "dev-022",
+  "key": "9929438f4f5a88e3",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:14.245886+00:00",
+  "result": {
+    "run": {
+      "id": "afe9a8de-3199-455a-a68e-e5cff669c137",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2926,
+        "output": 226,
+        "cached": 1051,
+        "reasoning": 0
+      },
+      "costUsd": 0.006672,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 4760,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "The built-in display on my managed laptop flickers continuously. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Managed laptop built-in display flickers continuously\", \"service\": \"laptop\", \"serviceQuote\": \"built-in display on my managed laptop\", \"symptomQuote\": \"flickers continuously\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"managed laptop\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null,",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1054,
+            "output": 119,
+            "cached": 1051,
+            "reasoning": 0
+          },
+          "costUsd": 0.001644,
+          "latencyMs": 1618,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "The built-in display on my managed laptop flickers continuously. [1 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The managed laptop\\u2019s built-in display is flickering, indicating a device hardware or display issue for Endpoint.\", \"probability\": 0.97, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1122,
+            "output": 78,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00318,
+          "latencyMs": 1882,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "The built-in display on my managed laptop flickers continuously. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 750,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001848,
+          "latencyMs": 1255,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Managed laptop built-in display flickers continuously",
+      "service": "laptop",
+      "serviceQuote": "built-in display on my managed laptop",
+      "symptomQuote": "flickers continuously",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "managed laptop",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The managed laptop\u2019s built-in display is flickering, indicating a device hardware or display issue for Endpoint.",
+      "probability": 0.97,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Managed laptop built-in display flickers continuously",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The built-in display on my managed laptop flickers continuously.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "managed laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7410420221276581,
+    "usage": {
+      "input": 2926,
+      "output": 226
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.97,
+      "rationale": "The managed laptop\u2019s built-in display is flickering, indicating a device hardware or display issue for Endpoint.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9845,
+      "band": "high",
+      "raw": 0.9845,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 97% that Endpoint is right",
+          "value": 0.97
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Managed laptops by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 97% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence favoured Managed laptops by a clear margin; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The managed laptop\u2019s built-in display is flickering, indicating a device hardware or display issue for Endpoint."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006672,
+    "agentRunId": "afe9a8de-3199-455a-a68e-e5cff669c137"
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "arm": "multi",
+  "id": "heldout-018",
+  "key": "9777e3307e838f95",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:38:29.316736+00:00",
+  "result": {
+    "run": {
+      "id": "a7a8b4b6-5cfe-4047-809c-8dcd673d3948",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 3027,
+        "output": 304,
+        "cached": 2232,
+        "reasoning": 50
+      },
+      "costUsd": 0.005684,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5791,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Managed laptop repeatedly restarts during boot before login\", \"service\": \"laptop\", \"serviceQuote\": \"managed laptop\", \"symptomQuote\": \"restarts repeatedly during boot, before any login screen\", \"impactQuote\": \"I have no other device or way to do my work.\", \"urgencyQuote\": null, \"deviceQuote\": \"managed laptop\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1068,
+            "output": 131,
+            "cached": 1065,
+            "reasoning": 0
+          },
+          "costUsd": 0.001791,
+          "latencyMs": 1886,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work. [2 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": \"I have no other device or way to do my work.\", \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The managed laptop repeatedly restarts during boot before the login screen, indicating a device boot failure rather than an SSO issue.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1170,
+            "output": 144,
+            "cached": 1167,
+            "reasoning": 50
+          },
+          "costUsd": 0.001967,
+          "latencyMs": 2509,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.99, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 789,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001926,
+          "latencyMs": 1389,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4, Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=insufficient-or-conflicting-evidence, normal-priority-reported-impact, model-tie-break, model-cited-work-blocked",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "elevated",
+            "escalation": "elevated",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Managed laptop repeatedly restarts during boot before login",
+      "service": "laptop",
+      "serviceQuote": "managed laptop",
+      "symptomQuote": "restarts repeatedly during boot, before any login screen",
+      "impactQuote": "I have no other device or way to do my work.",
+      "urgencyQuote": null,
+      "deviceQuote": "managed laptop",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": "I have no other device or way to do my work.",
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The managed laptop repeatedly restarts during boot before the login screen, indicating a device boot failure rather than an SSO issue.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Managed laptop repeatedly restarts during boot before login",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "normal-priority-reported-impact",
+      "model-tie-break",
+      "model-cited-work-blocked"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      },
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "elevated",
+    "escalation": "elevated",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "My managed laptop restarts repeatedly during boot, before any login screen. I have no other device or way to do my work.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": "I have no other device or way to do my work.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "I have no other device or way to do my work.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "device": {
+        "value": "managed laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "elevated",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 1.9790829974226654,
+    "usage": {
+      "input": 3027,
+      "output": 304
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The managed laptop repeatedly restarts during boot before the login screen, indicating a device boot failure rather than an SSO issue.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": []
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.8405,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Endpoint is right",
+          "value": 0.98
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Identity & Access and Endpoint",
+          "value": 0.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence was tied between Identity & Access and Endpoint; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The managed laptop repeatedly restarts during boot before the login screen, indicating a device boot failure rather than an SSO issue."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.005684,
+    "agentRunId": "a7a8b4b6-5cfe-4047-809c-8dcd673d3948"
+  }
+}

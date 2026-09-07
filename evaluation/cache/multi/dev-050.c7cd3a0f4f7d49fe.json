@@ -1,0 +1,350 @@
+{
+  "arm": "multi",
+  "id": "dev-050",
+  "key": "c7cd3a0f4f7d49fe",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:53.414119+00:00",
+  "result": {
+    "run": {
+      "id": "a2cd5ff1-5639-444a-a57f-593d4d423def",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2955,
+        "output": 233,
+        "cached": 2186,
+        "reasoning": 0
+      },
+      "costUsd": 0.004771,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 6517,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "My laptop cannot open any files. I cannot work at all and I have no workaround. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Laptop cannot open any files, preventing work\", \"service\": \"laptop\", \"serviceQuote\": \"laptop\", \"symptomQuote\": \"cannot open any files\", \"impactQuote\": \"I cannot work at all\", \"urgencyQuote\": null, \"deviceQuote\": \"laptop\", \"startedQuote\": null, \"workaroundQuote\": \"I have no workaround\", \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageServ",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1060,
+            "output": 121,
+            "cached": 1057,
+            "reasoning": 0
+          },
+          "costUsd": 0.001669,
+          "latencyMs": 1880,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "My laptop cannot open any files. I cannot work at all and I have no workaround. [1 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": \"I cannot work at all and I have no workaround.\", \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The laptop cannot open any files, which is a device/file-access failure for Endpoint.\", \"probability\": 0.95, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1132,
+            "output": 83,
+            "cached": 1129,
+            "reasoning": 0
+          },
+          "costUsd": 0.001228,
+          "latencyMs": 3541,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "My laptop cannot open any files. I cannot work at all and I have no workaround. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 763,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001874,
+          "latencyMs": 1090,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=catalog-and-evidence, explicit-work-blocked-no-workaround",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "elevated",
+            "escalation": "elevated",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop cannot open any files, preventing work",
+      "service": "laptop",
+      "serviceQuote": "laptop",
+      "symptomQuote": "cannot open any files",
+      "impactQuote": "I cannot work at all",
+      "urgencyQuote": null,
+      "deviceQuote": "laptop",
+      "startedQuote": null,
+      "workaroundQuote": "I have no workaround",
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": "I cannot work at all and I have no workaround.",
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The laptop cannot open any files, which is a device/file-access failure for Endpoint.",
+      "probability": 0.95,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Laptop cannot open any files, preventing work",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "explicit-work-blocked-no-workaround"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "elevated",
+    "escalation": "elevated",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "My laptop cannot open any files. I cannot work at all and I have no workaround.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "I cannot work at all",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "work blocked; no workaround reported",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "device": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "elevated",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "workaround": {
+        "value": "I have no workaround",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7439169858116657,
+    "usage": {
+      "input": 2955,
+      "output": 233
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.95,
+      "rationale": "The laptop cannot open any files, which is a device/file-access failure for Endpoint.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9775,
+      "band": "high",
+      "raw": 0.9775,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 95% that Endpoint is right",
+          "value": 0.95
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Managed laptops by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 95% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence favoured Managed laptops by a clear margin; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The laptop cannot open any files, which is a device/file-access failure for Endpoint."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.004771,
+    "agentRunId": "a2cd5ff1-5639-444a-a57f-593d4d423def"
+  }
+}

@@ -1,0 +1,386 @@
+{
+  "arm": "multi",
+  "id": "dev-036",
+  "key": "532213fdf1a8ae74",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:35.975404+00:00",
+  "result": {
+    "run": {
+      "id": "1294af36-2903-4469-acbb-84883e1ea835",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 4828,
+        "output": 426,
+        "cached": 1109,
+        "reasoning": 0
+      },
+      "costUsd": 0.012772,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 8500,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "Please purchase a second monitor for my home office. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Request to purchase a second monitor for home office\", \"service\": \"laptop\", \"serviceQuote\": \"second monitor\", \"symptomQuote\": null, \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"second monitor\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1052,
+            "output": 112,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003448,
+          "latencyMs": 1591,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "Please purchase a second monitor for my home office. [1 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The request is for a second monitor, an endpoint hardware purchase.\", \"probability\": 0.91, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1112,
+            "output": 70,
+            "cached": 1109,
+            "reasoning": 0
+          },
+          "costUsd": 0.001068,
+          "latencyMs": 1852,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "Please purchase a second monitor for my home office. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"revise\", \"agreementProbability\": 0.35, \"issues\": [{\"field\": \"service\", \"message\": \"The message supports a monitor purchase request, not the proposed laptop service.\", \"evidenceQuote\": \"purchase a second monitor\"}, {\"field\": \"team\", \"message\": \"The message does not establish that Endpoint is the appropriate first-line team for a home-office monitor purchase.\", \"evidenceQuote\": \"Please purchase a second monitor for my home office.\"}], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 729,
+            "output": 101,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00267,
+          "latencyMs": 1869,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "Please purchase a second monitor for my home office. [1 candidates, 2 reviewer notes]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The request is for purchasing a home-office monitor, not a laptop issue. No catalog service clearly covers procurement, so abstaining.\", \"probability\": 0.2, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1193,
+            "output": 83,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003382,
+          "latencyMs": 1812,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 5,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "Please purchase a second monitor for my home office. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.15, \"issues\": [{\"field\": \"service\", \"message\": \"The message supports a monitor procurement request, not the proposed laptop service.\", \"evidenceQuote\": \"purchase a second monitor\"}], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 742,
+            "output": 60,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.002204,
+          "latencyMs": 1366,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 6,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=unsupported-workflow, provisional-priority-impact-unknown, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Request to purchase a second monitor for home office",
+      "service": "laptop",
+      "serviceQuote": "second monitor",
+      "symptomQuote": null,
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "second monitor",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The request is for purchasing a home-office monitor, not a laptop issue. No catalog service clearly covers procurement, so abstaining.",
+      "probability": 0.2,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.15,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message supports a monitor procurement request, not the proposed laptop service.",
+          "evidenceQuote": "purchase a second monitor"
+        }
+      ],
+      "securityQuote": null
+    },
+    "summary": "Request to purchase a second monitor for home office",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "unsupported-workflow",
+      "provisional-priority-impact-unknown",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Please purchase a second monitor for my home office.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "second monitor",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.6856250111013651,
+    "usage": {
+      "input": 4828,
+      "output": 426
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": true,
+      "probability": 0.2,
+      "rationale": "The request is for purchasing a home-office monitor, not a laptop issue. No catalog service clearly covers procurement, so abstaining.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.15,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message supports a monitor procurement request, not the proposed laptop service."
+        }
+      ]
+    },
+    "confidence": {
+      "value": 0.6,
+      "band": "medium",
+      "raw": 0.6,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent proposed Endpoint, overruled by policy",
+          "value": 0.8
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Endpoint by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Medium confidence: agent proposed Endpoint, overruled by policy; reviewer requested human review; catalog evidence favoured Endpoint by a clear margin; extraction validated on the first attempt.",
+      "agentRationale": "The request is for purchasing a home-office monitor, not a laptop issue. No catalog service clearly covers procurement, so abstaining."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.012772,
+    "agentRunId": "1294af36-2903-4469-acbb-84883e1ea835"
+  }
+}

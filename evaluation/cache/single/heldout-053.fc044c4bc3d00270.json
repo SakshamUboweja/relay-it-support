@@ -1,0 +1,273 @@
+{
+  "arm": "single",
+  "id": "heldout-053",
+  "key": "fc044c4bc3d00270",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:56.581765+00:00",
+  "result": {
+    "run": {
+      "id": "a88ae191-7849-4c54-b5cc-b9508b675c09",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1701,
+        "output": 272,
+        "cached": 1698,
+        "reasoning": 94
+      },
+      "costUsd": 0.00361,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 3854,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "team": "Endpoint",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "I saw a Wi-Fi incident yesterday, but today wireless works and my laptop speakers produce no sound. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Laptop speakers produce no sound.\", \"service\": \"laptop\", \"serviceQuote\": \"my laptop speakers produce no sound\", \"symptomQuote\": \"speakers produce no sound\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"my laptop\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageS",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1701,
+            "output": 272,
+            "cached": 1698,
+            "reasoning": 94
+          },
+          "costUsd": 0.00361,
+          "latencyMs": 3850,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4, Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, model-tie-break",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop speakers produce no sound.",
+      "service": "laptop",
+      "serviceQuote": "my laptop speakers produce no sound",
+      "symptomQuote": "speakers produce no sound",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "my laptop",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The current issue is that the laptop speakers produce no sound; Wi-Fi is reported as working today.",
+      "probability": 0.96,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Laptop speakers produce no sound.",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "model-tie-break"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      },
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "I saw a Wi-Fi incident yesterday, but today wireless works and my laptop speakers produce no sound.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "my laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 1.5848749899305403,
+    "usage": {
+      "input": 1701,
+      "output": 272
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.96,
+      "rationale": "The current issue is that the laptop speakers produce no sound; Wi-Fi is reported as working today.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.7813,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 96% that Endpoint is right",
+          "value": 0.96
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Network and Endpoint",
+          "value": 0.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 96% that Endpoint is right; catalog evidence was tied between Network and Endpoint; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The current issue is that the laptop speakers produce no sound; Wi-Fi is reported as working today."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.00361,
+    "agentRunId": "a88ae191-7849-4c54-b5cc-b9508b675c09"
+  }
+}

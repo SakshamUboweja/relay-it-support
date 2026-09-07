@@ -1,0 +1,344 @@
+{
+  "arm": "multi",
+  "id": "dev-015",
+  "key": "b018c05d108bc958",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:03.335581+00:00",
+  "result": {
+    "run": {
+      "id": "a3a2efd2-3533-4f06-a447-ac6cf7041ad4",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2956,
+        "output": 231,
+        "cached": 2191,
+        "reasoning": 0
+      },
+      "costUsd": 0.004741,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5238,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "SSO says my account is disabled when I try to sign in. This account worked yesterday. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"SSO account reports disabled during sign-in\", \"service\": \"sso\", \"serviceQuote\": \"SSO\", \"symptomQuote\": \"says my account is disabled when I try to sign in\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": \"This account worked yesterday.\", \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"i",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1061,
+            "output": 124,
+            "cached": 1058,
+            "reasoning": 0
+          },
+          "costUsd": 0.001706,
+          "latencyMs": 2091,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "SSO says my account is disabled when I try to sign in. This account worked yesterday. [1 candidates]",
+          "outputSummary": "{\"service\": \"sso\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"SSO reports the account is disabled during sign-in; this is an identity/account access issue.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1136,
+            "output": 78,
+            "cached": 1133,
+            "reasoning": 0
+          },
+          "costUsd": 0.001169,
+          "latencyMs": 2111,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "SSO says my account is disabled when I try to sign in. This account worked yesterday. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 759,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001866,
+          "latencyMs": 1027,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "SSO account reports disabled during sign-in",
+      "service": "sso",
+      "serviceQuote": "SSO",
+      "symptomQuote": "says my account is disabled when I try to sign in",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": "This account worked yesterday.",
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "SSO reports the account is disabled during sign-in; this is an identity/account access issue.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "SSO account reports disabled during sign-in",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "SSO says my account is disabled when I try to sign in. This account worked yesterday.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "started": {
+        "value": "This account worked yesterday.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 3.0692919972352684,
+    "usage": {
+      "input": 2956,
+      "output": 231
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "SSO reports the account is disabled during sign-in; this is an identity/account access issue.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.988,
+      "band": "high",
+      "raw": 0.988,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Identity & Access is right",
+          "value": 0.98
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Identity & Access",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Single sign-on by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Identity & Access",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Identity & Access is right; triage and reviewer agree on Identity & Access; catalog evidence favoured Single sign-on by a clear margin; 20 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "SSO reports the account is disabled during sign-in; this is an identity/account access issue."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.004741,
+    "agentRunId": "a3a2efd2-3533-4f06-a447-ac6cf7041ad4"
+  }
+}

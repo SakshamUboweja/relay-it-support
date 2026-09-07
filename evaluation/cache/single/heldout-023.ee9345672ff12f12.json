@@ -1,0 +1,279 @@
+{
+  "arm": "single",
+  "id": "heldout-023",
+  "key": "ee9345672ff12f12",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:36.918051+00:00",
+  "result": {
+    "run": {
+      "id": "42c2d6ee-960d-485d-8509-21cce1945364",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1696,
+        "output": 188,
+        "cached": 1693,
+        "reasoning": 0
+      },
+      "costUsd": 0.002601,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2112,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "team": "Business Applications",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "Atlas displays the project list, but the search filter never updates the results. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Atlas search filter does not update project-list results.\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"the search filter never updates the results\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"im",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1696,
+            "output": 188,
+            "cached": 1693,
+            "reasoning": 0
+          },
+          "costUsd": 0.002601,
+          "latencyMs": 2107,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4, Business Applications=4; scoring v2",
+          "outputSummary": "team=Business Applications; accepted=True; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, model-tie-break",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas search filter does not update project-list results.",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "the search filter never updates the results",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "Atlas is named, and its search filter does not update project-list results. Route to Business Applications.",
+      "probability": 0.98,
+      "citedSourceIds": [
+        "case-10",
+        "case-100",
+        "case-15"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Atlas search filter does not update project-list results.",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Business Applications",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "model-tie-break"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      },
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Atlas displays the project list, but the search filter never updates the results.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7760829757899046,
+    "usage": {
+      "input": 1696,
+      "output": 188
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "Atlas is named, and its search filter does not update project-list results. Route to Business Applications.",
+      "citedSourceIds": [
+        "case-10",
+        "case-100",
+        "case-15"
+      ]
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.7907,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Business Applications is right",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Endpoint and Business Applications",
+          "value": 0.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Business Applications",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Business Applications is right; catalog evidence was tied between Endpoint and Business Applications; 20 of 20 similar reviewed cases went to Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "Atlas is named, and its search filter does not update project-list results. Route to Business Applications."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002601,
+    "agentRunId": "42c2d6ee-960d-485d-8509-21cce1945364"
+  }
+}

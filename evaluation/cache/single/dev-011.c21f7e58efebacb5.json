@@ -1,0 +1,276 @@
+{
+  "arm": "single",
+  "id": "dev-011",
+  "key": "c21f7e58efebacb5",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:08.890893+00:00",
+  "result": {
+    "run": {
+      "id": "a9d28e59-409d-4184-bf41-0cd1646c6240",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1695,
+        "output": 189,
+        "cached": 1692,
+        "reasoning": 0
+      },
+      "costUsd": 0.002612,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2698,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "team": "Identity & Access",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "Corporate SSO says my account is locked after several incorrect password attempts. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Corporate SSO account locked after incorrect password attempts\", \"service\": \"sso\", \"serviceQuote\": \"Corporate SSO\", \"symptomQuote\": \"says my account is locked\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageServ",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1695,
+            "output": 189,
+            "cached": 1692,
+            "reasoning": 0
+          },
+          "costUsd": 0.002612,
+          "latencyMs": 2697,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate SSO account locked after incorrect password attempts",
+      "service": "sso",
+      "serviceQuote": "Corporate SSO",
+      "symptomQuote": "says my account is locked",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "Corporate SSO reports that the user's account is locked after incorrect password attempts, which routes SSO authentication issues to Identity & Access.",
+      "probability": 0.99,
+      "citedSourceIds": [
+        "case-12"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Corporate SSO account locked after incorrect password attempts",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Corporate SSO says my account is locked after several incorrect password attempts.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.259166001342237,
+    "usage": {
+      "input": 1695,
+      "output": 189
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "Corporate SSO reports that the user's account is locked after incorrect password attempts, which routes SSO authentication issues to Identity & Access.",
+      "citedSourceIds": [
+        "case-12"
+      ]
+    },
+    "confidence": {
+      "value": 0.9953,
+      "band": "high",
+      "raw": 0.9953,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Identity & Access is right",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Single sign-on by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Identity & Access",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 99% that Identity & Access is right; catalog evidence favoured Single sign-on by a clear margin; 20 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "Corporate SSO reports that the user's account is locked after incorrect password attempts, which routes SSO authentication issues to Identity & Access."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002612,
+    "agentRunId": "a9d28e59-409d-4184-bf41-0cd1646c6240"
+  }
+}

@@ -1,0 +1,340 @@
+{
+  "arm": "multi",
+  "id": "heldout-042",
+  "key": "a136ad0649856f05",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:39:02.660279+00:00",
+  "result": {
+    "run": {
+      "id": "592bf5f7-f069-44c7-b93b-0d895cd93e07",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2942,
+        "output": 230,
+        "cached": 1055,
+        "reasoning": 0
+      },
+      "costUsd": 0.006745,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5377,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "proposal": "validated",
+        "team": "Business Applications",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "All forty people on our operations team report Atlas is unavailable and cannot process orders. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Atlas is unavailable and cannot process orders for operations team\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"is unavailable and cannot process orders\", \"impactQuote\": \"All forty people on our operations team\", \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\"",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1058,
+            "output": 121,
+            "cached": 1055,
+            "reasoning": 0
+          },
+          "costUsd": 0.001669,
+          "latencyMs": 2345,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "All forty people on our operations team report Atlas is unavailable and cannot process orders. [1 candidates]",
+          "outputSummary": "{\"service\": \"atlas\", \"team\": \"Business Applications\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": \"All forty people on our operations team\", \"securityQuote\": null, \"rationale\": \"Atlas is unavailable for the operations team and cannot process orders; route to Business Applications.\", \"probability\": 0.99, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1128,
+            "output": 80,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003216,
+          "latencyMs": 2010,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "All forty people on our operations team report Atlas is unavailable and cannot process orders. [proposal Business Applications, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.99, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 756,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00186,
+          "latencyMs": 1014,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Business Applications=4; scoring v2",
+          "outputSummary": "team=Business Applications; accepted=True; reasons=catalog-and-evidence, normal-priority-reported-impact, user-reported-broad-critical-loss",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "urgent",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas is unavailable and cannot process orders for operations team",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "is unavailable and cannot process orders",
+      "impactQuote": "All forty people on our operations team",
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": "All forty people on our operations team",
+      "securityQuote": null,
+      "rationale": "Atlas is unavailable for the operations team and cannot process orders; route to Business Applications.",
+      "probability": 0.99,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Atlas is unavailable and cannot process orders for operations team",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Business Applications",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "normal-priority-reported-impact",
+      "user-reported-broad-critical-loss"
+    ],
+    "alternatives": [
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "urgent",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "All forty people on our operations team report Atlas is unavailable and cannot process orders.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "All forty people on our operations team",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-10",
+      "case-100",
+      "case-15",
+      "case-20",
+      "case-25"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.908124988200143,
+    "usage": {
+      "input": 2942,
+      "output": 230
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "Atlas is unavailable for the operations team and cannot process orders; route to Business Applications.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": []
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.994,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Business Applications is right",
+          "value": 0.99
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Business Applications",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Atlas by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Business Applications",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 99% that Business Applications is right; triage and reviewer agree on Business Applications; catalog evidence favoured Atlas by a clear margin; 20 of 20 similar reviewed cases went to Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "Atlas is unavailable for the operations team and cannot process orders; route to Business Applications."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006745,
+    "agentRunId": "592bf5f7-f069-44c7-b93b-0d895cd93e07"
+  }
+}

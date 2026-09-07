@@ -1,0 +1,349 @@
+{
+  "arm": "multi",
+  "id": "dev-048",
+  "key": "23356578a4532371",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:49.595991+00:00",
+  "result": {
+    "run": {
+      "id": "9882af60-3a9b-4862-9508-f2999c6fd949",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2952,
+        "output": 305,
+        "cached": 2194,
+        "reasoning": 78
+      },
+      "costUsd": 0.005615,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5508,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "My laptop freezes after login. I am completely blocked with no usable workaround. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Laptop freezes after login\", \"service\": \"laptop\", \"serviceQuote\": \"laptop\", \"symptomQuote\": \"freezes after login\", \"impactQuote\": \"completely blocked\", \"urgencyQuote\": null, \"deviceQuote\": \"laptop\", \"startedQuote\": null, \"workaroundQuote\": \"no usable workaround\", \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1057,
+            "output": 114,
+            "cached": 1054,
+            "reasoning": 0
+          },
+          "costUsd": 0.001585,
+          "latencyMs": 1714,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "My laptop freezes after login. I am completely blocked with no usable workaround. [2 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": false, \"blockedQuote\": \"I am completely blocked with no usable workaround.\", \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The laptop itself freezes after login; this is a device failure rather than an authentication failure.\", \"probability\": 0.88, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1143,
+            "output": 162,
+            "cached": 1140,
+            "reasoning": 78
+          },
+          "costUsd": 0.002178,
+          "latencyMs": 2684,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "My laptop freezes after login. I am completely blocked with no usable workaround. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 752,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001852,
+          "latencyMs": 1104,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4, Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=insufficient-or-conflicting-evidence, explicit-work-blocked-no-workaround, model-tie-break",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "elevated",
+            "escalation": "elevated",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop freezes after login",
+      "service": "laptop",
+      "serviceQuote": "laptop",
+      "symptomQuote": "freezes after login",
+      "impactQuote": "completely blocked",
+      "urgencyQuote": null,
+      "deviceQuote": "laptop",
+      "startedQuote": null,
+      "workaroundQuote": "no usable workaround",
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": "I am completely blocked with no usable workaround.",
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The laptop itself freezes after login; this is a device failure rather than an authentication failure.",
+      "probability": 0.88,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "Laptop freezes after login",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "explicit-work-blocked-no-workaround",
+      "model-tie-break"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      },
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "elevated",
+    "escalation": "elevated",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "My laptop freezes after login. I am completely blocked with no usable workaround.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": "completely blocked",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "work blocked; no workaround reported",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "device": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "elevated",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "workaround": {
+        "value": "no usable workaround",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.2197920111939311,
+    "usage": {
+      "input": 2952,
+      "output": 305
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.88,
+      "rationale": "The laptop itself freezes after login; this is a device failure rather than an authentication failure.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.803,
+      "band": "high",
+      "raw": 0.803,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 88% that Endpoint is right",
+          "value": 0.88
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Endpoint",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Identity & Access and Endpoint",
+          "value": 0.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 88% that Endpoint is right; triage and reviewer agree on Endpoint; catalog evidence was tied between Identity & Access and Endpoint; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The laptop itself freezes after login; this is a device failure rather than an authentication failure."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.005615,
+    "agentRunId": "9882af60-3a9b-4862-9508-f2999c6fd949"
+  }
+}

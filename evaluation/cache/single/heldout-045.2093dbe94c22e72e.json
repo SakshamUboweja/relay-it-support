@@ -1,0 +1,283 @@
+{
+  "arm": "single",
+  "id": "heldout-045",
+  "key": "2093dbe94c22e72e",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:50.306706+00:00",
+  "result": {
+    "run": {
+      "id": "b2c2203a-54d1-4491-9c36-5a78247fe17a",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1701,
+        "output": 186,
+        "cached": 1698,
+        "reasoning": 0
+      },
+      "costUsd": 0.002578,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2300,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "team": "Business Applications",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "Multiple departments are reporting that Atlas is down and critical order processing has stopped. The cause is unknown. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Atlas is down, stopping critical order processing across multiple departments.\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"Atlas is down\", \"impactQuote\": \"critical order processing has stopped\", \"urgencyQuote\": \"critical\", \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservati",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1701,
+            "output": 186,
+            "cached": 1698,
+            "reasoning": 0
+          },
+          "costUsd": 0.002578,
+          "latencyMs": 2296,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Business Applications=4; scoring v2",
+          "outputSummary": "team=Business Applications; accepted=True; reasons=catalog-and-evidence, normal-priority-reported-impact, user-reported-broad-critical-loss",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "urgent",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas is down, stopping critical order processing across multiple departments.",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "Atlas is down",
+      "impactQuote": "critical order processing has stopped",
+      "urgencyQuote": "critical",
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": "Multiple departments are reporting that Atlas is down",
+      "securityQuote": null,
+      "rationale": "Atlas is reported down across multiple departments; route to Business Applications.",
+      "probability": 0.99,
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Atlas is down, stopping critical order processing across multiple departments.",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Business Applications",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "normal-priority-reported-impact",
+      "user-reported-broad-critical-loss"
+    ],
+    "alternatives": [
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "urgent",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Multiple departments are reporting that Atlas is down and critical order processing has stopped. The cause is unknown.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "Multiple departments are reporting that Atlas is down",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "critical",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-10",
+      "case-100",
+      "case-15",
+      "case-20",
+      "case-25"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.9033750102389604,
+    "usage": {
+      "input": 1701,
+      "output": 186
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "Atlas is reported down across multiple departments; route to Business Applications.",
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.9953,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Business Applications is right",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Atlas by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Business Applications",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 99% that Business Applications is right; catalog evidence favoured Atlas by a clear margin; 20 of 20 similar reviewed cases went to Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "Atlas is reported down across multiple departments; route to Business Applications."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002578,
+    "agentRunId": "b2c2203a-54d1-4491-9c36-5a78247fe17a"
+  }
+}

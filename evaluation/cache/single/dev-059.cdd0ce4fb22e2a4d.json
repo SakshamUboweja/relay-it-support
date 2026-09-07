@@ -1,0 +1,267 @@
+{
+  "arm": "single",
+  "id": "dev-059",
+  "key": "cdd0ce4fb22e2a4d",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:41.220440+00:00",
+  "result": {
+    "run": {
+      "id": "62360d57-128a-42fc-9d0d-78290b7d0bc8",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1700,
+        "output": 177,
+        "cached": 1697,
+        "reasoning": 0
+      },
+      "costUsd": 0.002469,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 3353,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "team": "Business Applications",
+        "abstain": true
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Atlas screen and laptop display acting strangely\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"are both acting strangely\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"my laptop display\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\":",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1700,
+            "output": 177,
+            "cached": 1697,
+            "reasoning": 0
+          },
+          "costUsd": 0.002469,
+          "latencyMs": 3351,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4, Business Applications=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas screen and laptop display acting strangely",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "are both acting strangely",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "my laptop display",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The message names both Atlas and a laptop display as acting strangely, without identifying which is responsible, so routing is ambiguous.",
+      "probability": 0.5,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Atlas screen and laptop display acting strangely",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      },
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "my laptop display",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": "Which service is affected: VPN, sign-in, Wi-Fi, your laptop, or Atlas?",
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.5643750191666186,
+    "usage": {
+      "input": 1700,
+      "output": 177
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": true,
+      "probability": 0.5,
+      "rationale": "The message names both Atlas and a laptop display as acting strangely, without identifying which is responsible, so routing is ambiguous.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 0.4091,
+      "band": "low",
+      "raw": 0.4091,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent proposed Business Applications, overruled by policy",
+          "value": 0.5
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Endpoint and Business Applications",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Low confidence: agent proposed Business Applications, overruled by policy; catalog evidence was tied between Endpoint and Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "The message names both Atlas and a laptop display as acting strangely, without identifying which is responsible, so routing is ambiguous."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002469,
+    "agentRunId": "62360d57-128a-42fc-9d0d-78290b7d0bc8"
+  }
+}

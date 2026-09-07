@@ -1,0 +1,275 @@
+{
+  "arm": "single",
+  "id": "dev-013",
+  "key": "8a1940b16c6f777c",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:10.572511+00:00",
+  "result": {
+    "run": {
+      "id": "28196b27-cbbf-4a0c-802b-be4c230c3e12",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1697,
+        "output": 184,
+        "cached": 1694,
+        "reasoning": 0
+      },
+      "costUsd": 0.002553,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2278,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "team": "Identity & Access",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The corporate single sign-on page displays account locked. I have not reset anything. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Corporate single sign-on page displays account locked\", \"service\": \"sso\", \"serviceQuote\": \"single sign-on\", \"symptomQuote\": \"displays account locked\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1697,
+            "output": 184,
+            "cached": 1694,
+            "reasoning": 0
+          },
+          "costUsd": 0.002553,
+          "latencyMs": 2275,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4, Endpoint=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, model-tie-break",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate single sign-on page displays account locked",
+      "service": "sso",
+      "serviceQuote": "single sign-on",
+      "symptomQuote": "displays account locked",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The corporate single sign-on page displays an account-locked message, so Identity & Access is the correct first-line team.",
+      "probability": 0.99,
+      "citedSourceIds": [
+        "case-12"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Corporate single sign-on page displays account locked",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "model-tie-break"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      },
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The corporate single sign-on page displays account locked. I have not reset anything.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7832499977666885,
+    "usage": {
+      "input": 1697,
+      "output": 184
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "The corporate single sign-on page displays an account-locked message, so Identity & Access is the correct first-line team.",
+      "citedSourceIds": [
+        "case-12"
+      ]
+    },
+    "confidence": {
+      "value": 0.7953,
+      "band": "medium",
+      "raw": 0.7953,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Identity & Access is right",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Identity & Access and Endpoint",
+          "value": 0.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Identity & Access",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Medium confidence: agent estimated 99% that Identity & Access is right; catalog evidence was tied between Identity & Access and Endpoint; 20 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "The corporate single sign-on page displays an account-locked message, so Identity & Access is the correct first-line team."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002553,
+    "agentRunId": "28196b27-cbbf-4a0c-802b-be4c230c3e12"
+  }
+}

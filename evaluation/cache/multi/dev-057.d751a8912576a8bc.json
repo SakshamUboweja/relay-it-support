@@ -1,0 +1,334 @@
+{
+  "arm": "multi",
+  "id": "dev-057",
+  "key": "d751a8912576a8bc",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:05.618058+00:00",
+  "result": {
+    "run": {
+      "id": "6b8de4e0-a5fe-4539-9014-0bae7771c6b3",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2938,
+        "output": 313,
+        "cached": 1057,
+        "reasoning": 81
+      },
+      "costUsd": 0.007729,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 9185,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "proposal": "validated",
+        "team": "Service Desk",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "SSO and the VPN both seem broken, but I have not seen an error message. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"SSO and VPN appear broken with no error message\", \"service\": null, \"serviceQuote\": \"SSO and the VPN both seem broken\", \"symptomQuote\": \"both seem broken\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1060,
+            "output": 119,
+            "cached": 1057,
+            "reasoning": 0
+          },
+          "costUsd": 0.001645,
+          "latencyMs": 3135,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "SSO and the VPN both seem broken, but I have not seen an error message. [1 candidates]",
+          "outputSummary": "{\"service\": null, \"team\": \"Service Desk\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"Both SSO and VPN are named as broken, with no error detail to distinguish which service should own first-line support.\", \"probability\": 0.5, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1125,
+            "output": 164,
+            "cached": 0,
+            "reasoning": 81
+          },
+          "costUsd": 0.004218,
+          "latencyMs": 4715,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "SSO and the VPN both seem broken, but I have not seen an error message. [proposal Service Desk, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.5, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 753,
+            "output": 30,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001866,
+          "latencyMs": 1330,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=catalog-and-evidence, provisional-priority-impact-unknown, model-abstain, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "SSO and VPN appear broken with no error message",
+      "service": null,
+      "serviceQuote": "SSO and the VPN both seem broken",
+      "symptomQuote": "both seem broken",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": null,
+      "team": "Service Desk",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "Both SSO and VPN are named as broken, with no error detail to distinguish which service should own first-line support.",
+      "probability": 0.5,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "SSO and VPN appear broken with no error message",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown",
+      "model-abstain",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "SSO and the VPN both seem broken, but I have not seen an error message.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.6709169829264283,
+    "usage": {
+      "input": 2938,
+      "output": 313
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Service Desk",
+      "service": null,
+      "abstain": true,
+      "probability": 0.5,
+      "rationale": "Both SSO and VPN are named as broken, with no error detail to distinguish which service should own first-line support.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.4688,
+      "band": "low",
+      "raw": 0.4688,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 50% that Service Desk is right",
+          "value": 0.5
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Network by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Low confidence: agent estimated 50% that Service Desk is right; reviewer requested human review; catalog evidence favoured Network by a clear margin; extraction validated on the first attempt.",
+      "agentRationale": "Both SSO and VPN are named as broken, with no error detail to distinguish which service should own first-line support."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.007729,
+    "agentRunId": "6b8de4e0-a5fe-4539-9014-0bae7771c6b3"
+  }
+}

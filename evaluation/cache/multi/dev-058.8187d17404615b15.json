@@ -1,0 +1,340 @@
+{
+  "arm": "multi",
+  "id": "dev-058",
+  "key": "8187d17404615b15",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:04.827444+00:00",
+  "result": {
+    "run": {
+      "id": "6d7206c3-1860-4255-9fa6-e57c1d3b3187",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2942,
+        "output": 269,
+        "cached": 1055,
+        "reasoning": 0
+      },
+      "costUsd": 0.007213,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5392,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "proposal": "validated",
+        "team": "Network",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Laptop or office Wi-Fi causing trouble\", \"service\": null, \"serviceQuote\": \"laptop or the office Wi-Fi\", \"symptomQuote\": \"is causing trouble\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1058,
+            "output": 115,
+            "cached": 1055,
+            "reasoning": 0
+          },
+          "costUsd": 0.001597,
+          "latencyMs": 1685,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which. [2 candidates]",
+          "outputSummary": "{\"service\": \"wifi\", \"team\": \"Network\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The requester explicitly cannot tell whether the laptop or office Wi-Fi is causing the issue; both services are equally plausible.\", \"probability\": 0.5, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1138,
+            "output": 79,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003224,
+          "latencyMs": 1972,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which. [proposal Network, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.5, \"issues\": [{\"field\": \"service\", \"message\": \"The message does not distinguish whether the problem is with the laptop or office Wi-Fi.\", \"evidenceQuote\": \"My laptop or the office Wi-Fi is causing trouble; I cannot tell which.\"}], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 746,
+            "output": 75,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.002392,
+          "latencyMs": 1728,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4, Endpoint=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Laptop or office Wi-Fi causing trouble",
+      "service": null,
+      "serviceQuote": "laptop or the office Wi-Fi",
+      "symptomQuote": "is causing trouble",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "wifi",
+      "team": "Network",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The requester explicitly cannot tell whether the laptop or office Wi-Fi is causing the issue; both services are equally plausible.",
+      "probability": 0.5,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message does not distinguish whether the problem is with the laptop or office Wi-Fi.",
+          "evidenceQuote": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which."
+        }
+      ],
+      "securityQuote": null
+    },
+    "summary": "Laptop or office Wi-Fi causing trouble",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      },
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "My laptop or the office Wi-Fi is causing trouble; I cannot tell which.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": "Which service is affected: VPN, sign-in, Wi-Fi, your laptop, or Atlas?",
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 1.172082993434742,
+    "usage": {
+      "input": 2942,
+      "output": 269
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Network",
+      "service": "wifi",
+      "abstain": true,
+      "probability": 0.5,
+      "rationale": "The requester explicitly cannot tell whether the laptop or office Wi-Fi is causing the issue; both services are equally plausible.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message does not distinguish whether the problem is with the laptop or office Wi-Fi."
+        }
+      ]
+    },
+    "confidence": {
+      "value": 0.2812,
+      "band": "low",
+      "raw": 0.2812,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent proposed Network, overruled by policy",
+          "value": 0.5
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Network and Endpoint",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Low confidence: agent proposed Network, overruled by policy; reviewer requested human review; catalog evidence was tied between Network and Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The requester explicitly cannot tell whether the laptop or office Wi-Fi is causing the issue; both services are equally plausible."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.007213,
+    "agentRunId": "6d7206c3-1860-4255-9fa6-e57c1d3b3187"
+  }
+}

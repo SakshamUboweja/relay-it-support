@@ -1,0 +1,254 @@
+{
+  "arm": "single",
+  "id": "heldout-047",
+  "key": "fb5e977b8bdc8994",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:52.725880+00:00",
+  "result": {
+    "run": {
+      "id": "1c3a33bb-06f6-413a-ae03-5accbd170501",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1696,
+        "output": 165,
+        "cached": 1693,
+        "reasoning": 0
+      },
+      "costUsd": 0.002325,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2909,
+      "outcome": {
+        "extraction": "validated",
+        "service": null,
+        "team": "Service Desk",
+        "abstain": true
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "Something stopped responding while I was working. I do not know which application. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Unknown application stopped responding while working\", \"service\": null, \"serviceQuote\": null, \"symptomQuote\": \"Something stopped responding\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}, \"propo",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1696,
+            "output": 165,
+            "cached": 1693,
+            "reasoning": 0
+          },
+          "costUsd": 0.002325,
+          "latencyMs": 2908,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: none; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Unknown application stopped responding while working",
+      "service": null,
+      "serviceQuote": null,
+      "symptomQuote": "Something stopped responding",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": null,
+      "team": "Service Desk",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "No service or application is identified; the report only states that something stopped responding.",
+      "probability": 0.15,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Unknown application stopped responding while working",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "Something stopped responding while I was working. I do not know which application.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": "Which service is affected: VPN, sign-in, Wi-Fi, your laptop, or Atlas?",
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.2510419872123748,
+    "usage": {
+      "input": 1696,
+      "output": 165
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Service Desk",
+      "service": null,
+      "abstain": true,
+      "probability": 0.15,
+      "rationale": "No service or application is identified; the report only states that something stopped responding.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.1864,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 15% that Service Desk is right",
+          "value": 0.15
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "No catalog match in the message",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 15% that Service Desk is right; no catalog match in the message; extraction validated on the first attempt.",
+      "agentRationale": "No service or application is identified; the report only states that something stopped responding."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002325,
+    "agentRunId": "1c3a33bb-06f6-413a-ae03-5accbd170501"
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "arm": "single",
+  "id": "dev-027",
+  "key": "165d681388d4227e",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:21.501969+00:00",
+  "result": {
+    "run": {
+      "id": "bfd7f424-0644-4d09-82b9-9344a71fcc90",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1695,
+        "output": 185,
+        "cached": 1692,
+        "reasoning": 0
+      },
+      "costUsd": 0.002564,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 3909,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "team": "Business Applications",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The internal Atlas application returns HTTP 500 after I sign in successfully. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Atlas returns HTTP 500 after successful sign-in\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"returns HTTP 500 after I sign in successfully\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageServi",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1695,
+            "output": 185,
+            "cached": 1692,
+            "reasoning": 0
+          },
+          "costUsd": 0.002564,
+          "latencyMs": 3906,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Business Applications=4; scoring v2",
+          "outputSummary": "team=Business Applications; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas returns HTTP 500 after successful sign-in",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "returns HTTP 500 after I sign in successfully",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The internal Atlas application returns HTTP 500 after successful sign-in, indicating an Atlas application failure.",
+      "probability": 0.98,
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Atlas returns HTTP 500 after successful sign-in",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Business Applications",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The internal Atlas application returns HTTP 500 after I sign in successfully.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-10",
+      "case-100",
+      "case-15",
+      "case-20",
+      "case-25"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7005420047789812,
+    "usage": {
+      "input": 1695,
+      "output": 185
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The internal Atlas application returns HTTP 500 after successful sign-in, indicating an Atlas application failure.",
+      "citedSourceIds": [
+        "case-10",
+        "case-100"
+      ]
+    },
+    "confidence": {
+      "value": 0.9907,
+      "band": "high",
+      "raw": 0.9907,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Business Applications is right",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Atlas by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Business Applications",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Business Applications is right; catalog evidence favoured Atlas by a clear margin; 20 of 20 similar reviewed cases went to Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "The internal Atlas application returns HTTP 500 after successful sign-in, indicating an Atlas application failure."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002564,
+    "agentRunId": "bfd7f424-0644-4d09-82b9-9344a71fcc90"
+  }
+}

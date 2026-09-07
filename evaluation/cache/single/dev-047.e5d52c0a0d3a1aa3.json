@@ -1,0 +1,286 @@
+{
+  "arm": "single",
+  "id": "dev-047",
+  "key": "e5d52c0a0d3a1aa3",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:32.592687+00:00",
+  "result": {
+    "run": {
+      "id": "d296f032-8203-4258-a443-5a286471016c",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1704,
+        "output": 196,
+        "cached": 1701,
+        "reasoning": 0
+      },
+      "costUsd": 0.002698,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2453,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "team": "Endpoint",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The trackpad on my managed laptop will not respond. I cannot do my work and no spare mouse is available. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Managed laptop trackpad is unresponsive\", \"service\": \"laptop\", \"serviceQuote\": \"managed laptop\", \"symptomQuote\": \"trackpad on my managed laptop will not respond\", \"impactQuote\": \"I cannot do my work\", \"urgencyQuote\": null, \"deviceQuote\": \"managed laptop\", \"startedQuote\": null, \"workaroundQuote\": \"no spare mouse is available\", \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"]",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1704,
+            "output": 196,
+            "cached": 1701,
+            "reasoning": 0
+          },
+          "costUsd": 0.002698,
+          "latencyMs": 2450,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4; scoring v2",
+          "outputSummary": "team=Endpoint; accepted=True; reasons=catalog-and-evidence, normal-priority-reported-impact, model-cited-work-blocked",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "elevated",
+            "escalation": "elevated",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Managed laptop trackpad is unresponsive",
+      "service": "laptop",
+      "serviceQuote": "managed laptop",
+      "symptomQuote": "trackpad on my managed laptop will not respond",
+      "impactQuote": "I cannot do my work",
+      "urgencyQuote": null,
+      "deviceQuote": "managed laptop",
+      "startedQuote": null,
+      "workaroundQuote": "no spare mouse is available",
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": false,
+      "blockedQuote": "I cannot do my work and no spare mouse is available.",
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The managed laptop's trackpad will not respond. The requester cannot work and has no spare mouse.",
+      "probability": 0.99,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Managed laptop trackpad is unresponsive",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Endpoint",
+    "service": "laptop",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "normal-priority-reported-impact",
+      "model-cited-work-blocked"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      }
+    ],
+    "priority": "elevated",
+    "escalation": "elevated",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The trackpad on my managed laptop will not respond. I cannot do my work and no spare mouse is available.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": "I cannot do my work",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "urgency": {
+        "value": "I cannot do my work and no spare mouse is available.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "device": {
+        "value": "managed laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "elevated",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "workaround": {
+        "value": "no spare mouse is available",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-14",
+      "case-19",
+      "case-24",
+      "case-29",
+      "case-34"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7166669820435345,
+    "usage": {
+      "input": 1704,
+      "output": 196
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": false,
+      "probability": 0.99,
+      "rationale": "The managed laptop's trackpad will not respond. The requester cannot work and has no spare mouse.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 0.9953,
+      "band": "high",
+      "raw": 0.9953,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 99% that Endpoint is right",
+          "value": 0.99
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Managed laptops by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Endpoint",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 99% that Endpoint is right; catalog evidence favoured Managed laptops by a clear margin; 20 of 20 similar reviewed cases went to Endpoint; extraction validated on the first attempt.",
+      "agentRationale": "The managed laptop's trackpad will not respond. The requester cannot work and has no spare mouse."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002698,
+    "agentRunId": "d296f032-8203-4258-a443-5a286471016c"
+  }
+}

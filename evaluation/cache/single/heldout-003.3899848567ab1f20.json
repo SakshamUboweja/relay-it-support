@@ -1,0 +1,272 @@
+{
+  "arm": "single",
+  "id": "heldout-003",
+  "key": "3899848567ab1f20",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:24.828619+00:00",
+  "result": {
+    "run": {
+      "id": "9e7a80b7-25a4-4d4c-9468-dc167f045560",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1697,
+        "output": 177,
+        "cached": 1694,
+        "reasoning": 0
+      },
+      "costUsd": 0.002469,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2421,
+      "outcome": {
+        "extraction": "validated",
+        "service": "vpn",
+        "team": "Network",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The corporate VPN connects but repeatedly loses its tunnel while I am browsing internal sites. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Corporate VPN repeatedly loses its tunnel while browsing internal sites.\", \"service\": \"vpn\", \"serviceQuote\": \"corporate VPN\", \"symptomQuote\": \"connects but repeatedly loses its tunnel\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"ima",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1697,
+            "output": 177,
+            "cached": 1694,
+            "reasoning": 0
+          },
+          "costUsd": 0.002469,
+          "latencyMs": 2420,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4; scoring v2",
+          "outputSummary": "team=Network; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate VPN repeatedly loses its tunnel while browsing internal sites.",
+      "service": "vpn",
+      "serviceQuote": "corporate VPN",
+      "symptomQuote": "connects but repeatedly loses its tunnel",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "vpn",
+      "team": "Network",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The corporate VPN connects but repeatedly loses its tunnel, indicating a VPN connectivity failure rather than authentication.",
+      "probability": 0.96,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Corporate VPN repeatedly loses its tunnel while browsing internal sites.",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Network",
+    "service": "vpn",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The corporate VPN connects but repeatedly loses its tunnel while I am browsing internal sites.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.20433301688171923,
+    "usage": {
+      "input": 1697,
+      "output": 177
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Network",
+      "service": "vpn",
+      "abstain": false,
+      "probability": 0.96,
+      "rationale": "The corporate VPN connects but repeatedly loses its tunnel, indicating a VPN connectivity failure rather than authentication.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 1.0,
+      "band": "high",
+      "raw": 0.848,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 96% that Network is right",
+          "value": 0.96
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Corporate VPN by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "10 of 20 similar reviewed cases went to Network",
+          "value": 0.5
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 96% that Network is right; catalog evidence favoured Corporate VPN by a clear margin; 10 of 20 similar reviewed cases went to Network; extraction validated on the first attempt.",
+      "agentRationale": "The corporate VPN connects but repeatedly loses its tunnel, indicating a VPN connectivity failure rather than authentication."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002469,
+    "agentRunId": "9e7a80b7-25a4-4d4c-9468-dc167f045560"
+  }
+}

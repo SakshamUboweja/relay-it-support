@@ -1,0 +1,276 @@
+{
+  "arm": "single",
+  "id": "dev-018",
+  "key": "03dfee26b8c431ca",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:13.248662+00:00",
+  "result": {
+    "run": {
+      "id": "29d7b1d3-1147-4954-8892-4b01fd859684",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1696,
+        "output": 184,
+        "cached": 1693,
+        "reasoning": 0
+      },
+      "costUsd": 0.002553,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2245,
+      "outcome": {
+        "extraction": "validated",
+        "service": "wifi",
+        "team": "Network",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "The office wireless network keeps refusing the connection before I get an IP address. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Office Wi-Fi refuses connection before IP address assignment\", \"service\": \"wifi\", \"serviceQuote\": \"office wireless network\", \"symptomQuote\": \"keeps refusing the connection before I get an IP address\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservat",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1696,
+            "output": 184,
+            "cached": 1693,
+            "reasoning": 0
+          },
+          "costUsd": 0.002553,
+          "latencyMs": 2242,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Network=4; scoring v2",
+          "outputSummary": "team=Network; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Office Wi-Fi refuses connection before IP address assignment",
+      "service": "wifi",
+      "serviceQuote": "office wireless network",
+      "symptomQuote": "keeps refusing the connection before I get an IP address",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "wifi",
+      "team": "Network",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The office wireless network is refusing connection before IP assignment, indicating an office Wi-Fi connectivity issue.",
+      "probability": 0.98,
+      "citedSourceIds": [
+        "case-13"
+      ]
+    },
+    "reviewer": null,
+    "summary": "Office Wi-Fi refuses connection before IP address assignment",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Network",
+    "service": "wifi",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Network",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The office wireless network keeps refusing the connection before I get an IP address.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "wifi",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-13",
+      "case-18",
+      "case-23",
+      "case-28",
+      "case-3"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.5242499755695462,
+    "usage": {
+      "input": 1696,
+      "output": 184
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Network",
+      "service": "wifi",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The office wireless network is refusing connection before IP assignment, indicating an office Wi-Fi connectivity issue.",
+      "citedSourceIds": [
+        "case-13"
+      ]
+    },
+    "confidence": {
+      "value": 0.9907,
+      "band": "high",
+      "raw": 0.9907,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 98% that Network is right",
+          "value": 0.98
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Office Wi-Fi by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "20 of 20 similar reviewed cases went to Network",
+          "value": 1.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 98% that Network is right; catalog evidence favoured Office Wi-Fi by a clear margin; 20 of 20 similar reviewed cases went to Network; extraction validated on the first attempt.",
+      "agentRationale": "The office wireless network is refusing connection before IP assignment, indicating an office Wi-Fi connectivity issue."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002553,
+    "agentRunId": "29d7b1d3-1147-4954-8892-4b01fd859684"
+  }
+}

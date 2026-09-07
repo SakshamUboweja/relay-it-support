@@ -1,0 +1,344 @@
+{
+  "arm": "multi",
+  "id": "dev-059",
+  "key": "82e84a46edf2c016",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:07.331663+00:00",
+  "result": {
+    "run": {
+      "id": "a99d8ff6-3df9-417d-bde6-859cfb8f3cc4",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2980,
+        "output": 385,
+        "cached": 1058,
+        "reasoning": 85
+      },
+      "costUsd": 0.008676,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 7067,
+      "outcome": {
+        "extraction": "validated",
+        "service": "laptop",
+        "proposal": "validated",
+        "team": "Endpoint",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Atlas screen and laptop display are acting strangely\", \"service\": \"laptop\", \"serviceQuote\": \"my laptop display\", \"symptomQuote\": \"The Atlas screen and my laptop display are both acting strangely.\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": \"my laptop display\", \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservation",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1061,
+            "output": 123,
+            "cached": 1058,
+            "reasoning": 0
+          },
+          "costUsd": 0.001694,
+          "latencyMs": 1873,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet. [2 candidates]",
+          "outputSummary": "{\"service\": \"laptop\", \"team\": \"Endpoint\", \"abstain\": true, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The report names both the Atlas screen and the laptop display as behaving strangely, without enough detail to distinguish an Atlas application issue from a device-display issue.\", \"probability\": 0.5, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1152,
+            "output": 174,
+            "cached": 0,
+            "reasoning": 85
+          },
+          "costUsd": 0.004392,
+          "latencyMs": 3055,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet. [proposal Endpoint, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.5, \"issues\": [{\"field\": \"service\", \"message\": \"The message supports both an Atlas screen issue and a laptop display issue, without enough detail to select a single service or first-line team.\", \"evidenceQuote\": \"The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet.\"}], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 767,
+            "output": 88,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00259,
+          "latencyMs": 2131,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Endpoint=4, Business Applications=4; scoring v2",
+          "outputSummary": "team=Service Desk; accepted=False; reasons=insufficient-or-conflicting-evidence, provisional-priority-impact-unknown, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas screen and laptop display are acting strangely",
+      "service": "laptop",
+      "serviceQuote": "my laptop display",
+      "symptomQuote": "The Atlas screen and my laptop display are both acting strangely.",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": "my laptop display",
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "laptop",
+      "team": "Endpoint",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The report names both the Atlas screen and the laptop display as behaving strangely, without enough detail to distinguish an Atlas application issue from a device-display issue.",
+      "probability": 0.5,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message supports both an Atlas screen issue and a laptop display issue, without enough detail to select a single service or first-line team.",
+          "evidenceQuote": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet."
+        }
+      ],
+      "securityQuote": null
+    },
+    "summary": "Atlas screen and laptop display are acting strangely",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Service Desk",
+    "service": null,
+    "accepted": false,
+    "reasons": [
+      "insufficient-or-conflicting-evidence",
+      "provisional-priority-impact-unknown",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Endpoint",
+        "score": 4
+      },
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "The Atlas screen and my laptop display are both acting strangely. I cannot describe the difference yet.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "laptop",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": "my laptop display",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [],
+    "procedure": null,
+    "related": null,
+    "question": "Which service is affected: VPN, sign-in, Wi-Fi, your laptop, or Atlas?",
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.9281669917982072,
+    "usage": {
+      "input": 2980,
+      "output": 385
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Endpoint",
+      "service": "laptop",
+      "abstain": true,
+      "probability": 0.5,
+      "rationale": "The report names both the Atlas screen and the laptop display as behaving strangely, without enough detail to distinguish an Atlas application issue from a device-display issue.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.5,
+      "issues": [
+        {
+          "field": "service",
+          "message": "The message supports both an Atlas screen issue and a laptop display issue, without enough detail to select a single service or first-line team."
+        }
+      ]
+    },
+    "confidence": {
+      "value": 0.2812,
+      "band": "low",
+      "raw": 0.2812,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent proposed Endpoint, overruled by policy",
+          "value": 0.5
+        },
+        {
+          "kind": "agreement",
+          "label": "Reviewer requested human review",
+          "value": 0.0
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence was tied between Endpoint and Business Applications",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Low confidence: agent proposed Endpoint, overruled by policy; reviewer requested human review; catalog evidence was tied between Endpoint and Business Applications; extraction validated on the first attempt.",
+      "agentRationale": "The report names both the Atlas screen and the laptop display as behaving strangely, without enough detail to distinguish an Atlas application issue from a device-display issue."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.008676,
+    "agentRunId": "a99d8ff6-3df9-417d-bde6-859cfb8f3cc4"
+  }
+}

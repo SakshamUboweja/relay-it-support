@@ -1,0 +1,328 @@
+{
+  "arm": "multi",
+  "id": "heldout-037",
+  "key": "0e2f04349b528e91",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:38:56.367744+00:00",
+  "result": {
+    "run": {
+      "id": "b627f830-4976-43b9-a139-1ccc43e4f00e",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2948,
+        "output": 229,
+        "cached": 1061,
+        "reasoning": 0
+      },
+      "costUsd": 0.006734,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 4892,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"SSO sign-in fails\", \"service\": \"sso\", \"serviceQuote\": \"SSO sign-in\", \"symptomQuote\": \"sign-in fails\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"imageService\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1064,
+            "output": 111,
+            "cached": 1061,
+            "reasoning": 0
+          },
+          "costUsd": 0.00155,
+          "latencyMs": 1742,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts. [1 candidates]",
+          "outputSummary": "{\"service\": \"sso\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"The requester reports that SSO sign-in fails, which is an authentication issue for Identity & Access. They explicitly deny unauthorized access and unexpected approval prompts.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1125,
+            "output": 89,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003318,
+          "latencyMs": 1829,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.99, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 759,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001866,
+          "latencyMs": 1311,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Security Review; accepted=True; reasons=catalog-and-evidence, possible-compromise-restricted-review, proposal-ignored-restricted",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "security",
+            "visibility": "restricted"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "SSO sign-in fails",
+      "service": "sso",
+      "serviceQuote": "SSO sign-in",
+      "symptomQuote": "sign-in fails",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "The requester reports that SSO sign-in fails, which is an authentication issue for Identity & Access. They explicitly deny unauthorized access and unexpected approval prompts.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "SSO sign-in fails",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Security Review",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "possible-compromise-restricted-review",
+      "proposal-ignored-restricted"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "security",
+    "visibility": "restricted",
+    "facts": {
+      "symptom": {
+        "value": "My SSO sign-in fails. No one else has accessed my account and there were no unexpected approval prompts.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.8459999808110297,
+    "usage": {
+      "input": 2948,
+      "output": 229
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": false,
+      "probability": 0.98,
+      "rationale": "The requester reports that SSO sign-in fails, which is an authentication issue for Identity & Access. They explicitly deny unauthorized access and unexpected approval prompts.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.99,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.5,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "deterministicMargin",
+          "label": "Security indicators decided the route",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "0 of 20 similar reviewed cases went to Security Review",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: security indicators decided the route; 0 of 20 similar reviewed cases went to Security Review; extraction validated on the first attempt.",
+      "agentRationale": "The requester reports that SSO sign-in fails, which is an authentication issue for Identity & Access. They explicitly deny unauthorized access and unexpected approval prompts."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.006734,
+    "agentRunId": "b627f830-4976-43b9-a139-1ccc43e4f00e"
+  }
+}

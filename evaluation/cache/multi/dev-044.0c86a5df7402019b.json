@@ -1,0 +1,337 @@
+{
+  "arm": "multi",
+  "id": "dev-044",
+  "key": "0c86a5df7402019b",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:36:44.086596+00:00",
+  "result": {
+    "run": {
+      "id": "0d7bdcc5-3e4e-4cec-a364-397f2bcd6325",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 3012,
+        "output": 288,
+        "cached": 1059,
+        "reasoning": 0
+      },
+      "costUsd": 0.007574,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5026,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Unexpected MFA requests for SSO account\", \"service\": \"sso\", \"serviceQuote\": \"SSO account\", \"symptomQuote\": \"Someone appears to be trying to sign into my SSO account\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": \"Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.\", ",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1062,
+            "output": 139,
+            "cached": 1059,
+            "reasoning": 0
+          },
+          "costUsd": 0.001886,
+          "latencyMs": 1815,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests. [1 candidates]",
+          "outputSummary": "{\"service\": \"sso\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": \"Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.\", \"rationale\": \"Unexpected MFA requests and suspected sign-in attempts on an SSO account indicate an Identity & Access issue with security evidence.\", \"probability\": 0.98, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1152,
+            "output": 100,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003504,
+          "latencyMs": 2025,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.98, \"issues\": [], \"securityQuote\": \"Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.\"}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 798,
+            "output": 49,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.002184,
+          "latencyMs": 1180,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Security Review; accepted=True; reasons=catalog-and-evidence, possible-compromise-restricted-review, model-extracted-security-evidence, proposal-ignored-restricted, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "security",
+            "visibility": "restricted"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Unexpected MFA requests for SSO account",
+      "service": "sso",
+      "serviceQuote": "SSO account",
+      "symptomQuote": "Someone appears to be trying to sign into my SSO account",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+      "rationale": "Unexpected MFA requests and suspected sign-in attempts on an SSO account indicate an Identity & Access issue with security evidence.",
+      "probability": 0.98,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.98,
+      "issues": [],
+      "securityQuote": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests."
+    },
+    "summary": "Unexpected MFA requests for SSO account",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Security Review",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "possible-compromise-restricted-review",
+      "model-extracted-security-evidence",
+      "proposal-ignored-restricted",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "security",
+    "visibility": "restricted",
+    "facts": {
+      "symptom": {
+        "value": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "security": {
+        "value": "Someone appears to be trying to sign into my SSO account: I received five unexpected MFA requests.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.4507080011535436,
+    "usage": {
+      "input": 3012,
+      "output": 288
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": true,
+      "probability": 0.98,
+      "rationale": "Unexpected MFA requests and suspected sign-in attempts on an SSO account indicate an Identity & Access issue with security evidence.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.98,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.5,
+      "band": "medium",
+      "raw": 0.5,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "deterministicMargin",
+          "label": "Security indicators decided the route",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "0 of 20 similar reviewed cases went to Security Review",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "Medium confidence: security indicators decided the route; 0 of 20 similar reviewed cases went to Security Review; extraction validated on the first attempt.",
+      "agentRationale": "Unexpected MFA requests and suspected sign-in attempts on an SSO account indicate an Identity & Access issue with security evidence."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.007574,
+    "agentRunId": "0d7bdcc5-3e4e-4cec-a364-397f2bcd6325"
+  }
+}

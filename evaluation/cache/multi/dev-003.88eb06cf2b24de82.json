@@ -1,0 +1,348 @@
+{
+  "arm": "multi",
+  "id": "dev-003",
+  "key": "88eb06cf2b24de82",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:35:47.629051+00:00",
+  "result": {
+    "run": {
+      "id": "6f3625fa-91fe-4e07-811e-0832b4e6d97f",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2926,
+        "output": 223,
+        "cached": 2173,
+        "reasoning": 0
+      },
+      "costUsd": 0.004617,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5402,
+      "outcome": {
+        "extraction": "validated",
+        "service": "vpn",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": false,
+        "verdict": "accept"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "VPN authentication stopped working immediately after my password change; the gateway is reachable. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"VPN authentication stopped working after password change\", \"service\": \"vpn\", \"serviceQuote\": \"VPN authentication\", \"symptomQuote\": \"stopped working\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": \"immediately after my password change\", \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": null, \"evidenceIds\": [\"eval-message\"], \"imageObservations\": [], \"imageText\": null, \"i",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1057,
+            "output": 115,
+            "cached": 1054,
+            "reasoning": 0
+          },
+          "costUsd": 0.001597,
+          "latencyMs": 1983,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "VPN authentication stopped working immediately after my password change; the gateway is reachable. [1 candidates]",
+          "outputSummary": "{\"service\": \"vpn\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": null, \"rationale\": \"VPN authentication failed immediately after a password change while the gateway remains reachable, indicating a credential/authentication issue.\", \"probability\": 0.96, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1122,
+            "output": 79,
+            "cached": 1119,
+            "reasoning": 0
+          },
+          "costUsd": 0.001178,
+          "latencyMs": 1947,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "VPN authentication stopped working immediately after my password change; the gateway is reachable. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"accept\", \"agreementProbability\": 0.9, \"issues\": [], \"securityQuote\": null}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 747,
+            "output": 29,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.001842,
+          "latencyMs": 1465,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Identity & Access; accepted=True; reasons=catalog-vpn-password-exception, provisional-priority-impact-unknown",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "normal",
+            "escalation": "none",
+            "visibility": "private"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "VPN authentication stopped working after password change",
+      "service": "vpn",
+      "serviceQuote": "VPN authentication",
+      "symptomQuote": "stopped working",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": "immediately after my password change",
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": null,
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "vpn",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": null,
+      "rationale": "VPN authentication failed immediately after a password change while the gateway remains reachable, indicating a credential/authentication issue.",
+      "probability": 0.96,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.9,
+      "issues": [],
+      "securityQuote": null
+    },
+    "summary": "VPN authentication stopped working after password change",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Identity & Access",
+    "service": "vpn",
+    "accepted": true,
+    "reasons": [
+      "catalog-vpn-password-exception",
+      "provisional-priority-impact-unknown"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "normal",
+    "escalation": "none",
+    "visibility": "private",
+    "facts": {
+      "symptom": {
+        "value": "VPN authentication stopped working immediately after my password change; the gateway is reachable.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "vpn",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "rootCause": {
+        "value": "cached credentials may be involved",
+        "origin": "hypothesis",
+        "evidenceIds": [
+          "catalog-vpn-password-exception"
+        ]
+      },
+      "priority": {
+        "value": "normal",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "started": {
+        "value": "immediately after my password change",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-1",
+      "case-11",
+      "case-16",
+      "case-21",
+      "case-26"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.609208014793694,
+    "usage": {
+      "input": 2926,
+      "output": 223
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "vpn",
+      "abstain": false,
+      "probability": 0.96,
+      "rationale": "VPN authentication failed immediately after a password change while the gateway remains reachable, indicating a credential/authentication issue.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "accept",
+      "agreementProbability": 0.9,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.861,
+      "band": "high",
+      "raw": 0.861,
+      "calibrated": false,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "agentProbability",
+          "label": "Agent estimated 96% that Identity & Access is right",
+          "value": 0.96
+        },
+        {
+          "kind": "agreement",
+          "label": "Triage and reviewer agree on Identity & Access",
+          "value": 0.9
+        },
+        {
+          "kind": "deterministicMargin",
+          "label": "Catalog evidence favoured Corporate VPN by a clear margin",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "10 of 20 similar reviewed cases went to Identity & Access",
+          "value": 0.5
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: agent estimated 96% that Identity & Access is right; triage and reviewer agree on Identity & Access; catalog evidence favoured Corporate VPN by a clear margin; 10 of 20 similar reviewed cases went to Identity & Access; extraction validated on the first attempt.",
+      "agentRationale": "VPN authentication failed immediately after a password change while the gateway remains reachable, indicating a credential/authentication issue."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.004617,
+    "agentRunId": "6f3625fa-91fe-4e07-811e-0832b4e6d97f"
+  }
+}

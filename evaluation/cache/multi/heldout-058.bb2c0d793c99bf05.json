@@ -1,0 +1,337 @@
+{
+  "arm": "multi",
+  "id": "heldout-058",
+  "key": "bb2c0d793c99bf05",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:39:24.838924+00:00",
+  "result": {
+    "run": {
+      "id": "6f481421-ac84-4380-ab12-f2e91f6c0f9b",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 3062,
+        "output": 303,
+        "cached": 1065,
+        "reasoning": 0
+      },
+      "costUsd": 0.007843,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5315,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "proposal": "validated",
+        "team": "Identity & Access",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Corporate SSO password submitted to a non-company login page\", \"service\": \"sso\", \"serviceQuote\": \"login page\", \"symptomQuote\": \"submitted my corporate SSO password before realizing it was not our site\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": \"A caller asked me to use a login page, and I submitted my corpora",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1068,
+            "output": 149,
+            "cached": 1065,
+            "reasoning": 0
+          },
+          "costUsd": 0.002007,
+          "latencyMs": 1882,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site. [1 candidates]",
+          "outputSummary": "{\"service\": \"sso\", \"team\": \"Identity & Access\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": \"A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.\", \"rationale\": \"The requester submitted a corporate SSO password to a non-company login page, indicating suspected credential phishing. Identity & Access owns SSO credential issues.\", \"probability\": 0.97, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1168,
+            "output": 112,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.00368,
+          "latencyMs": 1955,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site. [proposal Identity & Access, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.55, \"issues\": [], \"securityQuote\": \"submitted my corporate SSO password before realizing it was not our site\"}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 826,
+            "output": 42,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.002156,
+          "latencyMs": 1471,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Security Review; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown, model-extracted-security-evidence, proposal-ignored-restricted, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "security",
+            "visibility": "restricted"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate SSO password submitted to a non-company login page",
+      "service": "sso",
+      "serviceQuote": "login page",
+      "symptomQuote": "submitted my corporate SSO password before realizing it was not our site",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+      "rationale": "The requester submitted a corporate SSO password to a non-company login page, indicating suspected credential phishing. Identity & Access owns SSO credential issues.",
+      "probability": 0.97,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.55,
+      "issues": [],
+      "securityQuote": "submitted my corporate SSO password before realizing it was not our site"
+    },
+    "summary": "Corporate SSO password submitted to a non-company login page",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Security Review",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown",
+      "model-extracted-security-evidence",
+      "proposal-ignored-restricted",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "security",
+    "visibility": "restricted",
+    "facts": {
+      "symptom": {
+        "value": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "security": {
+        "value": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.451375002739951,
+    "usage": {
+      "input": 3062,
+      "output": 303
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": true,
+      "probability": 0.97,
+      "rationale": "The requester submitted a corporate SSO password to a non-company login page, indicating suspected credential phishing. Identity & Access owns SSO credential issues.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.55,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.5,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "deterministicMargin",
+          "label": "Security indicators decided the route",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "0 of 20 similar reviewed cases went to Security Review",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: security indicators decided the route; 0 of 20 similar reviewed cases went to Security Review; extraction validated on the first attempt.",
+      "agentRationale": "The requester submitted a corporate SSO password to a non-company login page, indicating suspected credential phishing. Identity & Access owns SSO credential issues."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.007843,
+    "agentRunId": "6f481421-ac84-4380-ab12-f2e91f6c0f9b"
+  }
+}

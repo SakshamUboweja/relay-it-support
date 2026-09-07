@@ -1,0 +1,276 @@
+{
+  "arm": "single",
+  "id": "heldout-058",
+  "key": "bd2089b37174ec3f",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "single": "relay-single-v2"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:37:59.299488+00:00",
+  "result": {
+    "run": {
+      "id": "cb0df458-d4ab-4c26-b5f0-873ceeece960",
+      "pipeline": "single",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 2,
+        "maxToolCalls": 0,
+        "maxTotalTokens": 25000,
+        "maxSeconds": 75.0
+      },
+      "usage": {
+        "input": 1707,
+        "output": 212,
+        "cached": 1704,
+        "reasoning": 0
+      },
+      "costUsd": 0.002891,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 2715,
+      "outcome": {
+        "extraction": "validated",
+        "service": "sso",
+        "team": "Identity & Access",
+        "abstain": false
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-single-v2",
+          "inputSummary": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site. [1 evidence ids, 8 sources]",
+          "outputSummary": "{\"extraction\": {\"summary\": \"Corporate SSO password submitted to an unrecognized login site\", \"service\": \"sso\", \"serviceQuote\": \"corporate SSO password\", \"symptomQuote\": \"submitted my corporate SSO password before realizing it was not our site\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": \"A caller asked me to use a login pag",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1707,
+            "output": 212,
+            "cached": 1704,
+            "reasoning": 0
+          },
+          "costUsd": 0.002891,
+          "latencyMs": 2713,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Identity & Access=4; scoring v2",
+          "outputSummary": "team=Security Review; accepted=True; reasons=catalog-and-evidence, provisional-priority-impact-unknown, model-extracted-security-evidence, proposal-ignored-restricted",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "security",
+            "visibility": "restricted"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Corporate SSO password submitted to an unrecognized login site",
+      "service": "sso",
+      "serviceQuote": "corporate SSO password",
+      "symptomQuote": "submitted my corporate SSO password before realizing it was not our site",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "sso",
+      "team": "Identity & Access",
+      "abstain": false,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+      "rationale": "The report identifies submission of a corporate SSO password to a site recognized as not legitimate.",
+      "probability": 0.93,
+      "citedSourceIds": []
+    },
+    "reviewer": null,
+    "summary": "Corporate SSO password submitted to an unrecognized login site",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Security Review",
+    "service": "sso",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "provisional-priority-impact-unknown",
+      "model-extracted-security-evidence",
+      "proposal-ignored-restricted"
+    ],
+    "alternatives": [
+      {
+        "team": "Identity & Access",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "security",
+    "visibility": "restricted",
+    "facts": {
+      "symptom": {
+        "value": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "sso",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "security": {
+        "value": "A caller asked me to use a login page, and I submitted my corporate SSO password before realizing it was not our site.",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-12",
+      "case-17",
+      "case-2",
+      "case-22",
+      "case-27"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.32941700192168355,
+    "usage": {
+      "input": 1707,
+      "output": 212
+    },
+    "promptVersion": "relay-single-v2",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Identity & Access",
+      "service": "sso",
+      "abstain": false,
+      "probability": 0.93,
+      "rationale": "The report identifies submission of a corporate SSO password to a site recognized as not legitimate.",
+      "citedSourceIds": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.5,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "deterministicMargin",
+          "label": "Security indicators decided the route",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "0 of 20 similar reviewed cases went to Security Review",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: security indicators decided the route; 0 of 20 similar reviewed cases went to Security Review; extraction validated on the first attempt.",
+      "agentRationale": "The report identifies submission of a corporate SSO password to a site recognized as not legitimate."
+    },
+    "pipeline": "single",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "single": "relay-single-v2"
+    },
+    "costUsd": 0.002891,
+    "agentRunId": "cb0df458-d4ab-4c26-b5f0-873ceeece960"
+  }
+}

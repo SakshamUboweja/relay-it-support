@@ -1,0 +1,337 @@
+{
+  "arm": "multi",
+  "id": "heldout-032",
+  "key": "485c31210127671f",
+  "model": "gpt-5.6-terra",
+  "effort": "medium",
+  "promptVersions": {
+    "intake": "relay-intake-v3",
+    "triage": "relay-triage-v1",
+    "reviewer": "relay-reviewer-v1"
+  },
+  "toolSchemaVersion": "relay-tools-v1",
+  "scoring": "v2",
+  "candidateScoring": "v2",
+  "sourcesHash": "c064726deb669a5c4135a4ad1b51414994af279c4afc2cca160d754b89e0d8c3",
+  "cachedAt": "2026-09-07T06:38:50.762352+00:00",
+  "result": {
+    "run": {
+      "id": "36785d11-8ebc-4adf-9f42-15c95d18d7d2",
+      "pipeline": "multi",
+      "scoring": "v2",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "status": "completed",
+      "budget": {
+        "maxModelCalls": 8,
+        "maxToolCalls": 4,
+        "maxTotalTokens": 60000,
+        "maxSeconds": 150.0
+      },
+      "usage": {
+        "input": 2972,
+        "output": 270,
+        "cached": 1052,
+        "reasoning": 0
+      },
+      "costUsd": 0.00729,
+      "pricingVersion": "2026-09-06-openrouter",
+      "latencyMs": 5737,
+      "outcome": {
+        "extraction": "validated",
+        "service": "atlas",
+        "proposal": "validated",
+        "team": "Business Applications",
+        "abstain": true,
+        "verdict": "human_review"
+      },
+      "steps": [
+        {
+          "seq": 1,
+          "role": "intake",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-intake-v3",
+          "inputSummary": "I accidentally shared an Atlas customer-data export through a public link. [1 evidence ids]",
+          "outputSummary": "{\"summary\": \"Atlas customer-data export shared through a public link\", \"service\": \"atlas\", \"serviceQuote\": \"Atlas\", \"symptomQuote\": \"accidentally shared an Atlas customer-data export through a public link\", \"impactQuote\": null, \"urgencyQuote\": null, \"deviceQuote\": null, \"startedQuote\": null, \"workaroundQuote\": null, \"attemptedStepsQuotes\": [], \"supportRequestQuote\": null, \"procedureAttemptedQuote\": null, \"securityQuote\": \"accidentally shared an Atlas customer-data export through a public link\", ",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1055,
+            "output": 133,
+            "cached": 1052,
+            "reasoning": 0
+          },
+          "costUsd": 0.001812,
+          "latencyMs": 2302,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 2,
+          "role": "triage",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-triage-v1",
+          "inputSummary": "I accidentally shared an Atlas customer-data export through a public link. [1 candidates]",
+          "outputSummary": "{\"service\": \"atlas\", \"team\": \"Business Applications\", \"abstain\": false, \"blockedQuote\": null, \"broadImpactQuote\": null, \"securityQuote\": \"accidentally shared an Atlas customer-data export through a public link\", \"rationale\": \"The report identifies an Atlas customer-data export; route Atlas ownership to Business Applications. The public link disclosure is preserved as security evidence.\", \"probability\": 0.93, \"citedSourceIds\": []}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 1137,
+            "output": 95,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.003414,
+          "latencyMs": 1831,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 3,
+          "role": "reviewer",
+          "kind": "model_call",
+          "model": "gpt-5.6-terra",
+          "promptVersion": "relay-reviewer-v1",
+          "inputSummary": "I accidentally shared an Atlas customer-data export through a public link. [proposal Business Applications, 0 cited sources]",
+          "outputSummary": "{\"verdict\": \"human_review\", \"agreementProbability\": 0.6, \"issues\": [], \"securityQuote\": \"accidentally shared an Atlas customer-data export through a public link\"}",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 780,
+            "output": 42,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.002064,
+          "latencyMs": 1599,
+          "status": "ok",
+          "error": null,
+          "detail": {}
+        },
+        {
+          "seq": 4,
+          "role": "policy",
+          "kind": "policy",
+          "model": null,
+          "promptVersion": null,
+          "inputSummary": "candidates: Business Applications=4; scoring v2",
+          "outputSummary": "team=Security Review; accepted=True; reasons=catalog-and-evidence, possible-compromise-restricted-review, model-extracted-security-evidence, proposal-ignored-restricted, reviewer-requested-human-review",
+          "toolName": null,
+          "toolArgs": null,
+          "toolResultSummary": null,
+          "usage": {
+            "input": 0,
+            "output": 0,
+            "cached": 0,
+            "reasoning": 0
+          },
+          "costUsd": 0.0,
+          "latencyMs": 0,
+          "status": "ok",
+          "error": null,
+          "detail": {
+            "priority": "urgent",
+            "escalation": "security",
+            "visibility": "restricted"
+          }
+        }
+      ]
+    },
+    "extraction": {
+      "summary": "Atlas customer-data export shared through a public link",
+      "service": "atlas",
+      "serviceQuote": "Atlas",
+      "symptomQuote": "accidentally shared an Atlas customer-data export through a public link",
+      "impactQuote": null,
+      "urgencyQuote": null,
+      "deviceQuote": null,
+      "startedQuote": null,
+      "workaroundQuote": null,
+      "attemptedStepsQuotes": [],
+      "supportRequestQuote": null,
+      "procedureAttemptedQuote": null,
+      "securityQuote": "accidentally shared an Atlas customer-data export through a public link",
+      "evidenceIds": [
+        "eval-message"
+      ],
+      "imageObservations": [],
+      "imageText": null,
+      "imageService": null
+    },
+    "proposal": {
+      "service": "atlas",
+      "team": "Business Applications",
+      "abstain": true,
+      "blockedQuote": null,
+      "broadImpactQuote": null,
+      "securityQuote": "accidentally shared an Atlas customer-data export through a public link",
+      "rationale": "The report identifies an Atlas customer-data export; route Atlas ownership to Business Applications. The public link disclosure is preserved as security evidence.",
+      "probability": 0.93,
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.6,
+      "issues": [],
+      "securityQuote": "accidentally shared an Atlas customer-data export through a public link"
+    },
+    "summary": "Atlas customer-data export shared through a public link",
+    "requested_support": false,
+    "procedure_tried": false
+  },
+  "decision": {
+    "team": "Security Review",
+    "service": "atlas",
+    "accepted": true,
+    "reasons": [
+      "catalog-and-evidence",
+      "possible-compromise-restricted-review",
+      "model-extracted-security-evidence",
+      "proposal-ignored-restricted",
+      "reviewer-requested-human-review"
+    ],
+    "alternatives": [
+      {
+        "team": "Business Applications",
+        "score": 4
+      }
+    ],
+    "priority": "urgent",
+    "escalation": "security",
+    "visibility": "restricted",
+    "facts": {
+      "symptom": {
+        "value": "I accidentally shared an Atlas customer-data export through a public link.",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "service": {
+        "value": "atlas",
+        "origin": "user",
+        "evidenceIds": [
+          "current-message"
+        ]
+      },
+      "impact": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "urgency": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "device": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "location": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "passwordChange": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "rootCause": {
+        "value": null,
+        "origin": "unknown",
+        "evidenceIds": []
+      },
+      "priority": {
+        "value": "urgent",
+        "origin": "policy_default",
+        "evidenceIds": [
+          "northstar-1.0"
+        ]
+      },
+      "security": {
+        "value": "accidentally shared an Atlas customer-data export through a public link",
+        "origin": "user",
+        "evidenceIds": [
+          "eval-message"
+        ]
+      }
+    },
+    "sources": [
+      "case-10",
+      "case-100",
+      "case-15",
+      "case-20",
+      "case-25"
+    ],
+    "procedure": null,
+    "related": null,
+    "question": null,
+    "model": "gpt-5.6-terra",
+    "version": "northstar-1.0",
+    "latencyMs": 0.7618750096298754,
+    "usage": {
+      "input": 2972,
+      "output": 270
+    },
+    "promptVersion": "relay-intake-v3",
+    "reasoningEffort": "medium",
+    "proposal": {
+      "team": "Business Applications",
+      "service": "atlas",
+      "abstain": true,
+      "probability": 0.93,
+      "rationale": "The report identifies an Atlas customer-data export; route Atlas ownership to Business Applications. The public link disclosure is preserved as security evidence.",
+      "citedSourceIds": []
+    },
+    "reviewer": {
+      "verdict": "human_review",
+      "agreementProbability": 0.6,
+      "issues": []
+    },
+    "confidence": {
+      "value": 0.9545,
+      "band": "high",
+      "raw": 0.5,
+      "calibrated": true,
+      "degraded": false,
+      "signals": [
+        {
+          "kind": "deterministicMargin",
+          "label": "Security indicators decided the route",
+          "value": 1.0
+        },
+        {
+          "kind": "retrievalSupport",
+          "label": "0 of 20 similar reviewed cases went to Security Review",
+          "value": 0.0
+        },
+        {
+          "kind": "evidenceFidelity",
+          "label": "Extraction validated on the first attempt",
+          "value": 1.0
+        }
+      ],
+      "why": "High confidence: security indicators decided the route; 0 of 20 similar reviewed cases went to Security Review; extraction validated on the first attempt.",
+      "agentRationale": "The report identifies an Atlas customer-data export; route Atlas ownership to Business Applications. The public link disclosure is preserved as security evidence."
+    },
+    "pipeline": "multi",
+    "scoring": "v2",
+    "promptVersions": {
+      "intake": "relay-intake-v3",
+      "triage": "relay-triage-v1",
+      "reviewer": "relay-reviewer-v1"
+    },
+    "costUsd": 0.00729,
+    "agentRunId": "36785d11-8ebc-4adf-9f42-15c95d18d7d2"
+  }
+}
