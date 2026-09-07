@@ -23,7 +23,7 @@
 - [x] Calibrated confidence with five weighted signals, per-arm isotonic breakpoints in `config/calibration.json`, and a plain-language "why" shown to the requester. The calibration table was fitted after the restricted-confidence change, on the dev split only.
 - [x] Persisted agent traces in `agent_runs` and `agent_steps` (migration `003_agent_traces.sql`, additive), with per-step usage, estimated cost from `config/pricing.json` and latency; shown as an operator timeline.
 - [x] Screenshot intake: multipart `POST /api/intake` accepts one PNG or JPEG up to 5 MB (migration `004_intake_images.sql`, additive). It is shown to the intake role only, staged as an attachment, and deleted when the Jira request type does not accept attachments. `python-multipart` added.
-- [x] Asynchronous multi-arm intake: in live mode the API answers `{"state":"processing"}` and the worker's `resume_intakes` completes the pipeline and prepares the review. `RELAY_INTAKE_INLINE=1` forces inline execution locally.
+- [x] Asynchronous intake for the multi arm: in live mode the API answers `{"state":"processing"}` and the worker's `resume_intakes` completes the pipeline and prepares the review. `RELAY_INTAKE_INLINE=1` forces inline execution locally.
 - [x] Arm comparison harness (`npm run eval -- --arm all --split all --effort medium`) with a resumable cache under `evaluation/cache/`, calibration fitted on dev only, results in `evaluation/arms-results.json` / `evaluation/ARMS-RESULTS.md`, and `GET /api/evaluation` for operators. `--arm rules-v1` runs the legacy runner, pinned to scoring v1.
 - [x] Frontend: confidence badge and "Why this team?" in the review form, pipeline chip, operator decision record with candidate teams and the agent timeline, Operations pipeline-comparison panel, chat screenshot attach, and polling that pauses on hidden tabs.
 - [x] 310 Python tests and 52 web tests pass. `npm run preflight` prints `{"vision": true}` for the image path.
@@ -42,7 +42,7 @@
 - [x] Railway deployment verified: HTTPS web, persistent worker, PostgreSQL 16/pgvector, 120 synthetic sources/embeddings, owner provisioning, secure session API, worker heartbeat and Jira HELP-7. Existing Hobby plan; one replica each. GitHub auto-deployment and browser sign-in await owner authentication; see DEPLOYMENT.md.
 
 - [x] Real native PostgreSQL 14 with pgvector migration/seed and transaction tests.
-- [x] 144 passing Python unit and integration/adapter tests, including verifier grounding, requester approval, field/schema validation, durable attachments and the existing connector regressions. Dependency audit at the original build reported zero known vulnerabilities.
+- [x] At the ticket-review release `d6af9d6`: 144 passing Python unit and integration/adapter tests, including verifier grounding, requester approval, field/schema validation, durable attachments and the existing connector regressions. Dependency audit at the original build reported zero known vulnerabilities.
 - [x] TypeScript and optimized Next.js build.
 - [x] Local HTTP employee/session/operator workflows and persisted demo provider request.
 - [x] Heldout synthetic results published honestly; accuracy/precision/security targets not met.

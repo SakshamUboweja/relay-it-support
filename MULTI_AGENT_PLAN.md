@@ -26,8 +26,9 @@ The multi arm's triage role can call three read-only tools — `lookup_catalog`,
 decision, and its lanes are narrow:
 
 - **Tie-break.** If the deterministic scorer did not accept a route, the proposal may select a
-  service that is already among the ranked candidates, is named in the message, matches the catalog's
-  team for that service, and clears `proposalMinConfidence`. Recorded as `model-tie-break`.
+  service named in the message — one whose catalog aliases appear in the text, per
+  `catalog_candidates` — provided its team matches the catalog's team for that service and the
+  proposal clears `proposalMinConfidence`. Recorded as `model-tie-break`.
 - **Abstain.** A proposal may withdraw an accepted non-security route back to Service Desk
   (`model-abstain`).
 - **Cite a blocked-work quote.** A validated quote from the message raises priority and escalation to
@@ -98,6 +99,11 @@ pinned to scoring v1 so its published baseline keeps its label. Results are writ
 
 Run 2026-09-07, `gpt-5.6-terra` at reasoning effort medium, scoring v2 for the model arms.
 
+The harness arms `rules-v1` and `rules-v2` run `decide()` on the raw message with no model call at
+all. They are not the shipped `RELAY_PIPELINE=deterministic` pipeline, which makes one extraction call
+before the same rules and has no row here; the rules rows are that pipeline's routing floor, what the
+policy achieves on unextracted text.
+
 | Arm | Split | Route acc | Accepted prec | Coverage | Security recall | Escalation recall | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | rules-v1 | dev | 49/60 (81.7%) | 32/37 (86.5%) | 34/40 (85.0%) | 3/5 (60.0%) | 7/10 (70.0%) | 0.000 | 0.142 | 0.661 | 0 / 0 | 0/0 | $0.0000 |
@@ -131,8 +137,9 @@ fitted on dev.
 `RELAY_PIPELINE=single` and scoring v2 are the live defaults. The single arm matched or beat the
 multi arm on routing accuracy and security recall, had the best calibration, and was 2.3× faster and
 2.4× cheaper. The multi arm's escalation edge is one case in twenty and within noise, and it
-restricted one extra routine case. The multi arm stays selectable because its reviewer verdicts and
-cited sources are useful evidence; both rules arms stay selectable as baselines.
+restricted one extra routine case. The multi arm remains a `RELAY_PIPELINE` option because its reviewer
+verdicts and cited sources are useful evidence, as does `deterministic`. The two rules arms are not
+pipelines: they exist only as harness `--arm` values, kept as no-model baselines.
 
 The original HELP-7 regression — a laptop reporting Wi-Fi failure tying Network against Endpoint and
 falling back to Service Desk — is resolved. Scoring v2 routes it to Network, and so do both model
