@@ -1,0 +1,10 @@
+{
+  "weights": {
+    "agentProbability": 0.35,
+    "agreement": 0.25,
+    "retrievalSupport": 0.2,
+    "deterministicMargin": 0.15,
+    "evidenceFidelity": 0.05
+  },
+  "bands": { "high": 0.8, "medium": 0.5 }
+}

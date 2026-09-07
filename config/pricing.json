@@ -1,0 +1,12 @@
+{
+  "version": "2026-09-06-openrouter",
+  "currency": "USD",
+  "note": "Estimate for comparison only; not a billing record. Prices from the public OpenRouter listing on 2026-09-06.",
+  "models": {
+    "gpt-5.6-terra": {
+      "inputPerMillion": 2.0,
+      "cachedInputPerMillion": 0.2,
+      "outputPerMillion": 12.0
+    }
+  }
+}
