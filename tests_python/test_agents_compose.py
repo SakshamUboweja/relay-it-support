@@ -7,7 +7,7 @@ import pytest
 
 from relay.agents.schemas import RoutingProposal, validate_proposal
 from relay.fixtures import catalog, users
-from relay.intake_evidence import apply_extraction, apply_proposal
+from relay.intake_evidence import apply_extraction, apply_proposal, apply_reviewer
 from relay.policy import catalog_candidates, decide, vpn_auth
 
 TIE = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
@@ -263,3 +263,125 @@ def test_catalog_candidates_matches_the_deterministic_scan_on_every_scenario():
         assert sorted(a["team"] for a in d["alternatives"]) == sorted(expected), text
     assert catalog_candidates("Nothing here") == []
     assert catalog_candidates("Nothing here", "the wifi is down") == ["wifi"]
+
+
+def test_security_quote_restricts_even_when_the_proposal_names_security_review():
+    text = "Office Wi-Fi drops and someone else is using my account without permission."
+    d, out = applied(
+        text,
+        service=None,
+        team="Security Review",
+        securityQuote="someone else is using my account without permission",
+    )
+    assert (out["team"], out["visibility"], out["escalation"]) == (
+        "Security Review",
+        "restricted",
+        "security",
+    )
+    assert "proposal-rejected-unknown-team" not in out["reasons"]
+    assert out["reasons"][-1] == "model-extracted-security-evidence"
+
+
+def test_tie_break_service_fact_cites_the_extraction_evidence_ids():
+    d = decide(TIE, [], users[0])
+    out = apply_proposal(
+        d,
+        proposal(),
+        candidates=catalog_candidates(TIE),
+        text=TIE,
+        raw_confidence=0.9,
+        evidence_ids=["m1", "m2"],
+    )
+    assert "model-tie-break" in out["reasons"]
+    assert out["facts"]["service"] == {"value": "wifi", "origin": "user", "evidenceIds": ["m1", "m2"]}
+    blocked = "Office Wi-Fi keeps dropping and I am stuck with no way to work."
+    d = decide(blocked, [], users[0])
+    out = apply_proposal(
+        d,
+        proposal(blockedQuote="I am stuck with no way to work"),
+        candidates=catalog_candidates(blocked),
+        text=blocked,
+        raw_confidence=0.9,
+        evidence_ids=["m1"],
+    )
+    assert out["facts"]["urgency"]["evidenceIds"] == ["m1"]
+
+
+def test_tie_break_never_fires_after_a_model_catalog_conflict():
+    # The extraction knocks a clear VPN decision out of `accepted`; the proposal must not
+    # re-accept the same model's reading of the service through the tie-break lane.
+    d = decide(CLEAR, [], users[0])
+    assert d["accepted"] and d["team"] == "Network"
+    apply_extraction(d, extraction(service="sso", serviceQuote="VPN"))
+    assert "model-catalog-conflict" in d["reasons"] and not d["accepted"]
+    out = apply_proposal(
+        d,
+        proposal(service="vpn", team="Network"),
+        candidates=catalog_candidates(CLEAR),
+        text=CLEAR,
+        raw_confidence=0.95,
+    )
+    assert "model-tie-break" not in out["reasons"]
+    assert (out["team"], out["accepted"]) == ("Service Desk", False)
+    # On a tie the catalog named no service, so an extracted service is not a conflict and
+    # the proposal may still break the tie.
+    d = decide(TIE, [], users[0])
+    apply_extraction(d, extraction(service="wifi", serviceQuote="office Wi-Fi"))
+    assert "model-catalog-conflict" not in d["reasons"]
+    out = apply_proposal(
+        d, proposal(), candidates=catalog_candidates(TIE), text=TIE, raw_confidence=0.9
+    )
+    assert "model-tie-break" in out["reasons"] and out["team"] == "Network"
+
+
+def test_an_abstaining_proposal_keeps_its_service_and_its_team_is_ignored():
+    d, out = applied(TIE, service="wifi", team="Service Desk", abstain=True)
+    assert "proposal-team-service-mismatch" not in out["reasons"]
+    assert "model-tie-break" not in out["reasons"]
+    assert (out["team"], out["accepted"]) == ("Service Desk", False)
+    d, out = applied(TIE, service="wifi", team="Endpoint", abstain=True)
+    assert "proposal-team-service-mismatch" not in out["reasons"]
+    assert out["team"] == "Service Desk"
+
+
+def review(**overrides):
+    return {
+        "verdict": "accept",
+        "agreementProbability": 0.8,
+        "issues": [],
+        "securityQuote": None,
+        **overrides,
+    }
+
+
+def test_apply_reviewer_records_human_review_and_restricts_on_a_security_quote():
+    d, out = applied(TIE)
+    assert out["team"] == "Network"
+    apply_reviewer(out, review(verdict="human_review"), evidence_ids=["m1"])
+    assert out["reasons"][-1] == "reviewer-requested-human-review"
+    assert out["visibility"] == "private"
+    text = "Office Wi-Fi drops and someone else is using my account without permission."
+    d = decide(text, [], users[0])
+    apply_reviewer(
+        d,
+        review(
+            verdict="human_review",
+            securityQuote="someone else is using my account without permission",
+        ),
+        evidence_ids=["m1"],
+    )
+    assert (d["team"], d["visibility"], d["priority"], d["escalation"]) == (
+        "Security Review",
+        "restricted",
+        "urgent",
+        "security",
+    )
+    assert d["facts"]["security"]["evidenceIds"] == ["m1"]
+    assert d["reasons"][-2:] == [
+        "reviewer-requested-human-review",
+        "model-extracted-security-evidence",
+    ]
+    # Already restricted: the first security fact and reason stand, nothing is repeated.
+    before = dict(d["facts"]["security"]), list(d["reasons"])
+    apply_reviewer(d, review(securityQuote="someone else is using my account"), evidence_ids=["m2"])
+    assert (d["facts"]["security"], d["reasons"]) == before

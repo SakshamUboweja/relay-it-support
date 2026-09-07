@@ -12,7 +12,9 @@ import pytest_asyncio
 
 from relay import workflow
 from relay.agents import build_pipeline
-from relay.agents.schemas import SingleAgentOutput
+from relay.agents.schemas import ReviewerOutput, RoutingProposal, SingleAgentOutput
+from relay.agents.tools import CasesArgs
+from relay.model import Extraction
 from relay.connector import ConnectorError, DemoConnector, draft
 from relay.db import query
 from relay.jobs import process_operation, review_timers, sync_requests
@@ -667,3 +669,143 @@ async def test_single_pipeline_run_records_the_arm_and_its_routing_proposal(monk
         ("policy", "policy"),
     ]
     assert steps[0]["prompt_version"] == "relay-single-v1"
+
+
+async def test_multi_pipeline_run_records_every_role_and_the_review(monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
+    from relay.agents.prompts import REVIEWER_PROMPT, TRIAGE_PROMPT
+
+    text = "My managed laptop cannot join the office Wi-Fi; it says unable to connect."
+    reviewed = source("case", "wifi", title="Office Wi-Fi join failure", metadata={"reviewed": True, "team": "Network"})
+
+    class FunctionCall(SimpleNamespace):
+        def model_dump(self, *, exclude_none=False, exclude=()):
+            return {k: v for k, v in vars(self).items() if k not in exclude and v is not None}
+
+    triage_calls = []
+
+    async def parse(**kwargs):
+        system = kwargs["input"][0]["content"]
+        sent = json.loads(kwargs["input"][1]["content"][0]["text"])
+        response = SimpleNamespace(
+            status="completed",
+            usage=SimpleNamespace(input_tokens=30, output_tokens=40),
+            output=[],
+            output_parsed=None,
+        )
+        if system == TRIAGE_PROMPT:
+            triage_calls.append(kwargs)
+            if len(triage_calls) == 1:
+                response.output = [
+                    FunctionCall(
+                        type="function_call",
+                        id="fc_1",
+                        name="similar_cases",
+                        call_id="call_1",
+                        arguments=json.dumps({"service": "wifi"}),
+                        parsed_arguments=CasesArgs(service="wifi"),
+                        status="completed",
+                    )
+                ]
+                return response
+            response.output_parsed = RoutingProposal(
+                service="wifi",
+                team="Network",
+                abstain=False,
+                blockedQuote=None,
+                broadImpactQuote=None,
+                securityQuote=None,
+                rationale="A reviewed case with the same symptom went to Network.",
+                probability=0.85,
+                citedSourceIds=[reviewed["id"]],
+            )
+        elif system == REVIEWER_PROMPT:
+            assert sent["citedSources"] == [
+                {"id": reviewed["id"], "title": "Office Wi-Fi join failure", "team": "Network"}
+            ]
+            response.output_parsed = ReviewerOutput(
+                verdict="accept", agreementProbability=0.9, issues=[], securityQuote=None
+            )
+        else:
+            response.output_parsed = Extraction(
+                summary="Managed laptop cannot join the office Wi-Fi",
+                service="wifi",
+                serviceQuote="office Wi-Fi",
+                symptomQuote="cannot join the office Wi-Fi",
+                impactQuote=None,
+                urgencyQuote=None,
+                deviceQuote="managed laptop",
+                startedQuote=None,
+                workaroundQuote=None,
+                attemptedStepsQuotes=[],
+                supportRequestQuote=None,
+                procedureAttemptedQuote=None,
+                securityQuote=None,
+                evidenceIds=sent["evidenceIds"],
+            )
+        return response
+
+    client = AsyncMock()
+    client.__aenter__.return_value = SimpleNamespace(responses=SimpleNamespace(parse=parse))
+    runtime = workflow.ModelRuntime
+    monkeypatch.setattr(
+        workflow,
+        "ModelRuntime",
+        lambda *args, **kwargs: runtime(*args, **kwargs, client_factory=lambda: client),
+    )
+
+    async def retrieve(text, user):
+        return [reviewed]
+
+    id = await intake({"text": text, "submissionKey": str(uuid4())}, USER)
+    await process_intake(
+        id, USER, {"retrieve": retrieve, "pipeline": build_pipeline("multi", extract=None)}
+    )
+    report = await get_report(id, USER)
+    decision = report["decision"]
+    assert report["state"] == "review_pending"
+    assert decision["pipeline"] == "multi"
+    assert (decision["team"], decision["service"]) == ("Network", "wifi")
+    assert "model-tie-break" in decision["reasons"]
+    assert decision["proposal"]["citedSourceIds"] == [reviewed["id"]]
+    assert decision["reviewer"] == {"verdict": "accept", "agreementProbability": 0.9, "issues": []}
+    assert decision["promptVersions"] == {
+        "intake": "relay-intake-v2",
+        "triage": "relay-triage-v1",
+        "reviewer": "relay-reviewer-v1",
+    }
+    assert decision["promptVersion"] == "relay-intake-v2"
+    assert decision["usage"] == {"input": 120, "output": 160}
+    assert {s["kind"] for s in decision["confidence"]["signals"]} >= {"agentProbability", "agreement"}
+    run = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows[0]
+    assert (run["pipeline"], run["status"], run["model"]) == ("multi", "completed", "test-model")
+    assert run["id"] == decision["agentRunId"]
+    assert run["outcome"]["verdict"] == "accept"
+    steps = (
+        await query(
+            "SELECT role,kind,status,tool_name,tool_args,tool_result_summary,prompt_version FROM agent_steps WHERE run_id=$1 ORDER BY seq",
+            [run["id"]],
+        )
+    ).rows
+    assert [(s["role"], s["kind"]) for s in steps] == [
+        ("intake", "model_call"),
+        ("triage", "model_call"),
+        ("triage", "tool_call"),
+        ("triage", "model_call"),
+        ("reviewer", "model_call"),
+        ("policy", "policy"),
+    ]
+    assert all(s["status"] == "ok" for s in steps)
+    tool = steps[2]
+    assert (tool["tool_name"], tool["tool_args"]) == ("similar_cases", {"service": "wifi"})
+    assert "Never sent" not in tool["tool_result_summary"]
+    assert reviewed["id"] in tool["tool_result_summary"]
+    assert [s["prompt_version"] for s in steps[:5]] == [
+        "relay-intake-v2",
+        "relay-triage-v1",
+        None,
+        "relay-triage-v1",
+        "relay-reviewer-v1",
+    ]

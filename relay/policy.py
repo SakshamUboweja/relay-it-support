@@ -112,6 +112,54 @@ def _device_context_row(ranked: list[dict], scan: str) -> dict | None:
     return None
 
 
+def _allowed(sources: list[dict], user: dict, now: datetime) -> list[dict]:
+    return [
+        s
+        for s in sources
+        if (s["visibility"] in ("all", user["scope"]) or user["role"] == "operator")
+        and _date(s["created_at"]) <= now
+    ]
+
+
+def _rank(text: str, supplemental: str, allowed: list[dict], scoring: str) -> tuple[list, bool]:
+    """Catalog candidates scored by reviewed-case support, best first; whether v2 demoted one."""
+    scan = text.lower() + "\n" + supplemental.lower() if supplemental else text.lower()
+    found = catalog_candidates(text, supplemental)
+    vpn_password = vpn_auth(text)
+    ranked = []
+    for s in [s for s in catalog if s["id"] in found]:
+        team = "Identity & Access" if vpn_password and s["id"] == "vpn" else s["team"]
+        matches = [
+            x
+            for x in allowed
+            if x["kind"] == "case"
+            and x["service"] == s["id"]
+            and x["metadata"].get("reviewed") is True
+            and x["metadata"].get("team") == team
+        ]
+        ranked.append({"service": s["id"], "team": team, "score": 3 + bool(matches)})
+    demoted = _device_context_row(ranked, scan) if scoring == "v2" else None
+    if demoted:
+        demoted["score"] = 1
+    ranked.sort(key=lambda row: row["score"], reverse=True)
+    return ranked, demoted is not None
+
+
+def rank_candidates(
+    text: str,
+    sources: list[dict],
+    user: dict,
+    now=None,
+    *,
+    scoring: str | None = None,
+    supplemental: str = "",
+) -> list[dict]:
+    """The deterministic candidate rows behind `decide`: [{service, team, score}], best first."""
+    now = _date(now) if now else datetime.now(timezone.utc)
+    scoring = policy["routingScoring"] if scoring is None else scoring
+    return _rank(text, supplemental, _allowed(sources, user, now), scoring)[0]
+
+
 def decide(
     text: str,
     sources: list[dict],
@@ -134,31 +182,9 @@ def decide(
         r"\b(new (access|account|laptop)|request access|access (to|approval)|grant|permission to|procure|purchase|buy |onboard|payroll|vacation|hr request|how (do|can|should) i report|what is phishing)\b",
         t,
     )
-    found = catalog_candidates(text, supplemental)
-    candidates = [s for s in catalog if s["id"] in found]
     vpn_password = vpn_auth(text)
-    allowed = [
-        s
-        for s in sources
-        if (s["visibility"] in ("all", user["scope"]) or user["role"] == "operator")
-        and _date(s["created_at"]) <= now
-    ]
-    ranked = []
-    for s in candidates:
-        team = "Identity & Access" if vpn_password and s["id"] == "vpn" else s["team"]
-        matches = [
-            x
-            for x in allowed
-            if x["kind"] == "case"
-            and x["service"] == s["id"]
-            and x["metadata"].get("reviewed") is True
-            and x["metadata"].get("team") == team
-        ]
-        ranked.append({"service": s["id"], "team": team, "score": 3 + bool(matches)})
-    demoted = _device_context_row(ranked, scan) if scoring == "v2" else None
-    if demoted:
-        demoted["score"] = 1
-    ranked.sort(key=lambda row: row["score"], reverse=True)
+    allowed = _allowed(sources, user, now)
+    ranked, demoted = _rank(text, supplemental, allowed, scoring)
     top = ranked[0] if ranked else None
     accepted = bool(
         top

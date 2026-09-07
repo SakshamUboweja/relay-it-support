@@ -1,12 +1,17 @@
-"""Pipeline arms. The deterministic arm wraps today's extraction call in a traced run."""
+"""Pipeline arms: the deterministic arm traces today's extraction; the multi arm adds
+triage with tools and an independent review, all under one budget."""
 
 from ..db import mode
 from ..intake_prompt import INTAKE_PROMPT_VERSION
-from ..policy import policy
+from ..policy import policy, rank_candidates
 from ..sanitize import sanitize
 from . import pricing
-from .runtime import ModelRuntime
+from .intake import run_intake
+from .reviewer import run_reviewer
+from .runtime import BudgetExceeded, ModelRuntime
 from .schemas import PipelineContext, PipelineResult, Usage
+from .tools import cited_sources
+from .triage import run_triage
 
 QUOTE_KEYS = (
     "serviceQuote",
@@ -81,3 +86,84 @@ async def run_deterministic(ctx: PipelineContext, rt: ModelRuntime, extract) -> 
         requested_support=bool(data.get("supportRequestQuote")),
         procedure_tried=bool(data.get("procedureAttemptedQuote")),
     )
+
+
+def _final_review(reviews: list[dict]) -> dict | None:
+    """The verdict compose sees. A revision the reviewer then accepted reads as `revise`;
+    a proposal that still needed revising, or never received its revision, needs a person."""
+    if not reviews:
+        return None
+    review = dict(reviews[-1])
+    if review["verdict"] == "revise":
+        review["verdict"] = "human_review"
+    elif len(reviews) == 2 and review["verdict"] == "accept":
+        review["verdict"] = "revise"
+    return review
+
+
+async def run_multi_agent(ctx: PipelineContext, rt: ModelRuntime) -> PipelineResult:
+    """Intake, then triage with tools and an independent review, with at most one revision.
+
+    Intake failure yields a rules-only result. Triage or reviewer failure keeps the
+    extraction and drops the proposal. Budget exhaustion keeps whatever validated so far.
+    """
+    scoring = policy["routingScoring"]
+
+    def snapshot(status: str, outcome: dict, **fields) -> PipelineResult:
+        run = rt.finish(pipeline=ctx.pipeline, scoring=scoring, status=status, outcome=outcome)
+        return PipelineResult(run=run, **fields)
+
+    if mode() == "demo":
+        return snapshot("skipped", {"extraction": "skipped", "proposal": "skipped"})
+    try:
+        extraction = await run_intake(ctx, rt, image=ctx.image)
+    except BudgetExceeded as error:
+        return snapshot("budget_exhausted", {"extraction": "skipped", "error": str(error)})
+    except Exception:
+        return snapshot("failed", {"extraction": "failed"})
+    fields = dict(
+        extraction=extraction,
+        summary=extraction["summary"],
+        requested_support=bool(extraction["supportRequestQuote"]),
+        procedure_tried=bool(extraction["procedureAttemptedQuote"]),
+    )
+    candidates = rank_candidates(ctx.text, ctx.sources, ctx.user, scoring=scoring)
+    status, proposal, reviews, error = "completed", None, [], None
+    try:
+        for _ in range(2):
+            proposal = await run_triage(
+                ctx,
+                rt,
+                extraction=extraction,
+                candidates=candidates,
+                reviewer_notes=reviews[-1]["issues"] if reviews else None,
+            )
+            reviews.append(
+                await run_reviewer(
+                    ctx,
+                    rt,
+                    extraction=extraction,
+                    proposal=proposal,
+                    cited_sources=cited_sources(rt.seen_sources, proposal["citedSourceIds"]),
+                )
+            )
+            if reviews[-1]["verdict"] != "revise":
+                break
+    except BudgetExceeded as failure:
+        status, error = "budget_exhausted", str(failure)
+    except Exception:
+        proposal, reviews = None, []
+    review = _final_review(reviews)
+    if review is not None and review["verdict"] == "human_review":
+        proposal["abstain"] = True
+    outcome = {
+        "extraction": "validated",
+        "service": extraction["service"],
+        "proposal": "validated" if proposal else "failed",
+        "team": proposal["team"] if proposal else None,
+        "abstain": proposal["abstain"] if proposal else None,
+        "verdict": review["verdict"] if review else None,
+    }
+    if error:
+        outcome["error"] = error
+    return snapshot(status, outcome, **fields, proposal=proposal, reviewer=review)

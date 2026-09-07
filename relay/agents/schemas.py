@@ -126,6 +126,33 @@ def validate_proposal(
     return data
 
 
+class ReviewerIssue(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    field: str = Field(max_length=100)
+    message: str = Field(max_length=300)
+    evidenceQuote: str | None
+
+
+class ReviewerOutput(BaseModel):
+    """An independent critic's verdict on a proposal; it can only ask, never route."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+    verdict: Literal["accept", "revise", "human_review"]
+    agreementProbability: float = Field(ge=0, le=1)
+    issues: list[ReviewerIssue] = Field(max_length=10)
+    securityQuote: str | None
+
+
+def validate_reviewer(output: ReviewerOutput | dict, text: str) -> dict:
+    """Every quote the reviewer gives must be a literal span of the requester text."""
+    parsed = output if isinstance(output, ReviewerOutput) else ReviewerOutput.model_validate(output)
+    data = parsed.model_dump()
+    quotes = [data["securityQuote"], *(issue["evidenceQuote"] for issue in data["issues"])]
+    if any(quote and quote not in text for quote in quotes):
+        raise ValueError("Reviewer asserted unsupported evidence.")
+    return data
+
+
 @dataclass
 class PipelineContext:
     report_id: str

@@ -2,12 +2,12 @@
 
 from ..db import mode
 from ..domain import fact
-from ..intake_evidence import apply_extraction, apply_proposal
+from ..intake_evidence import apply_extraction, apply_proposal, apply_reviewer
 from ..intake_prompt import INTAKE_PROMPT_VERSION
 from ..policy import catalog_candidates, decide, policy
 from ..sanitize import sanitize
 from . import confidence
-from .prompts import SINGLE_PROMPT_VERSION
+from .prompts import REVIEWER_PROMPT_VERSION, SINGLE_PROMPT_VERSION, TRIAGE_PROMPT_VERSION
 from .runtime import ModelRuntime
 from .schemas import PipelineContext, PipelineResult
 
@@ -26,6 +26,8 @@ def _prompt_versions(pipeline: str) -> dict:
     versions = {"intake": INTAKE_PROMPT_VERSION}
     if pipeline == "single":
         versions["single"] = SINGLE_PROMPT_VERSION
+    if pipeline == "multi":
+        versions.update(triage=TRIAGE_PROMPT_VERSION, reviewer=REVIEWER_PROMPT_VERSION)
     return versions
 
 
@@ -51,6 +53,18 @@ def _proposal_view(proposal: dict) -> dict:
         "probability": proposal["probability"],
         "rationale": sanitize(proposal["rationale"]),
         "citedSourceIds": proposal["citedSourceIds"],
+    }
+
+
+def _reviewer_view(review: dict) -> dict:
+    """What the UI may show of the review: verdict, agreement and field-level issues."""
+    return {
+        "verdict": review["verdict"],
+        "agreementProbability": review["agreementProbability"],
+        "issues": [
+            {"field": sanitize(issue["field"]), "message": sanitize(issue["message"])}
+            for issue in review["issues"]
+        ],
     }
 
 
@@ -96,16 +110,22 @@ def compose_decision(
                     candidates=catalog_candidates(ctx.text, supplemental),
                     text=ctx.text,
                     raw_confidence=gate,
+                    evidence_ids=extraction["evidenceIds"],
                 )
                 d["proposal"] = _proposal_view(result.proposal)
+                if result.reviewer is not None:
+                    apply_reviewer(d, result.reviewer, evidence_ids=extraction["evidenceIds"])
+                    d["reviewer"] = _reviewer_view(result.reviewer)
+            elif ctx.pipeline == "multi":
+                d["reasons"].append("triage-unavailable")
         else:
             d["model"] = "live-failed"
             if d["visibility"] != "restricted":
                 d.update(team="Service Desk", accepted=False)
             d.update(procedure=None, question=None)
             d["reasons"].append("model-unavailable")
-            if result.run.status == "budget_exhausted":
-                d["reasons"].append("agent-budget-exhausted")
+        if result.run.status == "budget_exhausted":
+            d["reasons"].append("agent-budget-exhausted")
     rt.policy_step(
         input_summary=_candidates(d, scoring),
         output_summary=_outcome(d),

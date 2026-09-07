@@ -4,7 +4,7 @@ import os
 from functools import partial
 
 from ..policy import policy
-from .orchestrator import run_deterministic
+from .orchestrator import run_deterministic, run_multi_agent
 from .schemas import Budget
 from .single import run_single_agent
 
@@ -30,13 +30,13 @@ class Pipeline:
 
 
 def build_pipeline(name: str, *, extract) -> Pipeline:
-    """An `async (ctx, rt) -> PipelineResult`; arms that have not shipped fail at boot."""
+    """An `async (ctx, rt) -> PipelineResult` for a configured arm; anything else fails at boot."""
     if name == "deterministic":
         return Pipeline(name, partial(run_deterministic, extract=extract))
     if name == "single":
         return Pipeline(name, run_single_agent)
-    if name in PIPELINES:
-        raise ValueError(f"Pipeline '{name}' is not available in this release")
+    if name == "multi":
+        return Pipeline(name, run_multi_agent)
     raise ValueError("RELAY_PIPELINE must be one of deterministic, single, multi")
 
 

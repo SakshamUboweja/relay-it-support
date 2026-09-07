@@ -320,3 +320,57 @@ def test_build_records_a_sanitized_agent_rationale(tmp_path, monkeypatch):
     assert result["agentRationale"] == "VPN named; password: [REDACTED]"
     assert [s["kind"] for s in result["signals"]][0] == "agentProbability"
     assert result["why"].startswith("Medium confidence: agent estimated 90% that Network is right;")
+
+
+@pytest.mark.parametrize(
+    "verdict,expected,label",
+    [
+        ("accept", 0.8, "Triage and reviewer agree on Network"),
+        ("revise", 0.4, "Reviewer asked for one revision; final proposal Network"),
+        ("human_review", 0.0, "Reviewer requested human review"),
+    ],
+)
+def test_agreement_follows_the_final_verdict(verdict, expected, label):
+    reviewer = {"verdict": verdict, "agreementProbability": 0.8, "issues": []}
+    found = features(
+        pipeline="multi",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+        reviewer=reviewer,
+    )
+    assert found["agreement"] == pytest.approx(expected)
+    labels = {
+        s["kind"]: s["label"]
+        for s in signals(
+            found, decision=decision(), ranked=TIED, sources=[], proposal=PROPOSAL, reviewer=reviewer
+        )
+    }
+    assert labels["agreement"] == label
+    assert list(labels)[:2] == ["agentProbability", "agreement"]
+
+
+def test_agreement_is_absent_without_a_reviewer(tmp_path, monkeypatch):
+    monkeypatch.setattr(confidence, "CALIBRATION_PATH", tmp_path / "missing.json")
+    result = build(
+        pipeline="multi",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    assert "agreement" not in {s["kind"] for s in result["signals"]}
+    reviewed = build(
+        pipeline="multi",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+        reviewer={"verdict": "accept", "agreementProbability": 1.0, "issues": []},
+    )
+    assert reviewed["raw"] > result["raw"]
+    assert [s["kind"] for s in reviewed["signals"]][1] == "agreement"

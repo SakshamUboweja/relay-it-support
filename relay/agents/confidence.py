@@ -53,6 +53,16 @@ def _agent_probability(proposal, decision: dict) -> float | None:
     return probability if proposal["team"] == decision["team"] else _clip(1 - probability)
 
 
+def _agreement(reviewer) -> float | None:
+    """The reviewer's own estimate: whole on accept, halved after a revision, gone on hand-off."""
+    if not reviewer:
+        return None
+    probability = _clip(float(reviewer["agreementProbability"]))
+    return {"accept": probability, "revise": 0.5 * probability, "human_review": 0.0}[
+        reviewer["verdict"]
+    ]
+
+
 def features(
     *,
     pipeline: str,
@@ -81,7 +91,7 @@ def features(
     fidelity = {None: None, True: 1.0, False: 0.0, "retried": 0.5}[extraction_ok]
     return {
         "agentProbability": _agent_probability(proposal, decision),
-        "agreement": None,
+        "agreement": _agreement(reviewer),
         "retrievalSupport": support,
         "deterministicMargin": margin,
         "evidenceFidelity": fidelity,
@@ -124,7 +134,13 @@ def band(value: float) -> str:
 
 
 def signals(
-    features: dict, *, decision: dict, ranked: list[dict], sources: list[dict], proposal=None
+    features: dict,
+    *,
+    decision: dict,
+    ranked: list[dict],
+    sources: list[dict],
+    proposal=None,
+    reviewer=None,
 ) -> list:
     found = []
     agent = features.get("agentProbability")
@@ -135,6 +151,15 @@ def signals(
             else f"Agent proposed {proposal['team']}, overruled by policy"
         )
         found.append({"kind": "agentProbability", "label": label, "value": agent})
+    agreement = features.get("agreement")
+    if agreement is not None and reviewer:
+        team = proposal["team"] if proposal else decision["team"]
+        label = {
+            "accept": f"Triage and reviewer agree on {team}",
+            "revise": f"Reviewer asked for one revision; final proposal {team}",
+            "human_review": "Reviewer requested human review",
+        }[reviewer["verdict"]]
+        found.append({"kind": "agreement", "label": label, "value": agreement})
     margin = features.get("deterministicMargin")
     if margin is not None:
         if decision["escalation"] == "security":
@@ -264,7 +289,12 @@ def build(
     value = round(value, 4)
     band_name = band(value)
     found_signals = signals(
-        found, decision=decision, ranked=ranked, sources=sources, proposal=proposal
+        found,
+        decision=decision,
+        ranked=ranked,
+        sources=sources,
+        proposal=proposal,
+        reviewer=reviewer,
     )
     return {
         "value": value,

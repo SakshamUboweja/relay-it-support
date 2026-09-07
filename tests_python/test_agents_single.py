@@ -228,9 +228,33 @@ async def test_demo_mode_makes_no_model_call(monkeypatch):
     assert result.extraction is None and result.proposal is None
 
 
-def test_build_pipeline_names_the_single_arm_and_keeps_multi_guarded():
-    pipeline = build_pipeline("single", extract=None)
-    assert pipeline.name == "single"
+async def test_an_abstaining_output_keeps_the_extracted_service_fact(monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+    rt = runtime(
+        AsyncMock(
+            return_value=completed(
+                output(abstain=True, team="Service Desk", probability=0.4, rationale="Tie.")
+            )
+        )
+    )
+    ctx = context()
+    result = await run_single_agent(ctx, rt)
+    assert result.extraction["service"] == "wifi" and result.proposal["abstain"] is True
+    d = compose_decision(ctx, result, rt, scoring="v1")
+    assert d["facts"]["service"]["value"] == "wifi"
+    assert "proposal-team-service-mismatch" not in d["reasons"]
+    assert "model-tie-break" not in d["reasons"]
+    assert (d["team"], d["accepted"]) == ("Service Desk", False)
+
+
+def test_build_pipeline_names_every_arm():
+    assert build_pipeline("single", extract=None).name == "single"
     assert build_pipeline("deterministic", extract=None).name == "deterministic"
-    with pytest.raises(ValueError, match="Pipeline 'multi' is not available"):
-        build_pipeline("multi", extract=None)
+    assert build_pipeline("multi", extract=None).name == "multi"
+    with pytest.raises(ValueError, match="must be one of"):
+        build_pipeline("bogus", extract=None)
+
+
+def test_the_single_prompt_never_asks_the_model_to_null_the_service_when_abstaining():
+    assert "set service to null" not in SINGLE_PROMPT
+    assert "abstain" in SINGLE_PROMPT

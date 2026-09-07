@@ -41,10 +41,20 @@ def apply_extraction(d: dict, data: dict) -> dict:
     for key, quote in quotes.items():
         if quote:
             d["facts"][key] = fact(quote, "user", data["evidenceIds"])
+    if data["service"] and d["facts"]["service"]["value"] is None:
+        # The requester named a service the catalog could not settle on: evidence, not a route.
+        d["facts"]["service"] = fact(data["service"], "user", data["evidenceIds"])
     if data["impactQuote"] and d["priority"] == "normal":
         d["reasons"] = [r for r in d["reasons"] if r != "provisional-priority-impact-unknown"]
         d["reasons"].append("normal-priority-reported-impact")
-    if data["service"] and d["service"] != data["service"] and d["visibility"] != "restricted":
+    # A conflict needs two readings: the catalog's accepted service and a different one from
+    # the model. On a tie the catalog named none, so the proposal lanes may still break it.
+    if (
+        data["service"]
+        and d["service"]
+        and d["service"] != data["service"]
+        and d["visibility"] != "restricted"
+    ):
         d.update(accepted=False, team="Service Desk", procedure=None)
         d["reasons"].append("model-catalog-conflict")
     if data["securityQuote"]:
@@ -65,28 +75,39 @@ def _evidence_ids(d: dict) -> list[str]:
 
 
 def apply_proposal(
-    d: dict, proposal: dict, *, candidates: list[str], text: str, raw_confidence: float
+    d: dict,
+    proposal: dict,
+    *,
+    candidates: list[str],
+    text: str,
+    raw_confidence: float,
+    evidence_ids: list[str] | None = None,
 ) -> dict:
     """Bounded lanes over a validated proposal: it may break a tie, never open a gate."""
     if d["visibility"] == "restricted":
         d["reasons"].append("proposal-ignored-restricted")
         return d
+    ids = list(evidence_ids or _evidence_ids(d))
+    if proposal["securityQuote"]:
+        # A validated security quote restricts before any routing lane could drop it.
+        return _restrict(d, proposal["securityQuote"], ids)
     if proposal["team"] not in TEAMS or proposal["team"] == "Security Review":
         d["reasons"].append("proposal-rejected-unknown-team")
         return d
     service = proposal["service"]
-    if service and proposal["team"] != _catalog_team(service, text):
+    # An abstaining proposal's team is ignored, so it is not held to the catalog.
+    if service and not proposal["abstain"] and proposal["team"] != _catalog_team(service, text):
         d["reasons"].append("proposal-team-service-mismatch")
         return d
     if (
         not d["accepted"]
         and "unsupported-workflow" not in d["reasons"]
+        and "model-catalog-conflict" not in d["reasons"]
         and service is not None
         and service in candidates
         and not proposal["abstain"]
         and raw_confidence >= policy["proposalMinConfidence"]
     ):
-        ids = _evidence_ids(d)
         d.update(service=service, team=proposal["team"], accepted=True, question=None)
         d["facts"]["service"] = fact(service, "user", ids)
         d["reasons"].append("model-tie-break")
@@ -95,15 +116,22 @@ def apply_proposal(
         d["reasons"].append("model-abstain")
     if proposal["blockedQuote"] and d["escalation"] == "none":
         d.update(priority="elevated", escalation="elevated")
-        d["facts"]["urgency"] = fact(proposal["blockedQuote"], "user", _evidence_ids(d))
+        d["facts"]["urgency"] = fact(proposal["blockedQuote"], "user", ids)
         d["facts"]["priority"] = fact("elevated", "policy_default", [d["version"]])
         d["reasons"].append("model-cited-work-blocked")
     if proposal["broadImpactQuote"]:
-        d["facts"]["impact"] = fact(proposal["broadImpactQuote"], "user", _evidence_ids(d))
+        d["facts"]["impact"] = fact(proposal["broadImpactQuote"], "user", ids)
         if d["service"] in policy["criticalServices"] and d["escalation"] == "none":
             d.update(priority="urgent", escalation="urgent")
             d["facts"]["priority"] = fact("urgent", "policy_default", [d["version"]])
             d["reasons"].append("user-reported-broad-critical-loss")
-    if proposal["securityQuote"]:
-        _restrict(d, proposal["securityQuote"], _evidence_ids(d))
+    return d
+
+
+def apply_reviewer(d: dict, review: dict, *, evidence_ids: list[str]) -> dict:
+    """The reviewer may ask for a person or restrict on a validated quote; nothing else."""
+    if review["verdict"] == "human_review":
+        d["reasons"].append("reviewer-requested-human-review")
+    if review.get("securityQuote") and d["visibility"] != "restricted":
+        _restrict(d, review["securityQuote"], list(evidence_ids))
     return d

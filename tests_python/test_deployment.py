@@ -48,20 +48,14 @@ def test_production_runtime_is_python_and_static_ui_only():
     )
 
 
-@pytest.mark.parametrize(
-    "value,message",
-    [
-        ("bogus", "RELAY_PIPELINE must be one of deterministic, single, multi"),
-        ("multi", "Pipeline 'multi' is not available in this release"),
-    ],
-)
-def test_pipeline_selection_fails_at_boot(monkeypatch, value, message):
+def test_pipeline_selection_fails_at_boot(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "postgresql://test.invalid/test")
     monkeypatch.setenv("APP_MODE", "demo")
     monkeypatch.setenv("SESSION_SECRET", "x" * 32)
-    monkeypatch.setenv("RELAY_PIPELINE", value)
+    monkeypatch.setenv("RELAY_PIPELINE", "bogus")
+    message = "RELAY_PIPELINE must be one of deterministic, single, multi"
     with pytest.raises(ValueError, match=re.escape(message)):
         validate_environment()
-    for available in ("deterministic", "single"):
+    for available in ("deterministic", "single", "multi"):
         monkeypatch.setenv("RELAY_PIPELINE", available)
         validate_environment()
