@@ -6,8 +6,8 @@ from unittest.mock import AsyncMock
 
 import httpx
 import pytest
-from openai import APIConnectionError, APIStatusError
-from pydantic import BaseModel
+from openai import APIConnectionError, APIStatusError, pydantic_function_tool
+from pydantic import BaseModel, ConfigDict
 
 from relay.agents.runtime import BudgetExceeded, ModelRuntime
 from relay.agents.schemas import Budget, Usage
@@ -98,12 +98,6 @@ async def test_image_adds_input_image_part_after_the_text():
         "image_url": "data:image/png;base64,AAAA",
         "detail": "low",
     }
-
-
-async def test_tools_are_not_available_yet():
-    rt = runtime(AsyncMock(return_value=completed()))
-    with pytest.raises(NotImplementedError, match="later task"):
-        await call(rt, tools=[{"type": "function", "name": "lookup"}])
 
 
 async def test_third_call_exceeds_the_model_call_budget():
@@ -342,3 +336,172 @@ async def test_the_deterministic_arm_sanitizes_before_truncating_the_input_summa
     await run_deterministic(ctx, rt, extract)
     assert "sk-abcdef" not in rt.steps[0].inputSummary
     assert "[REDACTED" in rt.steps[0].inputSummary
+
+
+class LookupArgs(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    service: str
+
+
+class FunctionCall(SimpleNamespace):
+    """Mirrors the SDK's parsed function-call item: `model_dump` carries `parsed_arguments`."""
+
+    def model_dump(self, *, exclude_none=False, exclude=()):
+        return {
+            key: value
+            for key, value in vars(self).items()
+            if key not in exclude and not (exclude_none and value is None)
+        }
+
+
+def function_call(name="lookup", call_id="call_1", **arguments):
+    return FunctionCall(
+        type="function_call",
+        id="fc_1",
+        name=name,
+        call_id=call_id,
+        arguments=json.dumps(arguments),
+        parsed_arguments=LookupArgs(**arguments) if name == "lookup" else None,
+        status="completed",
+        namespace=None,
+    )
+
+
+def calling(*calls):
+    return SimpleNamespace(
+        status="completed",
+        output=list(calls),
+        output_parsed=None,
+        usage=SimpleNamespace(input_tokens=20, output_tokens=8),
+    )
+
+
+def lookup_tools(impl=None):
+    tools = [pydantic_function_tool(LookupArgs, name="lookup", description="Find cases")]
+    return tools, {"lookup": impl or (lambda args: [{"id": f"case-{args.service}", "team": "Network"}])}
+
+
+def tool_budget(calls):
+    return Budget(maxModelCalls=5, maxToolCalls=calls, maxTotalTokens=20000, maxSeconds=75)
+
+
+async def test_tool_loop_echoes_calls_without_parsed_arguments_and_records_steps():
+    parse = AsyncMock(side_effect=[calling(function_call(service="vpn")), completed("routed")])
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools()
+    result = await call(rt, tools=tools, tool_impls=impls)
+    assert result.parsed.answer == "routed"
+    first = parse.call_args_list[0].kwargs
+    assert first["tools"] is tools
+    assert first["tool_choice"] == "auto" and first["parallel_tool_calls"] is True
+    assert "max_tool_calls" not in first
+    second = parse.call_args_list[1].kwargs["input"]
+    assert second[:2] == first["input"][:2]
+    assert second[2] == {
+        "type": "function_call",
+        "id": "fc_1",
+        "name": "lookup",
+        "call_id": "call_1",
+        "arguments": json.dumps({"service": "vpn"}),
+        "status": "completed",
+    }
+    assert second[3] == {
+        "type": "function_call_output",
+        "call_id": "call_1",
+        "output": json.dumps([{"id": "case-vpn", "team": "Network"}]),
+    }
+    assert [(s.kind, s.status) for s in rt.steps] == [
+        ("model_call", "ok"),
+        ("tool_call", "ok"),
+        ("model_call", "ok"),
+    ]
+    tool_step = rt.steps[1]
+    assert (tool_step.role, tool_step.toolName, tool_step.toolArgs) == (
+        "extractor",
+        "lookup",
+        {"service": "vpn"},
+    )
+    assert json.loads(tool_step.toolResultSummary) == [{"id": "case-vpn", "team": "Network"}]
+    assert tool_step.costUsd == 0.0 and tool_step.usage == Usage()
+    assert "lookup" in rt.steps[0].outputSummary
+    assert rt.seen_source_ids == {"case-vpn"}
+    assert (rt.model_calls, rt.tool_calls) == (2, 1)
+    assert rt.usage == Usage(input=30, output=13)
+
+
+async def test_async_tool_results_are_awaited_and_sanitized():
+    async def impl(args):
+        return {"id": "kb-1", "title": f"{args.service} password: hunter2"}
+
+    parse = AsyncMock(side_effect=[calling(function_call(service="vpn")), completed()])
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools(impl)
+    await call(rt, tools=tools, tool_impls=impls)
+    assert "hunter2" not in rt.steps[1].toolResultSummary
+    assert "[REDACTED]" in rt.steps[1].toolResultSummary
+    assert rt.seen_source_ids == {"kb-1"}
+
+
+async def test_tool_call_budget_is_enforced_locally():
+    parse = AsyncMock(
+        side_effect=[
+            calling(function_call(service="vpn"), function_call(call_id="call_2", service="sso")),
+            completed(),
+        ]
+    )
+    rt = runtime(parse, budget=tool_budget(1))
+    tools, impls = lookup_tools()
+    with pytest.raises(BudgetExceeded, match="Tool call budget"):
+        await call(rt, tools=tools, tool_impls=impls)
+    assert parse.await_count == 1
+    assert [(s.kind, s.status) for s in rt.steps] == [("model_call", "ok"), ("tool_call", "ok")]
+    assert rt.tool_calls == 1
+
+
+async def test_unknown_tool_name_returns_an_error_output_and_an_error_step():
+    parse = AsyncMock(side_effect=[calling(function_call(name="nope", service="vpn")), completed()])
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools()
+    await call(rt, tools=tools, tool_impls=impls)
+    output = parse.call_args_list[1].kwargs["input"][3]
+    assert output["type"] == "function_call_output" and output["call_id"] == "call_1"
+    assert "error" in json.loads(output["output"])
+    step = rt.steps[1]
+    assert (step.kind, step.status, step.toolName) == ("tool_call", "error", "nope")
+    assert "Unknown tool" in step.error
+    assert rt.tool_calls == 1 and rt.seen_source_ids == set()
+
+
+async def test_tool_exception_returns_an_error_output_and_an_error_step():
+    def impl(args):
+        raise RuntimeError("database unavailable")
+
+    parse = AsyncMock(side_effect=[calling(function_call(service="vpn")), completed()])
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools(impl)
+    await call(rt, tools=tools, tool_impls=impls)
+    output = json.loads(parse.call_args_list[1].kwargs["input"][3]["output"])
+    assert output == {"error": "database unavailable"}
+    assert rt.steps[1].status == "error" and "database unavailable" in rt.steps[1].error
+    assert rt.steps[1].toolArgs == {"service": "vpn"}
+
+
+async def test_neither_calls_nor_parsed_output_is_rejected_and_retried_once():
+    parse = AsyncMock(side_effect=[calling(), completed()])
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools()
+    result = await call(rt, tools=tools, tool_impls=impls)
+    assert result.parsed.answer == "ok"
+    assert [s.status for s in rt.steps] == ["rejected", "ok"]
+
+
+async def test_the_model_call_budget_bounds_the_tool_loop():
+    parse = AsyncMock(return_value=calling(function_call(service="vpn")))
+    rt = runtime(
+        parse, budget=Budget(maxModelCalls=2, maxToolCalls=4, maxTotalTokens=20000, maxSeconds=75)
+    )
+    tools, impls = lookup_tools()
+    with pytest.raises(BudgetExceeded, match="Model call budget"):
+        await call(rt, tools=tools, tool_impls=impls)
+    assert parse.await_count == 2
+    assert [s.kind for s in rt.steps] == ["model_call", "tool_call", "model_call", "tool_call"]

@@ -1,5 +1,6 @@
 """Budgeted Responses calls that record every attempt as a trace step."""
 
+import inspect
 import json
 import time
 from dataclasses import dataclass
@@ -10,7 +11,7 @@ from openai import APIConnectionError, APIStatusError, APITimeoutError
 
 from ..model import live_client
 from . import pricing
-from .schemas import AgentRun, AgentStep, Budget, Usage
+from .schemas import AgentRun, AgentStep, Budget, Usage, summary
 
 
 class BudgetExceeded(Exception):
@@ -62,6 +63,68 @@ def _describe(parsed) -> str:
     return json.dumps(parsed, default=str)
 
 
+def _answer(response, validator):
+    """The structured answer of a turn without tool calls, validated; else `Rejected`."""
+    if response.status != "completed" or response.output_parsed is None:
+        details = getattr(response, "incomplete_details", None)
+        raise Rejected(
+            "Model response incomplete or refused "
+            f"(status={getattr(response, 'status', None)}, "
+            f"reason={getattr(details, 'reason', None)})"
+        )
+    parsed = response.output_parsed
+    if validator is not None:
+        try:
+            checked = validator(parsed)
+        except ValueError as error:
+            raise Rejected(str(error)) from error
+        parsed = parsed if checked is None else checked
+    return parsed
+
+
+def _function_calls(response) -> list:
+    output = getattr(response, "output", None) or []
+    return [item for item in output if getattr(item, "type", None) == "function_call"]
+
+
+def _echo(output) -> list[dict]:
+    """Output items go back verbatim, minus the SDK-only field the API rejects."""
+    return [item.model_dump(exclude_none=True, exclude={"parsed_arguments"}) for item in output]
+
+
+def _tool_models(tools) -> dict:
+    """Argument models by tool name, from the `pydantic_function_tool` dicts."""
+    found = {}
+    for tool in tools or []:
+        function = tool.get("function") if isinstance(tool, dict) else None
+        if function is not None and hasattr(function, "model"):
+            found[function["name"]] = function.model
+    return found
+
+
+def _arguments(call, parsed) -> dict:
+    if hasattr(parsed, "model_dump"):
+        return parsed.model_dump()
+    try:
+        loaded = json.loads(getattr(call, "arguments", None) or "{}")
+    except ValueError:
+        loaded = None
+    return loaded if isinstance(loaded, dict) else {"arguments": call.arguments}
+
+
+def _sources(value, found: dict[str, dict]) -> dict[str, dict]:
+    """Every object with a string `id` that a tool result carries, at any depth."""
+    if isinstance(value, dict):
+        if isinstance(value.get("id"), str):
+            found[value["id"]] = value
+        for item in value.values():
+            _sources(item, found)
+    elif isinstance(value, list):
+        for item in value:
+            _sources(item, found)
+    return found
+
+
 class ModelRuntime:
     def __init__(
         self,
@@ -83,7 +146,13 @@ class ModelRuntime:
         self.cost_usd: float | None = 0.0
         self.model_calls = 0
         self.tool_calls = 0
+        self.seen_sources: dict[str, dict] = {}
         self.started = clock()
+
+    @property
+    def seen_source_ids(self) -> set[str]:
+        """IDs the model has actually been shown by a tool; the only IDs it may cite."""
+        return set(self.seen_sources)
 
     def elapsed_ms(self, since: float | None = None) -> int:
         return int((self.clock() - (self.started if since is None else since)) * 1000)
@@ -126,9 +195,11 @@ class ModelRuntime:
         timeout: float = 60.0,
         input_summary: str,
     ) -> CallResult:
-        """One structured call with a single retry; `validator` may return a replacement value."""
-        if tools or tool_impls:
-            raise NotImplementedError("tool loop arrives in a later task")
+        """One structured call with a single retry; `validator` may return a replacement value.
+
+        With `tools`, the model may call them between turns: each tool call is executed
+        locally under `maxToolCalls`, echoed back, and the model is called again.
+        """
         content = [{"type": "input_text", "text": json.dumps(user_json)}]
         if image:
             content.append(
@@ -151,9 +222,26 @@ class ModelRuntime:
         }
         if self.settings.get("effort"):
             args["reasoning"] = {"effort": self.settings["effort"]}
+        if tools:
+            # The tool-call cap is enforced locally, so `max_tool_calls` is never sent.
+            args.update(tools=tools, tool_choice="auto", parallel_tool_calls=True)
         step = dict(role=role, kind="model_call", model=self.model, promptVersion=prompt_version)
+        toolbox = (_tool_models(tools), tool_impls or {})
         last: Exception | None = None
         for _ in range(2):
+            try:
+                return await self._converse(args, step, input_summary, validator, toolbox)
+            except BudgetExceeded:
+                raise
+            except Exception as error:
+                last = error
+                if not _retryable(error):
+                    break
+        raise last
+
+    async def _converse(self, args, step, input_summary, validator, toolbox) -> CallResult:
+        """Model turns until one answers; tool calls in between are run and echoed back."""
+        while True:
             self.check_budget()
             started = self.clock()
             usage = Usage()
@@ -161,22 +249,10 @@ class ModelRuntime:
                 async with self.client_factory() as client:
                     response = await client.responses.parse(**args)
                 usage = _usage(response)
-                if response.status != "completed" or response.output_parsed is None:
-                    details = getattr(response, "incomplete_details", None)
-                    raise Rejected(
-                        "Model response incomplete or refused "
-                        f"(status={getattr(response, 'status', None)}, "
-                        f"reason={getattr(details, 'reason', None)})"
-                    )
-                parsed = response.output_parsed
-                if validator is not None:
-                    try:
-                        checked = validator(parsed)
-                    except ValueError as error:
-                        raise Rejected(str(error)) from error
-                    parsed = parsed if checked is None else checked
+                calls = _function_calls(response)
+                if not calls:
+                    parsed = _answer(response, validator)
             except Exception as error:
-                last = error
                 self.record(
                     **step,
                     inputSummary=input_summary,
@@ -187,11 +263,21 @@ class ModelRuntime:
                     status=_status(error),
                     error=str(error) or type(error).__name__,
                 )
-                if not _retryable(error):
-                    break
-                continue
+                raise
             cost_usd = pricing.cost(self.model, usage)
             latency_ms = self.elapsed_ms(started)
+            if calls:
+                self.record(
+                    **step,
+                    inputSummary=input_summary,
+                    outputSummary="tool calls: " + ", ".join(c.name for c in calls),
+                    usage=usage,
+                    costUsd=cost_usd,
+                    latencyMs=latency_ms,
+                )
+                outputs = [await self._tool_call(call, step["role"], toolbox) for call in calls]
+                args["input"].extend([*_echo(response.output), *outputs])
+                continue
             self.record(
                 **step,
                 inputSummary=input_summary,
@@ -201,7 +287,43 @@ class ModelRuntime:
                 latencyMs=latency_ms,
             )
             return CallResult(parsed, usage, latency_ms, cost_usd)
-        raise last
+
+    async def _tool_call(self, call, role: str, toolbox) -> dict:
+        """Run one tool under the tool budget; failures answer the model as an error object."""
+        if self.tool_calls + 1 > self.budget.maxToolCalls:
+            raise BudgetExceeded(f"Tool call budget of {self.budget.maxToolCalls} reached")
+        models, impls = toolbox
+        started = self.clock()
+        parsed = getattr(call, "parsed_arguments", None)
+        error: Exception | None = None
+        try:
+            if call.name not in impls:
+                raise ValueError(f"Unknown tool '{call.name}'")
+            if parsed is None:
+                parsed = models[call.name].model_validate_json(call.arguments)
+            result = impls[call.name](parsed)
+            if inspect.isawaitable(result):
+                result = await result
+        except Exception as failure:
+            error = failure
+            result = {"error": str(failure) or type(failure).__name__}
+        _sources(result, self.seen_sources)
+        tool_args = _arguments(call, parsed)
+        output = json.dumps(result, default=str)
+        self.record(
+            role=role,
+            kind="tool_call",
+            toolName=call.name,
+            toolArgs=tool_args,
+            inputSummary=json.dumps(tool_args),
+            outputSummary=summary(output),
+            toolResultSummary=output,
+            costUsd=0.0,
+            latencyMs=self.elapsed_ms(started),
+            status="error" if error else "ok",
+            error=None if error is None else result["error"],
+        )
+        return {"type": "function_call_output", "call_id": call.call_id, "output": output}
 
     def policy_step(self, *, input_summary: str, output_summary: str, detail=None) -> AgentStep:
         return self.record(
