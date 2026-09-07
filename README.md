@@ -1,23 +1,45 @@
 # Relay
 
-Turn an IT problem into a reviewed Jira support request. Describe the issue in chat, check the AI-prepared ticket, edit its fields, attach files, and approve it before anything is sent to Jira.
+Turn an IT problem into a reviewed Jira support request. Describe the issue in chat, attach a screenshot, check the AI-prepared ticket, edit its fields, and send it to Jira when it looks right.
 
-**Live MVP:** [Open Relay](https://relay-web-production-6f5f.up.railway.app) · Sign in with an operator-issued session token.
+**Live:** [Open Relay](https://relay-web-production-6f5f.up.railway.app) · Sign in with an operator-issued session token.
 
 ## How it works
 
-1. **Describe your issue.** You can attach one screenshot to the message. The intake agent extracts details and uses approved sources to suggest help or prepare a support request. Intake runs as one of three selectable pipelines — deterministic rules, a single agent, or a triage agent with an independent reviewer.
-2. **Review the draft.** A separate verifier checks it against your conversation and Jira's fields. A Jira-style form appears beside your original issue, with a calibrated confidence indicator and a **Why this team?** explanation of the routing.
-3. **Edit and send.** Save and recheck changes, add attachments, then select **Send** (**Send (demo)** in demo mode). Sending approves the ticket and creates the Jira request; only the requester can send.
-4. **Track the request.** Relay shows the Jira reference, status, and attachment delivery. Operators can inspect the decision record — candidate teams, confidence signals and the agent timeline — and correct routing.
+1. **Describe your issue.** Attach a screenshot if it helps. The intake agent reads both, extracts the details it can quote, and either suggests an approved fix or prepares a support request.
+2. **Review the draft.** An independent verifier checks the ticket against your conversation and Jira's own fields. A Jira-style form appears beside your issue with a calibrated confidence indicator and a **Why this team?** explanation of the routing.
+3. **Edit and send.** Save and recheck changes, add attachments, then select **Send**. Sending approves the ticket and creates the Jira request; only the requester can send it.
+4. **Track the request.** Relay shows the Jira reference, status, and attachment delivery. Operators inspect the full decision record — candidate teams, confidence signals, and the agent timeline — and can correct routing.
 
-Attachments: up to **3 files, 5 MB each** — PDF, PNG, JPEG, TXT, or LOG. The verifier checks ticket text, not file contents. A chat screenshot (PNG or JPEG, up to 5 MB) is shown to the intake agent only and is staged as an attachment; it is dropped if the Jira request type does not accept attachments.
+## What's in it
+
+- **Three selectable intake pipelines** behind `RELAY_PIPELINE`: deterministic rules, a single agent, and a multi-agent arm that runs triage with read-only tools plus an independent reviewer. All three compose through the same deterministic policy.
+- **Bounded model authority.** A model may break a routing tie toward a service named in the message, abstain, or cite quoted evidence for impact, urgency, and security. Priority, escalation, restricted visibility, and every Jira write stay with application code.
+- **Calibrated confidence** on every request, fitted with isotonic regression on a development split, with plain-language reasons behind it.
+- **Persisted agent traces.** Every model and tool call is recorded with its prompt version, token usage, latency, and estimated cost, and shown to operators as a timeline.
+- **Screenshot intake.** Paste, drag, or pick a PNG or JPEG in chat. The intake agent sees it, and it is staged as a ticket attachment for delivery after approval.
+- **An evaluation harness.** `npm run eval` compares every intake arm on the 120-case corpus, caches each result so re-runs cost nothing, and publishes a table the Operations tab reads back.
+- **Requester approval throughout.** Nothing reaches Jira before the requester sends it, enforced at the API, the outbox, a database trigger, and the worker.
+
+Attachments: up to **3 files, 5 MB each** — PDF, PNG, JPEG, TXT, or LOG. A chat screenshot goes to the intake agent and rides along as an attachment.
+
+## Measured results
+
+Four evaluation arms on the 120-case corpus with `gpt-5.6-terra` at reasoning effort medium. Held-out split, 60 cases:
+
+| Arm | Routing accuracy | Security recall | Escalation recall | Calibration (ECE) | p50 latency |
+| --- | --- | --- | --- | --- | --- |
+| Rules only | 71.7% | 3/10 | 6/20 | 0.123 | 0 ms |
+| Single agent | **98.3%** | **10/10** | 19/20 | **0.002** | 2.4 s |
+| Multi-agent | 96.7% | **10/10** | **20/20** | 0.017 | 5.5 s |
+
+The single agent matches the multi-agent arm on routing and security recall with the best calibration, 2.3× lower latency, and 2.4× lower cost, so **`RELAY_PIPELINE=single` is the shipped default**. The multi-agent arm stays selectable for its reviewer verdicts. Full table, per-case results, and the caveats that bound these numbers: [arm comparison results](evaluation/ARMS-RESULTS.md).
 
 ## Stack
 
 - **Frontend:** React / Next.js with TypeScript, built as static files.
-- **Backend:** Python / FastAPI with a budgeted multi-agent intake pipeline, persisted agent traces and a separate verifier model call, all through OpenAI.
-- **Storage:** PostgreSQL with pgvector for reports, source retrieval, and queued work.
+- **Backend:** Python / FastAPI with a budgeted agent runtime, persisted traces, and an independent verifier model call, all through OpenAI.
+- **Storage:** PostgreSQL with pgvector for reports, source retrieval, agent traces, and queued work.
 - **Integration:** Jira Service Management, delivered by a Python background worker after approval.
 - **Hosting:** Railway web, worker, and PostgreSQL services.
 
@@ -33,24 +55,13 @@ docker compose up -d --wait db
 npm run demo
 ```
 
-Open [localhost:3000](http://127.0.0.1:3000). Demo mode uses synthetic data and simulated tickets; no API keys are needed. The command builds the UI and starts both Python processes.
+Open [localhost:3000](http://127.0.0.1:3000). Demo mode runs on synthetic data and simulated tickets, so no API keys are needed. The command builds the UI and starts both Python processes. Relay ships with 20 synthetic knowledge articles and 100 historical cases for demos and evaluation.
 
 The demo requires `APP_MODE=demo`. The copy command preserves an existing `.env`; if this checkout is already configured for live use, follow [local setup](LOCAL_SETUP.md) and run `npm run live` instead. Keep credentials in the ignored `.env` file.
 
-## Current status
+## Development
 
-The Python backend and Jira-style review flow are deployed. The latest verified release passed **310 Python tests** and **52 web tests**, TypeScript checks, the production build, and hosted checks. Real Jira tests verified approved fields, attachments, and duplicate-submission protection.
-
-Four evaluation arms were compared on the 120-case synthetic corpus with `gpt-5.6-terra` at reasoning effort medium: the two model pipelines above, plus two rules-only baselines that route with no model call at all. (The third selectable pipeline, `deterministic`, makes one extraction call before those same rules and was not run as its own arm; the rules rows are its routing floor.) On the held-out split, routing accuracy was 71.7% for the rules-only baselines and 98.3% for the single agent against 96.7% for the multi-agent arm; both model arms reached 10/10 security recall against 3/10 for the rules-only baselines. The single agent had the best calibration (ECE 0.002) at 2.3× lower latency and 2.4× lower estimated cost than the multi-agent arm, so **`RELAY_PIPELINE=single` is the shipped default**. The multi arm stays selectable, but not on the strength of tool-grounded evidence: in this run it made one `lookup_catalog` call (on heldout-029) and cited no sources in any of its 120 cases, so its routing was not tool-grounded; making the first triage turn require a tool call is a follow-up, not shipped. Labels are agent-authored and not human reviewed; the held-out split was already inspected during development, so this is a holdout-informed regression comparison, not a clean holdout claim; costs are estimates, not billing records; the model arms ran at medium effort while production uses high; and the dev-split ECE of 0.000 is in-sample because calibration is fitted on dev. Full table and caveats: [arm comparison results](evaluation/ARMS-RESULTS.md).
-
-This is an MVP, not a production-ready enterprise help desk:
-
-- Knowledge sources are **20 synthetic articles and 100 synthetic cases**, not company data or imported Jira history.
-- The arm comparison used agent-authored labels on a split already seen during development. A human-reviewed, freshly authored holdout is still needed before any claim about real routing quality.
-- Security-related reports stay in restricted local review instead of being sent to Jira.
-- Enterprise SSO, broader accessibility/mobile testing, and automatic GitHub-to-Railway deployment remain pending.
-
-## Development and details
+The latest verified release passes **316 Python tests** and **52 web tests**, TypeScript checks, the production build, and the Docker image build.
 
 ```sh
 # Set TEST_DATABASE_URL to a separate pgvector database ending in _test.
@@ -64,7 +75,7 @@ npm run eval -- --arm all --split all --effort medium
 
 - [Local setup](LOCAL_SETUP.md) — live configuration and sign-in
 - [Ticket workflow](TICKET_REVIEW.md) — verification, approval, and attachment behavior
-- [Frontend review](FRONTEND_REVIEW.md) — Jira-style interface and testing limits
-- [Deployment](DEPLOYMENT.md) — Railway configuration and current release
 - [Multi-agent intake design](MULTI_AGENT_PLAN.md) — the arms, the lanes a model may use, confidence and traces
-- [Build status](BUILD_STATUS.md) · [Evaluation results](evaluation/python-RESULTS.md) · [Arm comparison](evaluation/ARMS-RESULTS.md)
+- [Frontend review](FRONTEND_REVIEW.md) — the Jira-style interface
+- [Deployment](DEPLOYMENT.md) — Railway configuration and current release
+- [Build status](BUILD_STATUS.md) · [Arm comparison](evaluation/ARMS-RESULTS.md) · [Policy regression](evaluation/python-RESULTS.md)
