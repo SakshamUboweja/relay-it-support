@@ -1,11 +1,12 @@
 import hashlib
 import hmac
+import json
 from uuid import uuid4
 
 import httpx
 import pytest
 
-from relay import review, workflow
+from relay import api, review, workflow
 from relay.agents import Pipeline
 from relay.agents.schemas import PipelineResult
 from relay.api import app
@@ -319,3 +320,26 @@ async def test_inline_override_keeps_the_multi_arm_in_the_request(client, monkey
     assert created.status_code == 200
     assert created.json() == {"id": created.json()["id"]}
     assert seen == [created.json()["id"]] * 2
+
+
+async def test_evaluation_report_is_operator_only_and_read_at_request_time(
+    client, monkeypatch, tmp_path
+):
+    path = tmp_path / "arms-results.json"
+    monkeypatch.setattr(api, "EVALUATION_PATH", path)
+    assert (await client.get("/api/evaluation")).status_code == 403
+    await client.post("/api/session", json={"userId": "alex"})
+    assert (await client.get("/api/evaluation")).json() == {"available": False}
+    report = {
+        "runDate": "2026-09-06T00:00:00+00:00",
+        "model": "gpt-test",
+        "rows": [{"arm": "single", "split": "dev"}],
+        "cases": {"single": {"dev": [{"id": "dev-001"}]}},
+    }
+    path.write_text(json.dumps(report))
+    payload = (await client.get("/api/evaluation")).json()
+    assert payload == {"available": True, **{k: v for k, v in report.items() if k != "cases"}}
+    with_cases = (await client.get("/api/evaluation", params={"cases": "1"})).json()
+    assert with_cases["cases"] == report["cases"] and with_cases["available"] is True
+    path.unlink()
+    assert (await client.get("/api/evaluation")).json() == {"available": False}

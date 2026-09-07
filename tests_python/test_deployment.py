@@ -42,6 +42,7 @@ def test_production_runtime_is_python_and_static_ui_only():
     assert "relay.web" in runtime
     assert "/app/node_modules" not in runtime
     assert "scripts/deploy-web.ts" not in runtime
+    assert "evaluation/arms-results.json" in runtime
     assert (
         json.loads(Path("package.json").read_text())["scripts"]["worker"]
         == "uv run python -m relay.worker"

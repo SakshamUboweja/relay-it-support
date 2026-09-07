@@ -15,6 +15,8 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY relay ./relay
 COPY migrations ./migrations
 COPY config ./config
+# The arm comparison is optional until the first eval run; the glob keeps the build green.
+COPY evaluation/scenarios.json evaluation/arms-results.json* ./evaluation/
 COPY --from=build /app/out ./out
 RUN useradd --create-home --uid 10001 relay
 USER relay

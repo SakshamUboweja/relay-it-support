@@ -295,6 +295,23 @@ async def reports(req: Request):
     return response({"reports": [await requester_report(r, user) for r in rows]})
 
 
+EVALUATION_PATH = ROOT / "evaluation/arms-results.json"
+
+
+@app.get("/api/evaluation")
+async def evaluation(req: Request):
+    """The committed arm comparison, read at request time; per-case rows only on `?cases=1`."""
+    user = await authenticate(req)
+    if user["role"] != "operator":
+        raise ValueError("Forbidden")
+    if not EVALUATION_PATH.exists():
+        return response({"available": False})
+    report = json.loads(EVALUATION_PATH.read_text())
+    if req.query_params.get("cases") != "1":
+        report.pop("cases", None)
+    return response({"available": True, **report})
+
+
 @app.get("/api/operations")
 async def operations(req: Request):
     user = await authenticate(req)
