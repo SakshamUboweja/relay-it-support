@@ -56,7 +56,8 @@ TABLE_HEADER = (
 
 
 @pytest.fixture(autouse=True)
-async def seeded(monkeypatch, tmp_path):
+async def seeded(isolated_db, monkeypatch, tmp_path):
+    """`isolated_db` first: seeding before it would write to the configured database."""
     await seed_demo()
     monkeypatch.setattr(harness, "CACHE_DIR", tmp_path / "cache")
     monkeypatch.setattr(harness, "RESULTS_PATH", tmp_path / "arms-results.json")
