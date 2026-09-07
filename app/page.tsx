@@ -42,6 +42,7 @@ import {
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TicketReview } from '@/components/ticket-review';
 import { PipelineChip } from '@/components/pipeline-chip';
+import { DecisionRecord } from '@/components/decision-record';
 import { fmtDateTime } from '@/lib/format';
 import {
   teams,
@@ -315,47 +316,6 @@ export default function Home() {
       (filter === 'open' && x.state !== 'resolved') ||
       (filter === 'resolved' && x.state === 'resolved'),
   );
-  const decisionPanel = detail && (
-    <div className="decision-panel">
-      <div className="section-heading">
-        <h2>Decision record</h2>
-        <span className="small">
-          {detail.report.decision.model} · {detail.report.decision.version}
-        </span>
-      </div>
-      <div className="fact-grid">
-        {Object.entries(detail.report.decision.facts).map(([key, f]) => (
-          <div key={key}>
-            <span className="fact-label">{key.replace(/([A-Z])/g, ' $1')}</span>
-            <strong>{f.value ?? 'Unknown'}</strong>
-            <span className={'origin ' + f.origin}>
-              {f.origin.replace('_', ' ')}
-            </span>
-            <span className="small">
-              {f.evidenceIds.join(', ') || 'No evidence supplied'}
-            </span>
-          </div>
-        ))}
-      </div>
-      <div className="reason-codes">
-        <strong>Policy reasons</strong>
-        {detail.report.decision.reasons.map((x) => (
-          <code key={x}>{x}</code>
-        ))}
-      </div>
-      <p className="small">
-        Suggested steps: {detail.report.offered.join(', ') || 'None'} ·
-        Confirmed attempted: {detail.report.attempted.join(', ') || 'None'}
-      </p>
-      <p className="small">
-        Route:{' '}
-        {detail.report.decision.accepted
-          ? 'Accepted'
-          : 'Abstained to Service Desk'}
-        . Candidate scores are uncalibrated ranking values.
-      </p>
-    </div>
-  );
   return (
     <main className={hasReview && tab === 'chat' ? 'request-mode' : undefined}>
       <header className="topbar">
@@ -567,6 +527,16 @@ export default function Home() {
                               <p>{m.body}</p>
                             </div>
                           ))}
+                        {r.state === 'processing' && (
+                          <p className="small agents-working">
+                            <RefreshCw
+                              size={14}
+                              className="spin"
+                              aria-hidden="true"
+                            />
+                            Relay’s agents are reviewing your message…
+                          </p>
+                        )}
                         <div ref={scroll} />
                       </div>
                     </details>
@@ -1092,7 +1062,10 @@ export default function Home() {
                         Acknowledge
                       </button>
                     </div>
-                    {decisionPanel}
+                    <DecisionRecord
+                      report={detail.report}
+                      trace={detail.trace}
+                    />
                     <div className="correction">
                       <h3>Correct provider routing</h3>
                       <p>

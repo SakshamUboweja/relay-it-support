@@ -1135,6 +1135,217 @@ input {
   width: fit-content;
   margin-top: 5px;
 }
+.decision-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.decision-subheading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--jsm-text);
+  margin-top: 24px;
+}
+.decision-confidence {
+  margin-top: 14px;
+}
+.confidence-signals {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.confidence-signals li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--jsm-text-subtle);
+  background: var(--jsm-surface-sunken);
+  border: 1px solid var(--jsm-border);
+  border-radius: 3px;
+  padding: 3px 7px;
+}
+.signal-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--jsm-text-subtlest);
+}
+.candidates {
+  margin-top: 12px;
+}
+.candidates th,
+.candidates td {
+  padding: 9px 14px;
+}
+.candidate-selected {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--jsm-success-text);
+}
+.candidate-abstain {
+  font-size: 12px;
+  color: var(--jsm-warning-text);
+  background: var(--jsm-warning-bg);
+}
+.score-bar {
+  display: block;
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--jsm-neutral);
+  overflow: hidden;
+}
+.score-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--primary);
+}
+.agent-proposal,
+.agent-reviewer {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--jsm-text-subtle);
+}
+.agent-proposal > p,
+.agent-reviewer > p {
+  margin-top: 4px;
+}
+.reviewer-issues {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--jsm-text-subtlest);
+}
+.agent-run + .agent-run {
+  margin-top: 20px;
+  border-top: 1px solid var(--jsm-border);
+  padding-top: 18px;
+}
+.agent-run-head {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--jsm-text-subtle);
+  margin-top: 12px;
+}
+.agent-trace {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0 0;
+  padding: 2px 0 2px 14px;
+  border-left: 1px solid var(--jsm-border);
+}
+.agent-trace > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.agent-trace-index {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--jsm-neutral);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--jsm-text-subtle);
+}
+.agent-trace-body {
+  flex: 1;
+  min-width: 0;
+}
+.agent-trace-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--jsm-text);
+}
+.agent-trace-head > .small {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.trace-status {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--jsm-neutral);
+  color: var(--jsm-text-subtle);
+}
+.trace-status.error,
+.trace-status.timeout {
+  background: var(--jsm-danger-bg);
+  color: var(--jsm-danger-text);
+}
+.trace-status.rejected {
+  background: var(--jsm-warning-badge-bg);
+  color: var(--jsm-warning-text);
+}
+.trace-metrics {
+  display: flex;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--jsm-text-subtlest);
+  margin: 0 0 0 auto;
+}
+.trace-metrics dt {
+  display: inline;
+  font-weight: 600;
+}
+.trace-metrics dd {
+  display: inline;
+  margin: 0 0 0 4px;
+}
+.trace-summary {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--jsm-text-subtle);
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+.agent-trace details > summary {
+  font-size: 11px;
+  color: var(--jsm-link);
+  cursor: pointer;
+  margin-top: 6px;
+}
+.trace-args {
+  display: block;
+  font-size: 11px;
+  color: var(--jsm-text-subtle);
+  background: var(--jsm-surface-sunken);
+  border: 1px solid var(--jsm-border);
+  border-radius: 3px;
+  padding: 8px;
+  margin-top: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.trace-footer {
+  margin-top: 12px;
+}
+.agents-working {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
 /* Request workspace: conversation stays available beside the Jira form. */
 .conversation-history > summary {
   display: none;
@@ -1914,6 +2125,11 @@ input {
   }
 }
 @media (max-width: 760px) {
+  .trace-metrics {
+    flex-direction: column;
+    gap: 2px;
+    margin: 6px 0 0;
+  }
   .profile .avatar {
     display: none;
   }

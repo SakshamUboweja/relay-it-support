@@ -126,6 +126,19 @@ export type Decision = {
   supportRequested?: boolean;
   pipeline?: Pipeline;
   confidence?: Confidence;
+  proposal?: {
+    team: string;
+    service: string | null;
+    abstain: boolean;
+    probability: number;
+    rationale: string;
+    citedSourceIds: string[];
+  };
+  reviewer?: {
+    verdict: 'accept' | 'revise' | 'human_review';
+    agreementProbability: number;
+    issues: { field: string; message: string }[];
+  };
   scoring?: string;
   costUsd?: number | null;
   agentRunId?: string;
