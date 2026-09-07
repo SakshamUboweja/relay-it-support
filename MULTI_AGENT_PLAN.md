@@ -14,11 +14,16 @@ before approval is a separate role and is documented in [TICKET_REVIEW.md](TICKE
 | Multi | `multi` | Triage with read-only tools, then an independent reviewer | 8 / 4 / 60000 / 150 |
 
 Budgets live in `config/policy.json` under `agentBudget`. A run that exceeds a budget stops and is
-recorded as `budget_exhausted`; the deterministic decision still stands. Prompt versions are
-`relay-intake-v3` (extraction), `relay-single-v2`, `relay-triage-v1` and `relay-reviewer-v1`.
+recorded as `budget_exhausted`; the deterministic decision still stands — the extraction's validated
+facts apply, but neither the proposal nor its review is applied, and both are shown as evidence
+only. Prompt versions are `relay-intake-v3` (extraction), `relay-single-v2`, `relay-triage-v1` and
+`relay-reviewer-v1`.
 
 The multi arm's triage role can call three read-only tools — `lookup_catalog`, `similar_cases` and
-`search_knowledge` — over approved sources only. The reviewer has no tools and no write path.
+`search_knowledge` — over approved sources only. The reviewer has no tools and no write path. In
+the measured run below the triage role made one tool call across 120 cases (`lookup_catalog` on
+`heldout-029`) and no proposal cited a source, so its routing was not tool-grounded; making the
+first triage turn require a tool call is a follow-up, not shipped.
 
 ## What a model may change
 
@@ -26,9 +31,10 @@ The multi arm's triage role can call three read-only tools — `lookup_catalog`,
 decision, and its lanes are narrow:
 
 - **Tie-break.** If the deterministic scorer did not accept a route, the proposal may select a
-  service named in the message — one whose catalog aliases appear in the text, per
-  `catalog_candidates` — provided its team matches the catalog's team for that service and the
-  proposal clears `proposalMinConfidence`. Recorded as `model-tie-break`.
+  service named in the message or in screenshot text (`imageText`), which is data, not a quote —
+  one whose catalog aliases appear in that text, per `catalog_candidates` — provided its team
+  matches the catalog's team for that service and the proposal clears `proposalMinConfidence`.
+  Recorded as `model-tie-break`.
 - **Abstain.** A proposal may withdraw an accepted non-security route back to Service Desk
   (`model-abstain`).
 - **Cite a blocked-work quote.** A validated quote from the message raises priority and escalation to
@@ -104,25 +110,25 @@ all. They are not the shipped `RELAY_PIPELINE=deterministic` pipeline, which mak
 before the same rules and has no row here; the rules rows are that pipeline's routing floor, what the
 policy achieves on unextracted text.
 
-| Arm | Split | Route acc | Accepted prec | Coverage | Security recall | Escalation recall | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| rules-v1 | dev | 49/60 (81.7%) | 32/37 (86.5%) | 34/40 (85.0%) | 3/5 (60.0%) | 7/10 (70.0%) | 0.000 | 0.142 | 0.661 | 0 / 0 | 0/0 | $0.0000 |
-| rules-v1 | heldout | 43/60 (71.7%) | 34/43 (79.1%) | 42/50 (84.0%) | 3/10 (30.0%) | 6/20 (30.0%) | 0.123 | 0.211 | 0.608 | 0 / 0 | 0/0 | $0.0000 |
-| rules-v2 | dev | 52/60 (86.7%) | 35/40 (87.5%) | 37/40 (92.5%) | 3/5 (60.0%) | 7/10 (70.0%) | 0.000 | 0.113 | 0.615 | 0 / 0 | 0/0 | $0.0000 |
-| rules-v2 | heldout | 43/60 (71.7%) | 34/43 (79.1%) | 42/50 (84.0%) | 3/10 (30.0%) | 6/20 (30.0%) | 0.163 | 0.226 | 0.567 | 0 / 0 | 0/0 | $0.0000 |
-| single | dev | 59/60 (98.3%) | 40/41 (97.6%) | 40/40 (100.0%) | 5/5 (100.0%) | 10/10 (100.0%) | 0.000 | 0.016 | 0.822 | n/a / n/a | 101780/11471 | $0.1644 |
-| single | heldout | 59/60 (98.3%) | 49/50 (98.0%) | 50/50 (100.0%) | 10/10 (100.0%) | 19/20 (95.0%) | 0.002 | 0.016 | 0.839 | 2422 / 3855 | 101948/11163 | $0.1608 |
-| multi | dev | 59/60 (98.3%) | 40/41 (97.6%) | 40/40 (100.0%) | 5/5 (100.0%) | 10/10 (100.0%) | 0.000 | 0.016 | 0.822 | n/a / n/a | 177847/15537 | $0.3796 |
-| multi | heldout | 58/60 (96.7%) | 48/50 (96.0%) | 50/50 (100.0%) | 10/10 (100.0%) | 20/20 (100.0%) | 0.017 | 0.031 | 0.828 | 5489 / 7440 | 178542/15549 | $0.3929 |
+| Arm | Split | Route acc | Accepted prec | Coverage | Security recall | Escalation recall | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost | Tool calls / cited |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| rules-v1 | dev | 49/60 (81.7%) | 32/37 (86.5%) | 34/40 (85.0%) | 3/5 (60.0%) | 7/10 (70.0%) | 0.000 | 0.142 | 0.661 | 0 / 0 | 0/0 | $0.0000 | 0 / 0 |
+| rules-v1 | heldout | 43/60 (71.7%) | 34/43 (79.1%) | 42/50 (84.0%) | 3/10 (30.0%) | 6/20 (30.0%) | 0.123 | 0.211 | 0.608 | 0 / 0 | 0/0 | $0.0000 | 0 / 0 |
+| rules-v2 | dev | 52/60 (86.7%) | 35/40 (87.5%) | 37/40 (92.5%) | 3/5 (60.0%) | 7/10 (70.0%) | 0.000 | 0.113 | 0.615 | 0 / 0 | 0/0 | $0.0000 | 0 / 0 |
+| rules-v2 | heldout | 43/60 (71.7%) | 34/43 (79.1%) | 42/50 (84.0%) | 3/10 (30.0%) | 6/20 (30.0%) | 0.163 | 0.226 | 0.567 | 0 / 0 | 0/0 | $0.0000 | 0 / 0 |
+| single | dev | 59/60 (98.3%) | 40/41 (97.6%) | 40/40 (100.0%) | 5/5 (100.0%) | 10/10 (100.0%) | 0.000 | 0.016 | 0.822 | 2450 / 4250 | 101780/11471 | $0.1644 | 0 / 28 |
+| single | heldout | 59/60 (98.3%) | 49/50 (98.0%) | 50/50 (100.0%) | 10/10 (100.0%) | 19/20 (95.0%) | 0.002 | 0.016 | 0.839 | 2421 / 3854 | 101948/11163 | $0.1608 | 0 / 31 |
+| multi | dev | 59/60 (98.3%) | 40/41 (97.6%) | 40/40 (100.0%) | 5/5 (100.0%) | 10/10 (100.0%) | 0.000 | 0.016 | 0.822 | 5371 / 7922 | 177847/15537 | $0.3796 | 0 / 0 |
+| multi | heldout | 58/60 (96.7%) | 48/50 (96.0%) | 50/50 (100.0%) | 10/10 (100.0%) | 20/20 (100.0%) | 0.017 | 0.031 | 0.828 | 5488 / 7439 | 178542/15549 | $0.3929 | 1 / 0 |
 
 Caveats:
 
 1. Labels are agent-authored and not human reviewed.
-2. The heldout split was already inspected during development (its failures are in
-   python-results.json); this is a holdout-informed regression comparison, not a clean holdout claim.
+2. The heldout split was already inspected during development (its failures are in python-results.json); this is a holdout-informed regression comparison, not a clean holdout claim.
 3. Costs are estimates from config/pricing.json (version 2026-09-06-openrouter), not billing records.
 4. Model arms ran at reasoning effort medium; production uses high.
 5. The single arm saw the first eight seeded sources by id (no retrieval on this text-only corpus).
+6. The multi arm made 1 tool call and cited sources in 0 of 120 cases; its routing was not tool-grounded in this run.
 
 Held-out misses: single failed `heldout-037` (a routine password/MFA report restricted as Security
 Review) and `heldout-017` (elevated priority not recognised); multi failed `heldout-037` and
@@ -137,9 +143,12 @@ fitted on dev.
 `RELAY_PIPELINE=single` and scoring v2 are the live defaults. The single arm matched or beat the
 multi arm on routing accuracy and security recall, had the best calibration, and was 2.3× faster and
 2.4× cheaper. The multi arm's escalation edge is one case in twenty and within noise, and it
-restricted one extra routine case. The multi arm remains a `RELAY_PIPELINE` option because its reviewer
-verdicts and cited sources are useful evidence, as does `deterministic`. The two rules arms are not
-pipelines: they exist only as harness `--arm` values, kept as no-model baselines.
+restricted one extra routine case. The multi arm remains a `RELAY_PIPELINE` option, as does
+`deterministic`, but not on the strength of tool-grounded evidence: in this run it made one
+`lookup_catalog` call (on `heldout-029`) and cited no sources in any of its 120 cases, so its routing
+was not tool-grounded. Making the first triage turn require a tool call is a follow-up, not shipped.
+The two rules arms are not pipelines: they exist only as harness `--arm` values, kept as no-model
+baselines.
 
 The original HELP-7 regression — a laptop reporting Wi-Fi failure tying Network against Endpoint and
 falling back to Service Desk — is resolved. Scoring v2 routes it to Network, and so do both model
