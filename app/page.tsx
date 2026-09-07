@@ -44,6 +44,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { TicketReview } from '@/components/ticket-review';
 import { PipelineChip } from '@/components/pipeline-chip';
 import { DecisionRecord } from '@/components/decision-record';
+import { usePolling } from '@/hooks/use-polling';
 import { fmtDateTime } from '@/lib/format';
 import {
   teams,
@@ -150,7 +151,8 @@ export default function Home() {
         '/api/reports' + (tab === 'ops' ? '?all=1' : ''),
       );
       setReports(rows.reports);
-      if (detailId) await loadDetail(detailId);
+      // The requests tab shows the list only, so the detail fetch can wait.
+      if (detailId && tab !== 'requests') await loadDetail(detailId);
       if (tab === 'ops') setHealth(await api<Health>('/api/operations'));
     } catch (e) {
       setError((e as Error).message);
@@ -158,12 +160,9 @@ export default function Home() {
   }, [boot, tab, detailId, loadDetail]);
   useEffect(() => {
     const initial = setTimeout(() => void refresh(), 0);
-    const timer = setInterval(() => void refresh(), 4000);
-    return () => {
-      clearTimeout(initial);
-      clearInterval(timer);
-    };
+    return () => clearTimeout(initial);
   }, [refresh]);
+  usePolling(refresh, 4000);
   useEffect(() => {
     if (
       reportState &&

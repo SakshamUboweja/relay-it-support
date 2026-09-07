@@ -17,6 +17,7 @@ import {
   Upload,
   UserRound,
 } from 'lucide-react';
+import { usePolling } from '@/hooks/use-polling';
 import type { ReviewField, ReviewValue, TicketReviewData } from '@/lib/review';
 import { ConfidenceBadge } from '@/components/confidence-badge';
 import { confidenceCopy, isConfidence, pipelineNote } from '@/lib/confidence';
@@ -144,13 +145,12 @@ export function TicketReview({
     alive.current = true;
     generation.current++;
     const initial = setTimeout(() => void load(), 0);
-    const timer = setInterval(() => void load(), 4000);
     return () => {
       alive.current = false;
       clearTimeout(initial);
-      clearInterval(timer);
     };
   }, [load]);
+  usePolling(load, 4000);
 
   function edit(id: string, value: ReviewValue) {
     latest.current.dirty = true;
