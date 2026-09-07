@@ -2,7 +2,6 @@
 
 import hashlib
 import json
-import os
 import re
 from argparse import Namespace
 from pathlib import Path
@@ -312,6 +311,8 @@ async def test_fit_calibration_refuses_heldout_and_writes_monotone_breakpoints_o
 
 async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, tmp_path, capsys):
     live(monkeypatch)
+    # Pin the production effort the caveat quotes; the ambient value must not decide the assertion.
+    monkeypatch.setenv("OPENAI_REASONING_EFFORT", "high")
     parse = single_parse()
     result = await evaluate_arms(
         EvalOptions(arm="single", split="all", ids=["dev-001", "heldout-001"]),
@@ -395,8 +396,7 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
         " holdout claim.",
         "Costs are estimates from config/pricing.json (version 2026-09-06-openrouter), not"
         " billing records.",
-        "Model arms ran at reasoning effort medium; production uses"
-        f" {os.environ['OPENAI_REASONING_EFFORT']}.",
+        "Model arms ran at reasoning effort medium; production uses high.",
         "The single arm saw the first eight seeded sources by id (no retrieval on this text-only"
         " corpus).",
     ]
