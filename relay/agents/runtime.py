@@ -87,9 +87,14 @@ def _function_calls(response) -> list:
     return [item for item in output if getattr(item, "type", None) == "function_call"]
 
 
+# The SDK adds `parsed_arguments` to function calls and `parsed` to message text; the API
+# rejects both when they are echoed back.
+_SDK_ONLY = {"parsed_arguments": True, "content": {"__all__": {"parsed"}}}
+
+
 def _echo(output) -> list[dict]:
-    """Output items go back verbatim, minus the SDK-only field the API rejects."""
-    return [item.model_dump(exclude_none=True, exclude={"parsed_arguments"}) for item in output]
+    """Output items go back verbatim, minus the SDK-only fields the API rejects."""
+    return [item.model_dump(exclude_none=True, exclude=_SDK_ONLY) for item in output]
 
 
 def _tool_models(tools) -> dict:

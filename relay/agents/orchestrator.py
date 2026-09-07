@@ -91,6 +91,10 @@ async def run_deterministic(ctx: PipelineContext, rt: ModelRuntime, extract) -> 
     )
 
 
+def _text(error: Exception) -> str:
+    return str(error) or type(error).__name__
+
+
 def _final_review(reviews: list[dict]) -> dict | None:
     """The verdict compose sees. A revision the reviewer then accepted reads as `revise`;
     a proposal that still needed revising, or never received its revision, needs a person."""
@@ -122,15 +126,22 @@ async def run_multi_agent(ctx: PipelineContext, rt: ModelRuntime) -> PipelineRes
         extraction = await run_intake(ctx, rt, image=ctx.image)
     except BudgetExceeded as error:
         return snapshot("budget_exhausted", {"extraction": "skipped", "error": str(error)})
-    except Exception:
-        return snapshot("failed", {"extraction": "failed"})
+    except Exception as error:
+        return snapshot("failed", {"extraction": "failed", "error": _text(error)})
     fields = dict(
         extraction=extraction,
         summary=extraction["summary"],
         requested_support=bool(extraction["supportRequestQuote"]),
         procedure_tried=bool(extraction["procedureAttemptedQuote"]),
     )
-    candidates = rank_candidates(ctx.text, ctx.sources, ctx.user, scoring=scoring)
+    # Screenshot text widens the candidate list exactly as it does in compose.
+    candidates = rank_candidates(
+        ctx.text,
+        ctx.sources,
+        ctx.user,
+        scoring=scoring,
+        supplemental=extraction.get("imageText") or "",
+    )
     status, proposal, reviews, error = "completed", None, [], None
     try:
         for _ in range(2):
@@ -154,8 +165,8 @@ async def run_multi_agent(ctx: PipelineContext, rt: ModelRuntime) -> PipelineRes
                 break
     except BudgetExceeded as failure:
         status, error = "budget_exhausted", str(failure)
-    except Exception:
-        proposal, reviews = None, []
+    except Exception as failure:
+        proposal, reviews, error = None, [], _text(failure)
     review = _final_review(reviews)
     if review is not None and review["verdict"] == "human_review":
         proposal["abstain"] = True

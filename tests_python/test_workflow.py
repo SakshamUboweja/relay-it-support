@@ -652,8 +652,8 @@ async def test_single_pipeline_run_records_the_arm_and_its_routing_proposal(monk
         "rationale": "The message names the office Wi-Fi.",
         "citedSourceIds": [],
     }
-    assert decision["promptVersions"]["single"] == "relay-single-v1"
-    assert decision["promptVersion"] == "relay-single-v1"
+    assert decision["promptVersions"]["single"] == "relay-single-v2"
+    assert decision["promptVersion"] == "relay-single-v2"
     assert decision["confidence"]["agentRationale"] == "The message names the office Wi-Fi."
     run = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows[0]
     assert (run["pipeline"], run["status"], run["model"]) == ("single", "completed", "test-model")
@@ -668,7 +668,7 @@ async def test_single_pipeline_run_records_the_arm_and_its_routing_proposal(monk
         ("intake", "model_call"),
         ("policy", "policy"),
     ]
-    assert steps[0]["prompt_version"] == "relay-single-v1"
+    assert steps[0]["prompt_version"] == "relay-single-v2"
 
 
 async def test_multi_pipeline_run_records_every_role_and_the_review(monkeypatch):

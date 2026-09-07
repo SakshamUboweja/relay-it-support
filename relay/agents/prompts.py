@@ -1,6 +1,6 @@
 """Prompts for the agent arms. Versions are recorded on every step and on the decision."""
 
-SINGLE_PROMPT_VERSION = "relay-single-v1"
+SINGLE_PROMPT_VERSION = "relay-single-v2"
 TRIAGE_PROMPT_VERSION = "relay-triage-v1"
 REVIEWER_PROMPT_VERSION = "relay-reviewer-v1"
 

@@ -15,6 +15,6 @@
   "agentBudget": {
     "deterministic": { "maxModelCalls": 2, "maxToolCalls": 0, "maxTotalTokens": 20000, "maxSeconds": 75 },
     "single": { "maxModelCalls": 2, "maxToolCalls": 0, "maxTotalTokens": 25000, "maxSeconds": 75 },
-    "multi": { "maxModelCalls": 5, "maxToolCalls": 4, "maxTotalTokens": 60000, "maxSeconds": 150 }
+    "multi": { "maxModelCalls": 8, "maxToolCalls": 4, "maxTotalTokens": 60000, "maxSeconds": 150 }
   }
 }

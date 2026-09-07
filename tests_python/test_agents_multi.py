@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from relay.agents import build_pipeline
+from relay.agents import budget_for, build_pipeline
 from relay.agents.compose import compose_decision
 from relay.agents.orchestrator import run_multi_agent
 from relay.agents.prompts import (
@@ -30,7 +30,7 @@ USER = {
     "device": "MacBook",
     "scope": "sf",
 }
-MULTI = Budget(maxModelCalls=5, maxToolCalls=4, maxTotalTokens=60000, maxSeconds=150)
+MULTI = Budget(maxModelCalls=8, maxToolCalls=4, maxTotalTokens=60000, maxSeconds=150)
 
 
 def extraction(**overrides):
@@ -116,7 +116,9 @@ def similar_cases_call(service="wifi", call_id="call_1"):
 
 
 def calling(*calls):
-    return SimpleNamespace(status="completed", output=list(calls), output_parsed=None, usage=usage())
+    return SimpleNamespace(
+        status="completed", output=list(calls), output_parsed=None, usage=usage()
+    )
 
 
 def script(*, intake=None, triage=(), reviewer=()):
@@ -238,7 +240,9 @@ async def test_accept_path_routes_the_tie_through_a_tool_grounded_proposal():
         "citedSources": [{"id": "case-1", "title": "Office Wi-Fi case 1", "team": "Network"}],
     }
     assert rt.steps[4].promptVersion == REVIEWER_PROMPT_VERSION
-    assert result.reviewer["verdict"] == "accept" and result.proposal["citedSourceIds"] == ["case-1"]
+    assert result.reviewer["verdict"] == "accept" and result.proposal["citedSourceIds"] == [
+        "case-1"
+    ]
     assert result.summary == "Managed laptop cannot join the office Wi-Fi"
 
     d = compose_decision(ctx, result, rt, scoring="v1")
@@ -283,7 +287,9 @@ async def test_a_revise_verdict_runs_one_more_triage_with_the_reviewer_notes():
     assert d["team"] == "Network" and "model-tie-break" in d["reasons"]
     assert d["reviewer"]["verdict"] == "revise"
     signals = {s["kind"]: s for s in d["confidence"]["signals"]}
-    assert signals["agreement"]["label"] == "Reviewer asked for one revision; final proposal Network"
+    assert (
+        signals["agreement"]["label"] == "Reviewer asked for one revision; final proposal Network"
+    )
     assert signals["agreement"]["value"] == pytest.approx(0.4)
 
 
@@ -378,6 +384,7 @@ async def test_triage_failure_keeps_the_extraction_and_marks_triage_unavailable(
     assert result.extraction is not None
     assert result.proposal is None and result.reviewer is None
     assert roles(rt) == [("intake", "model_call", "ok"), ("triage", "model_call", "error")]
+    assert result.run.outcome["error"] == "Provider unavailable"
     d = compose_decision(ctx, result, rt, scoring="v1")
     assert d["model"] == "gpt-test" and "model-unavailable" not in d["reasons"]
     assert "triage-unavailable" in d["reasons"]
@@ -393,6 +400,7 @@ async def test_reviewer_failure_drops_the_proposal_too():
     result = await run_multi_agent(ctx, rt)
     assert result.run.status == "completed"
     assert result.proposal is None and result.reviewer is None
+    assert result.run.outcome["error"] == "boom"
     d = compose_decision(ctx, result, rt, scoring="v1")
     assert "triage-unavailable" in d["reasons"] and "model-tie-break" not in d["reasons"]
 
@@ -455,10 +463,50 @@ async def test_intake_failure_yields_the_live_failed_fallback():
     ctx = context()
     result = await run_multi_agent(ctx, rt)
     assert result.run.status == "failed" and result.extraction is None
+    assert result.run.outcome == {"extraction": "failed", "error": "Provider unavailable"}
     assert len(parse.calls) == 1
     d = compose_decision(ctx, result, rt, scoring="v1")
     assert (d["team"], d["model"]) == ("Service Desk", "live-failed")
     assert "model-unavailable" in d["reasons"]
+
+
+async def test_screenshot_text_makes_a_triage_candidate_like_compose():
+    message = "It drops every few minutes and I cannot get anything done."
+    image = {"data_url": "data:image/png;base64,AAAA", "detail": "auto", "attachmentId": "a1"}
+    parse = script(
+        intake=[
+            completed(
+                extraction(
+                    summary="Connection drops every few minutes",
+                    service=None,
+                    serviceQuote=None,
+                    symptomQuote="It drops every few minutes",
+                    deviceQuote=None,
+                    imageObservations=["GlobalProtect window showing Disconnected"],
+                    imageText="GlobalProtect\nStatus: Disconnected",
+                    imageService="vpn",
+                )
+            )
+        ],
+        triage=[completed(proposal(service="vpn", team="Network"))],
+        reviewer=[completed(review())],
+    )
+    rt = runtime(parse)
+    ctx = context(text=message, sources=[])
+    ctx.image = image
+    result = await run_multi_agent(ctx, rt)
+    assert result.run.status == "completed"
+    intake, triage, reviewer = parse.calls
+    assert [part["type"] for part in intake["input"][1]["content"]] == ["input_text", "input_image"]
+    assert [part["type"] for part in triage["input"][1]["content"]] == ["input_text"]
+    assert sent(triage)["candidates"] == [{"service": "vpn", "team": "Network", "score": 3}]
+    d = compose_decision(ctx, result, rt, scoring="v1")
+    assert (d["team"], d["service"]) == ("Network", "vpn")
+    assert d["facts"]["imageEvidence"]["evidenceIds"] == ["a1"]
+
+
+def test_the_multi_budget_fits_two_review_rounds_and_tool_turns():
+    assert budget_for("multi") == MULTI
 
 
 async def test_demo_mode_makes_no_call(monkeypatch):

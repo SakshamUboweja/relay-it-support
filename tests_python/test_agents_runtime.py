@@ -378,7 +378,9 @@ def calling(*calls):
 
 def lookup_tools(impl=None):
     tools = [pydantic_function_tool(LookupArgs, name="lookup", description="Find cases")]
-    return tools, {"lookup": impl or (lambda args: [{"id": f"case-{args.service}", "team": "Network"}])}
+    return tools, {
+        "lookup": impl or (lambda args: [{"id": f"case-{args.service}", "team": "Network"}])
+    }
 
 
 def tool_budget(calls):
@@ -427,6 +429,47 @@ async def test_tool_loop_echoes_calls_without_parsed_arguments_and_records_steps
     assert rt.seen_source_ids == {"case-vpn"}
     assert (rt.model_calls, rt.tool_calls) == (2, 1)
     assert rt.usage == Usage(input=30, output=13)
+
+
+async def test_tool_loop_echoes_message_items_without_the_sdk_parsed_field():
+    """A message item echoed with the SDK's `parsed` content field is rejected by the API."""
+    from openai.types.responses.parsed_response import (
+        ParsedResponseOutputMessage,
+        ParsedResponseOutputText,
+    )
+
+    note = ParsedResponseOutputMessage[Output](
+        id="msg_1",
+        role="assistant",
+        status="completed",
+        type="message",
+        content=[
+            ParsedResponseOutputText[Output](
+                type="output_text",
+                text=json.dumps({"answer": "looking"}),
+                annotations=[],
+                parsed=Output(answer="looking"),
+            )
+        ],
+    )
+    parse = AsyncMock(
+        side_effect=[calling(note, function_call(service="vpn")), completed("routed")]
+    )
+    rt = runtime(parse, budget=tool_budget(4))
+    tools, impls = lookup_tools()
+    result = await call(rt, tools=tools, tool_impls=impls)
+    assert result.parsed.answer == "routed"
+    echoed = parse.call_args_list[1].kwargs["input"][2]
+    assert echoed == {
+        "id": "msg_1",
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "content": [
+            {"type": "output_text", "text": json.dumps({"answer": "looking"}), "annotations": []}
+        ],
+    }
+    assert parse.call_args_list[1].kwargs["input"][3]["type"] == "function_call"
 
 
 async def test_async_tool_results_are_awaited_and_sanitized():
