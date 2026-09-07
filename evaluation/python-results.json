@@ -1,11 +1,11 @@
 {
-  "runDate": "2026-09-05T22:32:25.238508+00:00",
+  "runDate": "2026-09-07T06:42:29.957877+00:00",
   "mode": "deterministic-demo",
   "runtime": "python",
   "model": "deterministic-demo-v1",
   "promptVersion": "intake-v1",
   "policyVersion": "northstar-1.0",
-  "policyHash": "c4c498321f75f7ee41087b22333cf6b99c725c4d48ce9b0b23c8526d77c682a7",
+  "policyHash": "8d199a4ac680e7f49e498cc8c7bfbc2ce32aa055d0d5cdb3a660e175b5845748",
   "dataset": "120 synthetic cases; historical 60/60 family split, already observed during development; agent-authored labels NOT human reviewed. Migration regression corpus, not a new untouched holdout.",
   "allowedInformation": {
     "keyword": "Text and catalog; first alias match; no policy, history, model or incidents",
@@ -102,8 +102,8 @@
           "rate": 0.0
         },
         "latency": {
-          "p50Ms": 0.1518749922979623,
-          "p95Ms": 0.21866700262762606,
+          "p50Ms": 0.15545898349955678,
+          "p95Ms": 0.23812500876374543,
           "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
         },
         "tokens": {
@@ -130,7 +130,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 1.6816249990370125
+            "latencyMs": 1.654499996220693
           },
           {
             "id": "dev-002",
@@ -150,7 +150,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1709580101305619
+            "latencyMs": 0.17683400074020028
           },
           {
             "id": "dev-003",
@@ -170,7 +170,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16566699196118861
+            "latencyMs": 0.16862500342540443
           },
           {
             "id": "dev-004",
@@ -190,7 +190,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16408300143666565
+            "latencyMs": 0.1642499992158264
           },
           {
             "id": "dev-005",
@@ -210,7 +210,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.21466700127348304
+            "latencyMs": 0.23812500876374543
           },
           {
             "id": "dev-031",
@@ -230,7 +230,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.12316599895711988
+            "latencyMs": 0.12608300312422216
           },
           {
             "id": "dev-032",
@@ -250,7 +250,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.12629199773073196
+            "latencyMs": 0.12858299305662513
           },
           {
             "id": "dev-033",
@@ -270,7 +270,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.13625000428874046
+            "latencyMs": 0.14062499394640326
           },
           {
             "id": "dev-034",
@@ -290,7 +290,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1300839940086007
+            "latencyMs": 0.13316699187271297
           },
           {
             "id": "dev-035",
@@ -310,7 +310,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.12604099174495786
+            "latencyMs": 0.1297919952776283
           },
           {
             "id": "dev-036",
@@ -330,7 +330,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14708300295751542
+            "latencyMs": 0.1415839942637831
           },
           {
             "id": "dev-040",
@@ -350,7 +350,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.13937499898020178
+            "latencyMs": 0.14337498578242958
           },
           {
             "id": "dev-041",
@@ -370,7 +370,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1484160020481795
+            "latencyMs": 0.16262498684227467
           },
           {
             "id": "dev-042",
@@ -390,7 +390,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15120899479370564
+            "latencyMs": 0.15233299927785993
           },
           {
             "id": "dev-043",
@@ -410,7 +410,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14054100029170513
+            "latencyMs": 0.14916699728928506
           },
           {
             "id": "dev-044",
@@ -430,7 +430,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1452089927624911
+            "latencyMs": 0.149500003317371
           },
           {
             "id": "dev-045",
@@ -450,7 +450,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14187500346451998
+            "latencyMs": 0.14637497952207923
           },
           {
             "id": "dev-046",
@@ -470,7 +470,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.27070799842476845
+            "latencyMs": 0.2505000156816095
           },
           {
             "id": "dev-047",
@@ -490,7 +490,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16770799993537366
+            "latencyMs": 0.1674590166658163
           },
           {
             "id": "dev-048",
@@ -510,7 +510,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1586660073371604
+            "latencyMs": 0.16458300524391234
           },
           {
             "id": "dev-049",
@@ -530,7 +530,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15808400348760188
+            "latencyMs": 0.15929198707453907
           },
           {
             "id": "dev-050",
@@ -550,7 +550,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1467080001020804
+            "latencyMs": 0.1507079869043082
           },
           {
             "id": "dev-054",
@@ -570,7 +570,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14545800513587892
+            "latencyMs": 0.1551249879412353
           },
           {
             "id": "dev-056",
@@ -590,7 +590,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16399999731220305
+            "latencyMs": 0.16429199604317546
           },
           {
             "id": "dev-057",
@@ -610,7 +610,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.149125000461936
+            "latencyMs": 0.15454200911335647
           },
           {
             "id": "dev-058",
@@ -630,7 +630,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15683300443924963
+            "latencyMs": 0.1637499954085797
           },
           {
             "id": "dev-059",
@@ -650,7 +650,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15862500004004687
+            "latencyMs": 0.1626670127734542
           },
           {
             "id": "dev-060",
@@ -670,7 +670,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15070900553837419
+            "latencyMs": 0.1564999984111637
           }
         ]
       },
@@ -759,8 +759,8 @@
           "rate": 0.31666666666666665
         },
         "latency": {
-          "p50Ms": 0.15233299927785993,
-          "p95Ms": 0.18033299420494586,
+          "p50Ms": 0.15387500752694905,
+          "p95Ms": 0.16754199168644845,
           "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
         },
         "tokens": {
@@ -788,7 +788,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15037499542813748
+            "latencyMs": 0.16070899437181652
           },
           {
             "id": "dev-013",
@@ -809,7 +809,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.2042499982053414
+            "latencyMs": 0.15895802062004805
           },
           {
             "id": "dev-016",
@@ -830,7 +830,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16425001376774162
+            "latencyMs": 0.15720800729468465
           },
           {
             "id": "dev-017",
@@ -851,7 +851,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16320800932589918
+            "latencyMs": 0.15708300634287298
           },
           {
             "id": "dev-020",
@@ -872,7 +872,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15787499432917684
+            "latencyMs": 0.16208301531150937
           },
           {
             "id": "dev-037",
@@ -893,7 +893,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1340830058325082
+            "latencyMs": 0.1480000209994614
           },
           {
             "id": "dev-038",
@@ -914,7 +914,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.13908300024922937
+            "latencyMs": 0.14445898705162108
           },
           {
             "id": "dev-041",
@@ -935,7 +935,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.17025000124704093
+            "latencyMs": 0.16033300198614597
           },
           {
             "id": "dev-042",
@@ -956,7 +956,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1498339988756925
+            "latencyMs": 0.15595799777656794
           },
           {
             "id": "dev-047",
@@ -977,7 +977,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1713339879643172
+            "latencyMs": 0.16650001634843647
           },
           {
             "id": "dev-048",
@@ -998,7 +998,7 @@
                 "explicit-work-blocked-no-workaround"
               ]
             },
-            "latencyMs": 0.1585830032126978
+            "latencyMs": 0.16204098938032985
           },
           {
             "id": "dev-052",
@@ -1019,7 +1019,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1405829971190542
+            "latencyMs": 0.14408299466595054
           },
           {
             "id": "dev-053",
@@ -1040,7 +1040,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.13791599485557526
+            "latencyMs": 0.14145899331197143
           },
           {
             "id": "dev-054",
@@ -1061,7 +1061,7 @@
                 "possible-compromise-restricted-review"
               ]
             },
-            "latencyMs": 0.15087499923538417
+            "latencyMs": 0.15350000467151403
           },
           {
             "id": "dev-055",
@@ -1082,7 +1082,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.13604199921246618
+            "latencyMs": 0.1367499935440719
           },
           {
             "id": "dev-057",
@@ -1103,7 +1103,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1543749967822805
+            "latencyMs": 0.15883299056440592
           },
           {
             "id": "dev-060",
@@ -1124,7 +1124,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15395898662973195
+            "latencyMs": 0.15937499119900167
           }
         ]
       }
@@ -1215,8 +1215,8 @@
           "rate": 0.0
         },
         "latency": {
-          "p50Ms": 0.15445900498889387,
-          "p95Ms": 0.16929199045989662,
+          "p50Ms": 0.15812498168088496,
+          "p95Ms": 0.1732500095386058,
           "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
         },
         "tokens": {
@@ -1243,7 +1243,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1564999984111637
+            "latencyMs": 0.16216599033214152
           },
           {
             "id": "heldout-017",
@@ -1263,7 +1263,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16929199045989662
+            "latencyMs": 0.1732500095386058
           },
           {
             "id": "heldout-018",
@@ -1283,7 +1283,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1638329995330423
+            "latencyMs": 0.16949998098425567
           },
           {
             "id": "heldout-019",
@@ -1303,7 +1303,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.164333003340289
+            "latencyMs": 0.16670802142471075
           },
           {
             "id": "heldout-020",
@@ -1323,7 +1323,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15300000086426735
+            "latencyMs": 0.15870798961259425
           },
           {
             "id": "heldout-023",
@@ -1343,7 +1343,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15666701074223965
+            "latencyMs": 0.16125000547617674
           },
           {
             "id": "heldout-031",
@@ -1363,7 +1363,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1899170019896701
+            "latencyMs": 0.1916250039357692
           },
           {
             "id": "heldout-032",
@@ -1383,7 +1383,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14754199946764857
+            "latencyMs": 0.1514999894425273
           },
           {
             "id": "heldout-033",
@@ -1403,7 +1403,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.163792006787844
+            "latencyMs": 0.16387499636039138
           },
           {
             "id": "heldout-034",
@@ -1423,7 +1423,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16187499568331987
+            "latencyMs": 0.16379202133975923
           },
           {
             "id": "heldout-035",
@@ -1443,7 +1443,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.159624993102625
+            "latencyMs": 0.16241701086983085
           },
           {
             "id": "heldout-041",
@@ -1463,7 +1463,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.26108400197699666
+            "latencyMs": 0.25516599998809397
           },
           {
             "id": "heldout-042",
@@ -1483,7 +1483,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1596670044818893
+            "latencyMs": 0.1662079885136336
           },
           {
             "id": "heldout-043",
@@ -1503,7 +1503,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1621249975869432
+            "latencyMs": 0.1678749977145344
           },
           {
             "id": "heldout-044",
@@ -1523,7 +1523,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15300000086426735
+            "latencyMs": 0.15908302157185972
           },
           {
             "id": "heldout-045",
@@ -1543,7 +1543,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15966698992997408
+            "latencyMs": 0.1645419979467988
           },
           {
             "id": "heldout-046",
@@ -1563,7 +1563,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.152749998960644
+            "latencyMs": 0.16012502601370215
           },
           {
             "id": "heldout-047",
@@ -1583,7 +1583,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1370410027448088
+            "latencyMs": 0.14258298324421048
           },
           {
             "id": "heldout-048",
@@ -1603,7 +1603,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.13945800310466439
+            "latencyMs": 0.13991701416671276
           },
           {
             "id": "heldout-049",
@@ -1623,7 +1623,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.13608300650957972
+            "latencyMs": 0.14920797548256814
           },
           {
             "id": "heldout-050",
@@ -1643,7 +1643,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14170800568535924
+            "latencyMs": 0.14587497571483254
           },
           {
             "id": "heldout-051",
@@ -1663,7 +1663,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.16224999853875488
+            "latencyMs": 0.167582998983562
           },
           {
             "id": "heldout-053",
@@ -1683,7 +1683,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.1604169956408441
+            "latencyMs": 0.16433402197435498
           },
           {
             "id": "heldout-054",
@@ -1703,7 +1703,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15949999215081334
+            "latencyMs": 0.17133299843408167
           },
           {
             "id": "heldout-056",
@@ -1723,7 +1723,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.14070799807086587
+            "latencyMs": 0.14712498523294926
           },
           {
             "id": "heldout-057",
@@ -1743,7 +1743,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15070900553837419
+            "latencyMs": 0.15624999650754035
           },
           {
             "id": "heldout-058",
@@ -1763,7 +1763,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15587499365210533
+            "latencyMs": 0.1622500130906701
           },
           {
             "id": "heldout-059",
@@ -1783,7 +1783,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15224999515339732
+            "latencyMs": 0.1574999769218266
           },
           {
             "id": "heldout-060",
@@ -1803,7 +1803,7 @@
                 "first-keyword-match"
               ]
             },
-            "latencyMs": 0.15100000018719584
+            "latencyMs": 0.15570901450701058
           }
         ]
       },
@@ -1892,8 +1892,8 @@
           "rate": 0.25
         },
         "latency": {
-          "p50Ms": 0.15900000289548188,
-          "p95Ms": 0.20754100114572793,
+          "p50Ms": 0.15795801300555468,
+          "p95Ms": 0.16799999866634607,
           "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency."
         },
         "tokens": {
@@ -1921,7 +1921,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.17129199113696814
+            "latencyMs": 0.15691597945988178
           },
           {
             "id": "heldout-017",
@@ -1942,7 +1942,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.20754100114572793
+            "latencyMs": 0.16545900143682957
           },
           {
             "id": "heldout-018",
@@ -1963,7 +1963,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1867500104708597
+            "latencyMs": 0.1663750153966248
           },
           {
             "id": "heldout-019",
@@ -1984,7 +1984,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.17470799502916634
+            "latencyMs": 0.16799999866634607
           },
           {
             "id": "heldout-023",
@@ -2005,7 +2005,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1650829944992438
+            "latencyMs": 0.15983401681296527
           },
           {
             "id": "heldout-026",
@@ -2026,7 +2026,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.13412500265985727
+            "latencyMs": 0.13416699948720634
           },
           {
             "id": "heldout-029",
@@ -2047,7 +2047,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1429999974789098
+            "latencyMs": 0.1299590221606195
           },
           {
             "id": "heldout-030",
@@ -2068,7 +2068,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.13566600682679564
+            "latencyMs": 0.13395797577686608
           },
           {
             "id": "heldout-031",
@@ -2089,7 +2089,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.18141600594390184
+            "latencyMs": 0.17833401216194034
           },
           {
             "id": "heldout-033",
@@ -2110,7 +2110,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1617499947315082
+            "latencyMs": 0.15999999595806003
           },
           {
             "id": "heldout-034",
@@ -2131,7 +2131,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16241699631791562
+            "latencyMs": 0.16079199849627912
           },
           {
             "id": "heldout-035",
@@ -2152,7 +2152,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16250000044237822
+            "latencyMs": 0.15883398009464145
           },
           {
             "id": "heldout-037",
@@ -2173,7 +2173,7 @@
                 "possible-compromise-restricted-review"
               ]
             },
-            "latencyMs": 0.15337500371970236
+            "latencyMs": 0.1598329981788993
           },
           {
             "id": "heldout-040",
@@ -2194,7 +2194,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15683300443924963
+            "latencyMs": 0.16212501213885844
           },
           {
             "id": "heldout-042",
@@ -2215,7 +2215,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15879099373705685
+            "latencyMs": 0.15941698802635074
           },
           {
             "id": "heldout-043",
@@ -2236,7 +2236,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1644999865675345
+            "latencyMs": 0.166124984389171
           },
           {
             "id": "heldout-044",
@@ -2257,7 +2257,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15616700693499297
+            "latencyMs": 0.15512501704506576
           },
           {
             "id": "heldout-045",
@@ -2278,7 +2278,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16254201182164252
+            "latencyMs": 0.1617079833522439
           },
           {
             "id": "heldout-046",
@@ -2299,7 +2299,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15529200027231127
+            "latencyMs": 0.15633300063200295
           },
           {
             "id": "heldout-051",
@@ -2320,7 +2320,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16637500084470958
+            "latencyMs": 0.16450000111944973
           },
           {
             "id": "heldout-052",
@@ -2341,7 +2341,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15900000289548188
+            "latencyMs": 0.15849998453631997
           },
           {
             "id": "heldout-053",
@@ -2362,7 +2362,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.16216599033214152
+            "latencyMs": 0.1617920061107725
           },
           {
             "id": "heldout-054",
@@ -2383,7 +2383,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.15916700067464262
+            "latencyMs": 0.16262498684227467
           },
           {
             "id": "heldout-057",
@@ -2404,7 +2404,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.1797909935703501
+            "latencyMs": 0.15454200911335647
           },
           {
             "id": "heldout-058",
@@ -2425,7 +2425,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.2727920073084533
+            "latencyMs": 0.16008300008252263
           },
           {
             "id": "heldout-059",
@@ -2446,7 +2446,7 @@
                 "provisional-priority-impact-unknown"
               ]
             },
-            "latencyMs": 0.21816599473822862
+            "latencyMs": 0.1584590063430369
           }
         ]
       }

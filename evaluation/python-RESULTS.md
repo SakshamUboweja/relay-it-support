@@ -1,6 +1,6 @@
 # Python migration regression results
 
-Run: 2026-09-05T22:32:25.238508+00:00. Policy: northstar-1.0. Implementation SHA-256: c4c498321f75f7ee41087b22333cf6b99c725c4d48ce9b0b23c8526d77c682a7.
+Run: 2026-09-07T06:42:29.957877+00:00. Policy: northstar-1.0. Implementation SHA-256: 8d199a4ac680e7f49e498cc8c7bfbc2ce32aa055d0d5cdb3a660e175b5845748.
 
 Labels are agent-authored and **not human reviewed**. Both historical split names are retained for comparison; their cases have already been observed. This is migration regression evidence, not a new untouched holdout or proof of improved real-world accuracy.
 
