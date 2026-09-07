@@ -17,6 +17,8 @@ import {
   UserRound,
 } from 'lucide-react';
 import type { ReviewField, ReviewValue, TicketReviewData } from '@/lib/review';
+import { ConfidenceBadge } from '@/components/confidence-badge';
+import { confidenceCopy, isConfidence, pipelineNote } from '@/lib/confidence';
 
 class ReviewError extends Error {
   constructor(
@@ -535,7 +537,10 @@ export function TicketReview({
               <dl className="review-routing">
                 <div>
                   <dt>Suggested team</dt>
-                  <dd>{review.team}</dd>
+                  <dd>
+                    {review.team}
+                    <ConfidenceBadge confidence={review.confidence} />
+                  </dd>
                 </div>
                 <div>
                   <dt>Priority</dt>
@@ -543,6 +548,24 @@ export function TicketReview({
                 </div>
               </dl>
             </div>
+            {isConfidence(review.confidence) && (
+              <details className="review-confidence-why">
+                <summary>Why this team?</summary>
+                <p>{confidenceCopy(review.confidence.band).sentence}</p>
+                <ul>
+                  {review.confidence.signals.map((signal) => (
+                    <li key={signal.kind}>{signal.label}</li>
+                  ))}
+                </ul>
+                <p className="review-caption">
+                  {pipelineNote(review.pipeline)} Confidence{' '}
+                  {review.confidence.value.toFixed(2)}
+                  {review.confidence.calibrated
+                    ? ', calibrated on Relay’s evaluation set.'
+                    : ', uncalibrated.'}
+                </p>
+              </details>
+            )}
             <div
               className={
                 'review-verification ' +

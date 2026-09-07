@@ -41,6 +41,8 @@ import {
 } from '@/components/ui/table';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TicketReview } from '@/components/ticket-review';
+import { PipelineChip } from '@/components/pipeline-chip';
+import { fmtDateTime } from '@/lib/format';
 import {
   teams,
   type Report,
@@ -48,6 +50,7 @@ import {
   type Message,
   type Source,
   type Operation,
+  type Trace,
 } from '@/lib/domain';
 type Bootstrap = {
   user: User;
@@ -61,6 +64,7 @@ type Detail = {
   sources: Source[];
   operations: Operation[];
   events: { id: string; kind: string; detail: unknown; created_at: string }[];
+  trace?: Trace;
 };
 type Health = {
   mode: string;
@@ -84,13 +88,6 @@ const labels: Record<string, string> = {
   resolved: 'Resolution saved',
   operator_review: 'Needs operator review',
 };
-const fmt = (s: string) =>
-  new Date(s).toLocaleString(undefined, {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
 async function api<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(path, {
     method: body ? 'POST' : 'GET',
@@ -509,7 +506,8 @@ export default function Home() {
                       <span className={'status ' + r.state}>
                         {labels[r.state]}
                       </span>
-                      <span>{fmt(r.created_at)}</span>
+                      <span>{fmtDateTime(r.created_at)}</span>
+                      <PipelineChip pipeline={r.decision.pipeline} />
                       {r.decision.visibility === 'restricted' && (
                         <span>
                           <Lock size={13} />
@@ -623,7 +621,7 @@ export default function Home() {
                               : 'Jira Service Management'}{' '}
                             ·{' '}
                             {r.synced_at
-                              ? 'Synced ' + fmt(r.synced_at)
+                              ? 'Synced ' + fmtDateTime(r.synced_at)
                               : 'Awaiting synchronization'}
                           </span>
                         </div>
@@ -771,8 +769,8 @@ export default function Home() {
                       {boot.mode === 'demo'
                         ? 'Simulated directory and device inventory'
                         : 'Live context'}{' '}
-                      · captured {fmt(r.updated_at)}. Optional unknowns never
-                      block support.
+                      · captured {fmtDateTime(r.updated_at)}. Optional unknowns
+                      never block support.
                     </p>
                     <div className="context-facts">
                       <span>
@@ -786,7 +784,7 @@ export default function Home() {
                       <div className="source" key={s.id}>
                         <strong>{s.title}</strong>
                         <span className="small">
-                          {s.id} · {s.kind} · {fmt(s.updated_at)}
+                          {s.id} · {s.kind} · {fmtDateTime(s.updated_at)}
                           {boot.mode === 'demo' ? ' · synthetic' : ''}
                         </span>
                         <p>{s.body}</p>
@@ -824,7 +822,7 @@ export default function Home() {
                           {boot.mode === 'demo'
                             ? 'Simulated advisory'
                             : 'Approved advisory'}{' '}
-                          · {fmt(i.updated_at)}
+                          · {fmtDateTime(i.updated_at)}
                         </span>
                       </div>
                     ))
@@ -935,7 +933,8 @@ export default function Home() {
                         <h3>{item.summary}</h3>
                         <span>
                           {item.provider_key ?? 'Conversation saved'} ·{' '}
-                          {fmt(item.created_at)}
+                          {fmtDateTime(item.created_at)}
+                          <PipelineChip pipeline={item.decision.pipeline} />
                         </span>
                       </div>
                       <span className={'status ' + item.state}>
@@ -979,7 +978,7 @@ export default function Home() {
                     </strong>
                     <small>
                       {health?.worker.last_seen
-                        ? fmt(health.worker.last_seen)
+                        ? fmtDateTime(health.worker.last_seen)
                         : 'Start the background worker'}
                     </small>
                   </div>
@@ -1048,6 +1047,7 @@ export default function Home() {
                           </TableCell>
                           <TableCell>
                             {item.provider_team ?? item.decision.team}
+                            <PipelineChip pipeline={item.decision.pipeline} />
                           </TableCell>
                           <TableCell>
                             <span
@@ -1207,7 +1207,9 @@ export default function Home() {
                       {detail.events.map((e) => (
                         <div className="source" key={e.id}>
                           <strong>{e.kind}</strong>
-                          <span className="small">{fmt(e.created_at)}</span>
+                          <span className="small">
+                            {fmtDateTime(e.created_at)}
+                          </span>
                           <pre>{JSON.stringify(e.detail, null, 2)}</pre>
                         </div>
                       ))}
