@@ -279,10 +279,20 @@ h3 {
 .composer textarea::placeholder {
   color: #8792a5;
 }
+.composer.dragging {
+  outline: 2px dashed var(--primary);
+  outline-offset: 3px;
+}
+.composer-attachments {
+  margin: 10px 0 12px;
+}
+.composer-attachments [data-slot='attachment'] {
+  max-width: 100%;
+}
 .composer-bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
 }
 .composer-bottom > span {
   font-size: 12px;
@@ -290,6 +300,24 @@ h3 {
   display: flex;
   gap: 6px;
   align-items: center;
+  margin-right: auto;
+}
+.composer-attach {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid var(--jsm-border);
+  color: var(--jsm-text-subtle);
+  border-radius: 10px;
+}
+.composer-attach:hover:not(:disabled) {
+  background: var(--jsm-surface-raised);
+  color: var(--foreground);
+}
+.composer-attach:disabled {
+  opacity: 0.55;
 }
 .send {
   display: grid;
@@ -1069,6 +1097,10 @@ input {
   background: #e7efff;
   color: #4263a7;
 }
+.origin.image {
+  background: #e6f2ee;
+  color: #3a6d5c;
+}
 .reason-codes {
   display: flex;
   align-items: center;
@@ -1419,6 +1451,18 @@ input {
   line-height: 1.8;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+.request-original-image {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: 14px;
+  line-height: 0;
+}
+.request-original-image img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 8px;
+  border: 1px solid var(--jsm-border);
 }
 .request-original > a {
   display: inline-flex;

@@ -1,7 +1,6 @@
 'use client';
 import {
   ArrowUpRight,
-  ArrowUp,
   ShieldCheck,
   Radio,
   LifeBuoy,
@@ -42,15 +41,18 @@ import {
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TicketReview } from '@/components/ticket-review';
+import { Composer, type ComposerImage } from '@/components/composer';
 import { PipelineChip } from '@/components/pipeline-chip';
 import { DecisionRecord } from '@/components/decision-record';
 import { usePolling } from '@/hooks/use-polling';
 import { fmtDateTime } from '@/lib/format';
+import { imageSignature } from '@/lib/intake-image';
 import {
   teams,
   type Report,
   type User,
   type Message,
+  type MessageImage,
   type Source,
   type Operation,
   type Trace,
@@ -97,15 +99,44 @@ const PipelineComparison = dynamic(
   { ssr: false, loading: () => <p className="small">Loading comparison…</p> },
 );
 async function api<T>(path: string, body?: unknown): Promise<T> {
+  // A multipart body carries its own boundary, so the browser must be left to
+  // write the Content-Type header itself.
+  const multipart = body instanceof FormData;
   const res = await fetch(path, {
     method: body ? 'POST' : 'GET',
-    headers: body ? { 'Content-Type': 'application/json' } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
+    headers:
+      body && !multipart ? { 'Content-Type': 'application/json' } : undefined,
+    body: multipart ? body : body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json();
   if (!res.ok)
     throw new Error(data.error ?? 'Something went wrong. Please retry.');
   return data;
+}
+/** The screenshot a requester attached, shown back to them.
+ *
+ * Retention can clear the bytes once the file reaches Jira, so a filename
+ * stands in for the picture rather than a broken image.
+ */
+function MessageScreenshot({ image }: { image: MessageImage }) {
+  if (!image.hasContent)
+    return <p className="small">{image.filename} (sent to Jira)</p>;
+  return (
+    <a
+      className="request-original-image"
+      href={image.url}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {/* The static export ships no image loader, so the API URL is used as is. */}
+      {/* oxlint-disable-next-line no-img-element */}
+      <img
+        src={image.url}
+        alt={`Screenshot you attached: ${image.filename}`}
+        loading="lazy"
+      />
+    </a>
+  );
 }
 export default function Home() {
   const [boot, setBoot] = useState<Bootstrap | null>(null),
@@ -123,8 +154,27 @@ export default function Home() {
     [correctionPriority, setCorrectionPriority] = useState<string>('normal'),
     [reason, setReason] = useState(''),
     [comparisonOpen, setComparisonOpen] = useState(false);
-  const pending = useRef<{ body: unknown; signature: string } | null>(null);
+  const [image, setImage] = useState<ComposerImage | null>(null);
+  const pending = useRef<{
+    signature: string;
+    submissionKey: string;
+    fields: { text: string; action: string; reportId?: string };
+    image: File | null;
+  } | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
+  const previewUrl = image?.url;
+  // The preview URL is a blob handle: drop it when it is replaced or the page
+  // goes away, so a long session does not pin screenshots in memory.
+  useEffect(
+    () => () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    },
+    [previewUrl],
+  );
+  function clearImage() {
+    if (image) URL.revokeObjectURL(image.url);
+    setImage(null);
+  }
   const bootstrap = useCallback(async () => {
     try {
       setBoot(await api<Bootstrap>('/api/bootstrap'));
@@ -179,6 +229,7 @@ export default function Home() {
       setReports([]);
       setTab('chat');
       setText('');
+      clearImage();
       pending.current = null;
       await bootstrap();
     } catch (e) {
@@ -204,21 +255,35 @@ export default function Home() {
       text: content,
       action,
       reportId: detail?.report.id,
+      image: image ? imageSignature(image.file) : null,
     });
     if (pending.current?.signature !== signature)
       pending.current = {
         signature,
-        body: {
+        submissionKey: crypto.randomUUID(),
+        fields: {
           text: content,
           action,
           reportId: detail?.report.id,
-          submissionKey: crypto.randomUUID(),
         },
+        image: image?.file ?? null,
       };
+    // The body is rebuilt per attempt because a FormData stream can only be
+    // read once; the submission key is reused so a retry stays idempotent.
+    const attempt = pending.current;
+    const payload = { ...attempt.fields, submissionKey: attempt.submissionKey };
+    let body: unknown = payload;
+    if (attempt.image) {
+      const form = new FormData();
+      form.append('payload', JSON.stringify(payload));
+      form.append('image', attempt.image, attempt.image.name);
+      body = form;
+    }
     try {
-      const r = await api<{ id: string }>('/api/intake', pending.current.body);
+      const r = await api<{ id: string }>('/api/intake', body);
       await loadDetail(r.id);
       setText('');
+      clearImage();
       pending.current = null;
       setTab('chat');
     } catch (e) {
@@ -250,6 +315,7 @@ export default function Home() {
   function newChat() {
     setDetail(null);
     setText('');
+    clearImage();
     setError('');
     setNotice('');
     pending.current = null;
@@ -302,6 +368,7 @@ export default function Home() {
     return () => lifecycle.abort();
   }, []);
   const r = detail?.report,
+    firstUserMessage = detail?.messages.find((m) => m.role === 'user'),
     waiting =
       r &&
       ['awaiting_response', 'awaiting_clarification', 'processing'].includes(
@@ -501,9 +568,10 @@ export default function Home() {
                         <span className="message-label">
                           <MessageSquare size={15} /> You reported
                         </span>
-                        <p>
-                          {detail.messages.find((m) => m.role === 'user')?.body}
-                        </p>
+                        <p>{firstUserMessage?.body}</p>
+                        {firstUserMessage?.image && (
+                          <MessageScreenshot image={firstUserMessage.image} />
+                        )}
                         <a href="#ticket-request">
                           {r.provider_key
                             ? 'View submitted request'
@@ -546,6 +614,9 @@ export default function Home() {
                                 )}
                               </div>
                               <p>{m.body}</p>
+                              {m.role === 'user' && m.image && (
+                                <MessageScreenshot image={m.image} />
+                              )}
                             </div>
                           ))}
                         {r.state === 'processing' && (
@@ -650,53 +721,24 @@ export default function Home() {
                   </>
                 )}
                 {showComposer && (
-                  <form
-                    className="composer"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      void send();
-                    }}
-                  >
-                    <label className="sr-only" htmlFor="issue">
-                      {r
-                        ? 'Answer the clarification'
-                        : 'Describe your IT issue'}
-                    </label>
-                    <textarea
-                      id="issue"
-                      value={text}
-                      maxLength={6000}
-                      onChange={(e) => setText(e.target.value)}
-                      placeholder={
-                        r
-                          ? 'Tell us which service is affected…'
-                          : 'For example, my VPN stopped working after I changed my password…'
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                          e.preventDefault();
-                          void send();
-                        }
-                      }}
-                    />
-                    <div className="composer-bottom">
-                      <span>
-                        <ShieldCheck size={15} />
-                        Your report is saved privately
-                      </span>
-                      <button
-                        className="send"
-                        disabled={busy || !text.trim()}
-                        aria-label="Submit issue"
-                      >
-                        {busy ? (
-                          <RefreshCw size={18} className="spin" />
-                        ) : (
-                          <ArrowUp size={20} />
-                        )}
-                      </button>
-                    </div>
-                  </form>
+                  <Composer
+                    id="issue"
+                    label={
+                      r ? 'Answer the clarification' : 'Describe your IT issue'
+                    }
+                    placeholder={
+                      r
+                        ? 'Tell us which service is affected…'
+                        : 'For example, my VPN stopped working after I changed my password…'
+                    }
+                    value={text}
+                    onChange={setText}
+                    image={image}
+                    onImageChange={setImage}
+                    onError={setError}
+                    busy={busy}
+                    onSubmit={() => void send()}
+                  />
                 )}
                 {!r && (
                   <>
