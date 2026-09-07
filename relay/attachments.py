@@ -100,16 +100,17 @@ async def stage_intake_image(db, report_id, user, message_id, filename, content)
 
 
 async def attachment_bytes(report_id, attachment_id, user):
-    """The stored file for its owner or an operator, while the local copy still exists."""
+    """The stored file for its owner or an operator, while the local copy still exists:
+    `(content_type, content, filename)`, or None."""
     rows = (
         await query(
-            "SELECT a.content_type,a.content FROM report_attachments a JOIN reports r ON r.id=a.report_id WHERE a.id=$1 AND a.report_id=$2 AND (r.owner_id=$3 OR $4='operator') AND r.mode=$5 AND a.content IS NOT NULL",
+            "SELECT a.content_type,a.content,a.filename FROM report_attachments a JOIN reports r ON r.id=a.report_id WHERE a.id=$1 AND a.report_id=$2 AND (r.owner_id=$3 OR $4='operator') AND r.mode=$5 AND a.content IS NOT NULL",
             [attachment_id, report_id, user["id"], user["role"], mode()],
         )
     ).rows
     if not rows:
         return None
-    return rows[0]["content_type"], bytes(rows[0]["content"])
+    return rows[0]["content_type"], bytes(rows[0]["content"]), rows[0]["filename"]
 
 
 async def intake_images(report_id):

@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from contextlib import asynccontextmanager
+from urllib.parse import quote
 from uuid import UUID, uuid4
 
 from fastapi import FastAPI, Request
@@ -122,8 +123,11 @@ async def _intake_parts(form):
     except ValueError as exc:
         raise ValueError("Invalid JSON request") from exc
     upload = form.get("image")
-    if not isinstance(upload, UploadFile):
+    if upload is None:
         return data, None
+    if not isinstance(upload, UploadFile):
+        # A screenshot sent as a text field is a client mistake, not a message without one.
+        raise ValueError("Attach the screenshot as a file.")
     return data, (upload.filename, await upload.read(), upload.content_type)
 
 
@@ -509,6 +513,16 @@ async def review_upload(req: Request):
     )
 
 
+def content_disposition(filename: str) -> str:
+    """`inline` under the stored filename: quotes and backslashes escaped in the ASCII
+    parameter, with the exact UTF-8 name alongside when the ASCII form had to substitute."""
+    fallback = filename.encode("ascii", "replace").decode()
+    header = 'inline; filename="' + fallback.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    if not filename.isascii():
+        header += f"; filename*=UTF-8''{quote(filename, safe='')}"
+    return header
+
+
 @app.get("/api/attachments")
 async def attachment(req: Request):
     from .workflow import get_report
@@ -520,11 +534,15 @@ async def attachment(req: Request):
     found = await attachment_bytes(report_id, file_id, user)
     if found is None:
         raise ValueError("Not found")
-    content_type, content = found
+    content_type, content, filename = found
     return Response(
         content,
         media_type=content_type,
-        headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
+        headers={
+            "Cache-Control": "private, no-store",
+            "X-Content-Type-Options": "nosniff",
+            "Content-Disposition": content_disposition(filename),
+        },
     )
 
 

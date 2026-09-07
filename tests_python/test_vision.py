@@ -272,6 +272,7 @@ async def test_attachment_bytes_are_served_to_the_owner_and_operators_only(clien
     assert served.status_code == 200 and served.content == PNG
     assert served.headers["content-type"] == "image/png"
     assert served.headers["cache-control"] == "private, no-store"
+    assert served.headers["content-disposition"] == 'inline; filename="screen.png"'
     assert (
         await client.get("/api/attachments", params={"reportId": id, "id": "bad"})
     ).status_code == 400
@@ -291,6 +292,72 @@ async def test_attachment_bytes_are_served_to_the_owner_and_operators_only(clien
         next(m for m in operator_view["messages"] if m["role"] == "user")["image"]["hasContent"]
         is False
     )
+
+
+async def test_served_attachments_are_named_inline_with_an_ascii_fallback(client, owner):
+    from relay.api import content_disposition
+
+    assert content_disposition("screen.png") == 'inline; filename="screen.png"'
+    assert content_disposition('a"b\\c.png') == 'inline; filename="a\\"b\\\\c.png"'
+    tricky = 'my "shot" \u00e9.png'
+    id = await intake(
+        {"text": TEXT, "submissionKey": str(uuid4())}, owner, image=(tricky, PNG, "image/png")
+    )
+    [image] = await intake_images(id)
+    assert image["filename"] == tricky
+    served = await client.get("/api/attachments", params={"reportId": id, "id": image["id"]})
+    assert served.status_code == 200 and served.content == PNG
+    assert served.headers["content-disposition"] == (
+        'inline; filename="my \\"shot\\" ?.png"; filename*=UTF-8\'\'my%20%22shot%22%20%C3%A9.png'
+    )
+
+
+async def test_a_screenshot_sent_as_a_text_field_is_rejected(client):
+    from relay.api import _intake_parts
+
+    with pytest.raises(ValueError, match="Attach the screenshot as a file."):
+        await _intake_parts(FormData([("payload", "{}"), ("image", "not-a-file")]))
+    payload = json.dumps({"text": CHAT, "submissionKey": str(uuid4())}).encode()
+    body = (
+        b'--x\r\nContent-Disposition: form-data; name="payload"\r\n\r\n' + payload + b"\r\n"
+        b'--x\r\nContent-Disposition: form-data; name="image"\r\n\r\nnot-a-file\r\n--x--\r\n'
+    )
+    res = await client.post(
+        "/api/intake",
+        content=body,
+        headers={"content-type": "multipart/form-data; boundary=x"},
+    )
+    assert (res.status_code, res.json()) == (400, {"error": "Attach the screenshot as a file."})
+    assert (await query("SELECT count(*)::int n FROM reports")).rows[0]["n"] == 0
+
+
+def large_png(size=600):
+    """A real black RGB PNG stored uncompressed, so it is larger than one mebibyte."""
+    import zlib
+
+    def chunk(kind, body):
+        crc = zlib.crc32(kind + body) & 0xFFFFFFFF
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", crc)
+
+    rows = b"\x00" * (size * (1 + 3 * size))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(rows, 0))
+        + chunk(b"IEND", b"")
+    )
+
+
+async def test_a_valid_png_larger_than_one_mebibyte_stages_through_multipart(client):
+    # Starlette caps non-file parts at 1 MiB; a file part is spooled and only the body cap
+    # applies, which this pins.
+    png = large_png()
+    assert 1024 * 1024 < len(png) <= MAX_FILE and validate_file("big.png", png) == "image/png"
+    created = await client.post("/api/intake", **multipart(filename="big.png", content=png))
+    assert created.status_code == 200, created.text
+    [row] = await attachments(created.json()["id"])
+    assert (row["filename"], row["size"], row["state"]) == ("big.png", len(png), "staged")
+    assert bytes(row["content"]) == png
 
 
 # --- review stage ------------------------------------------------------------------------
