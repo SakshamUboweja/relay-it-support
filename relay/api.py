@@ -104,9 +104,14 @@ async def read_intake(req):
     if not length.isdigit() or int(length) > MAX_INTAKE_BODY:
         raise ValueError("Message too large")
     try:
-        form = await req.form(max_files=1, max_fields=2)
+        # The form is closed on exit, so a spooled upload is released whatever happens below.
+        async with req.form(max_files=1, max_fields=2) as form:
+            return await _intake_parts(form)
     except (HTTPException, MultiPartException) as exc:
         raise ValueError("Invalid multipart request") from exc
+
+
+async def _intake_parts(form):
     payload = form.get("payload")
     if not isinstance(payload, str):
         raise ValueError("Invalid JSON request")

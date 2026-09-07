@@ -206,8 +206,10 @@ async def prepare_review(report_id, user, provider=None, verifier=None):
                             [str(uuid4()), report_id, SCREENSHOT_NOT_SENT],
                             db=db,
                         )
+                # `clock_timestamp()` runs later than the transaction's `now()`, so the
+                # screenshot notice above always renders before this message.
                 await query(
-                    "INSERT INTO messages VALUES($1,$2,'assistant',$3,now())",
+                    "INSERT INTO messages VALUES($1,$2,'assistant',$3,clock_timestamp())",
                     [
                         str(uuid4()),
                         report_id,

@@ -10,11 +10,17 @@ from ..model import Extraction
 from ..sanitize import sanitize
 
 SUMMARY_LIMIT = 500
+IMAGE_MARKER = " [+image]"
 
 
 def summary(text: str) -> str:
     """Trace text is stored redacted and short: evidence for operators, not a transcript."""
     return sanitize(text)[:SUMMARY_LIMIT]
+
+
+def image_marker(image) -> str:
+    """Appended to an intake step's input summary when the model was shown a screenshot."""
+    return IMAGE_MARKER if image else ""
 
 
 class Usage(BaseModel):

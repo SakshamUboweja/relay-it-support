@@ -349,7 +349,7 @@ async def process_intake(id, user, dependencies=None):
                 procedure={"id": procedure["id"], "body": procedure["body"]} if procedure else None,
                 settings=model_settings(),
                 pipeline=name,
-                image=await intake_image(id),
+                image=await intake_image(id) if mode() == "live" else None,
             )
             rt = ModelRuntime(
                 ctx.settings,

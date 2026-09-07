@@ -4,7 +4,7 @@ from ..intake_prompt import INTAKE_PROMPT, INTAKE_PROMPT_VERSION
 from ..model import Extraction, validate_extraction
 from ..sanitize import sanitize
 from .runtime import ModelRuntime
-from .schemas import PipelineContext
+from .schemas import PipelineContext, image_marker
 
 
 async def run_intake(ctx: PipelineContext, rt: ModelRuntime, *, image: dict | None = None) -> dict:
@@ -23,6 +23,7 @@ async def run_intake(ctx: PipelineContext, rt: ModelRuntime, *, image: dict | No
             parsed, ctx.text, ctx.message_ids, has_image=image is not None
         ),
         image=image,
-        input_summary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]",
+        input_summary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]"
+        + image_marker(image),
     )
     return result.parsed

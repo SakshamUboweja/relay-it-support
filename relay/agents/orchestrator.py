@@ -9,7 +9,7 @@ from . import pricing
 from .intake import run_intake
 from .reviewer import run_reviewer
 from .runtime import BudgetExceeded, ModelRuntime
-from .schemas import PipelineContext, PipelineResult, Usage
+from .schemas import PipelineContext, PipelineResult, Usage, image_marker
 from .tools import cited_sources
 from .triage import run_triage
 
@@ -45,7 +45,8 @@ async def run_deterministic(ctx: PipelineContext, rt: ModelRuntime, extract) -> 
         kind="model_call",
         model=rt.model,
         promptVersion=INTAKE_PROMPT_VERSION,
-        inputSummary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]",
+        inputSummary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]"
+        + image_marker(ctx.image),
     )
     try:
         # The screenshot rides along only when there is one, so plain extractors still fit.

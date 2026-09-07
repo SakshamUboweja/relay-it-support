@@ -11,6 +11,7 @@ from .schemas import (
     PipelineResult,
     RoutingProposal,
     SingleAgentOutput,
+    image_marker,
     validate_proposal,
 )
 
@@ -75,7 +76,8 @@ async def run_single_agent(ctx: PipelineContext, rt: ModelRuntime) -> PipelineRe
             text_format=SingleAgentOutput,
             validator=validator,
             image=ctx.image,
-            input_summary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids, {len(sources)} sources]",
+            input_summary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids,"
+            f" {len(sources)} sources]" + image_marker(ctx.image),
         )
     except BudgetExceeded as error:
         return snapshot("budget_exhausted", {"extraction": "skipped", "error": str(error)})

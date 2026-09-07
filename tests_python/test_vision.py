@@ -15,6 +15,8 @@ from relay import cli, workflow
 from relay.agents import build_pipeline
 from relay.agents.compose import compose_decision
 from relay.agents.intake import run_intake
+from relay.agents.orchestrator import run_deterministic
+from relay.agents.single import run_single_agent
 from relay.agents.prompts import REVIEWER_PROMPT, TRIAGE_PROMPT
 from relay.agents.runtime import ModelRuntime, Rejected
 from relay.agents.schemas import (
@@ -43,6 +45,7 @@ from relay.model import Extraction, extract_live, validate_extraction
 from relay.policy import decide
 from relay.review import approve_review, prepare_review, view_review
 from relay.workflow import get_report, intake, process_intake
+from starlette.datastructures import FormData
 
 pytestmark = pytest.mark.usefixtures("isolated_db")
 
@@ -733,3 +736,113 @@ async def test_preflight_reports_whether_the_model_described_the_probe(monkeypat
     assert lines[-1] == {"vision": True}
     assert lines[-2]["structuredOutput"] is True
     assert calls[0] is None and calls[1]["data_url"].startswith("data:image/png;base64,")
+
+
+# --- hardening: ordering, form release, image loading, trace marker ----------------------
+
+
+async def test_the_screenshot_notice_lands_before_the_ready_message(owner):
+    provider = RecordingProvider()
+    provider.attachments_allowed = False
+    id = await staged_report(owner)
+    await prepare_review(id, owner, provider=provider)
+    rows = (
+        await query(
+            "SELECT body,created_at FROM messages WHERE report_id=$1 AND role='assistant' ORDER BY created_at,id",
+            [id],
+        )
+    ).rows
+    bodies = [r["body"] for r in rows]
+    notice = bodies.index(NOT_SENT)
+    ready = next(i for i, body in enumerate(bodies) if body.startswith("Your ticket draft is ready"))
+    assert notice < ready
+    assert rows[notice]["created_at"] < rows[ready]["created_at"]
+
+
+async def test_the_parsed_multipart_form_is_closed_after_intake(client, monkeypatch):
+    closed = []
+    original = FormData.close
+
+    async def close(self):
+        closed.append(True)
+        await original(self)
+
+    monkeypatch.setattr(FormData, "close", close)
+    created = await client.post("/api/intake", **multipart())
+    assert created.status_code == 200 and closed == [True]
+    rejected = await client.post("/api/intake", **multipart(filename="fake.png", content=b"nope"))
+    assert rejected.status_code == 400 and closed == [True, True]
+
+
+async def test_the_screenshot_is_only_loaded_for_the_live_pipeline(owner, monkeypatch):
+    calls = []
+    real = workflow.intake_image
+
+    async def spy(report_id):
+        calls.append(report_id)
+        return await real(report_id)
+
+    monkeypatch.setattr(workflow, "intake_image", spy)
+    id = await intake(
+        {"text": TEXT, "submissionKey": str(uuid4())}, owner, image=("shot.png", PNG, "image/png")
+    )
+    await process_intake(id, owner, {"retrieve": no_sources})
+    assert calls == [] and (await get_report(id, owner))["state"] == "review_pending"
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    live_id, staged = await staged_live(owner)
+    seen = []
+
+    async def extract(text, message_ids, procedure, image=None):
+        seen.append(image)
+        return {
+            "usage": {"input": 1, "output": 1},
+            "data": {**EXTRACTED, **SEEN, "evidenceIds": message_ids},
+        }
+
+    await process_intake(live_id, owner, {"retrieve": no_sources, "extract_live": extract})
+    assert calls == [live_id] and seen[0]["attachmentId"] == staged["id"]
+
+
+async def test_the_intake_step_marks_an_attached_image_in_every_arm(monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+
+    async def extract(text, message_ids, procedure, image=None):
+        data = {**EXTRACTED, **(SEEN if image else {}), "evidenceIds": message_ids}
+        return {"usage": {"input": 1, "output": 1}, "data": data}
+
+    rt = runtime(AsyncMock())
+    await run_deterministic(context(image=IMAGE, pipeline="deterministic"), rt, extract)
+    assert rt.steps[0].inputSummary.endswith(" [+image]")
+    rt = runtime(AsyncMock())
+    await run_deterministic(context(pipeline="deterministic"), rt, extract)
+    assert "[+image]" not in rt.steps[0].inputSummary
+
+    def single(**seen):
+        return completed(
+            SingleAgentOutput(
+                **EXTRACTED,
+                **seen,
+                team="Service Desk",
+                abstain=True,
+                blockedQuote=None,
+                broadImpactQuote=None,
+                rationale="No service is named.",
+                probability=0.4,
+                citedSourceIds=[],
+            )
+        )
+
+    rt = runtime(AsyncMock(return_value=single(**SEEN)))
+    await run_single_agent(context(image=IMAGE, pipeline="single"), rt)
+    assert rt.steps[0].role == "intake" and rt.steps[0].inputSummary.endswith(" [+image]")
+    rt = runtime(AsyncMock(return_value=single()))
+    await run_single_agent(context(pipeline="single"), rt)
+    assert "[+image]" not in rt.steps[0].inputSummary
+
+    rt = runtime(AsyncMock(return_value=completed(extraction(**SEEN))))
+    await run_intake(context(image=IMAGE), rt, image=IMAGE)
+    assert rt.steps[0].inputSummary.endswith(" [+image]")
+    rt = runtime(AsyncMock(return_value=completed(extraction())))
+    await run_intake(context(), rt)
+    assert "[+image]" not in rt.steps[0].inputSummary
