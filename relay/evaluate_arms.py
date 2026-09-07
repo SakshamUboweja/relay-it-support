@@ -48,8 +48,9 @@ RESULTS_PATH = ROOT / "evaluation/arms-results.json"
 MARKDOWN_PATH = ROOT / "evaluation/ARMS-RESULTS.md"
 TABLE_HEADER = (
     "| Arm | Split | Route acc | Accepted prec | Coverage | Security recall | Escalation recall"
-    " | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost |"
+    " | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost | Tool calls / cited |"
 )
+TABLE_COLUMNS = 14
 
 
 @dataclass
@@ -98,11 +99,14 @@ def _expected(case: dict) -> dict:
 
 def _run_summary(result: PipelineResult) -> dict:
     calls = [s for s in result.run.steps if s.kind == "model_call"]
+    cited = result.proposal["citedSourceIds"] if result.proposal else []
     return {
         "status": result.run.status,
         "usage": result.run.usage.model_dump(),
         "costUsd": result.run.costUsd,
         "modelCalls": len(calls),
+        "toolCalls": sum(s.kind == "tool_call" for s in result.run.steps),
+        "citedSources": len(cited),
         "firstCallOk": calls[0].status == "ok" if calls else None,
         "verdict": result.reviewer["verdict"] if result.reviewer else None,
     }
@@ -178,6 +182,8 @@ class _Run:
                 "usage": rt.usage.model_dump(),
                 "costUsd": rt.cost_usd,
                 "modelCalls": len(calls),
+                "toolCalls": sum(s.kind == "tool_call" for s in rt.steps),
+                "citedSources": 0,
                 "firstCallOk": calls[0].status == "ok" if calls else None,
                 "verdict": None,
             }
@@ -252,18 +258,20 @@ class _Run:
             self.settings, budget_for(arm), model=self.model, client_factory=self.client_factory
         )
         holder["rt"] = rt
+        # A model case's latency is its run's wall-clock: on a miss, the pipeline and its
+        # composition on this runtime; on a hit, the value the cached run recorded when the
+        # case actually ran, read before composition refreshes the snapshot.
         if entry is not None:
             result = replay(entry, rt)
+            latency = result.run.latencyMs
             decision = compose_decision(ctx, result, rt, scoring=MODEL_SCORING)
-            latency = None
         else:
-            started = time.perf_counter()
             try:
                 result = await MODEL_ARMS[arm](ctx, rt)
             finally:
                 self._spend(rt.cost_usd)
             decision = compose_decision(ctx, result, rt, scoring=MODEL_SCORING)
-            latency = (time.perf_counter() - started) * 1000
+            latency = result.run.latencyMs
             write_entry(
                 path,
                 {
@@ -372,7 +380,28 @@ def _calibration_hash() -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
 
-def _caveats(options: EvalOptions, model_arms: list[str]) -> list[str]:
+def _plural(count: int, noun: str) -> str:
+    return f"{count} {noun}" if count == 1 else f"{count} {noun}s"
+
+
+def _multi_tool_use(rows: list[dict]) -> str:
+    """What the multi arm measurably did with its tools, summed over its arm×split rows."""
+    multi = [row for row in rows if row["arm"] == "multi"]
+    calls = sum(row["toolCalls"] for row in multi)
+    cited = sum(row["citedSources"] for row in multi)
+    cases = sum(row["cases"] for row in multi)
+    grounded = (
+        "its routing was not tool-grounded in this run"
+        if cited == 0
+        else "its routing was tool-grounded in those cases only"
+    )
+    return (
+        f"The multi arm made {_plural(calls, 'tool call')} and cited sources in {cited} of"
+        f" {cases} cases; {grounded}."
+    )
+
+
+def _caveats(options: EvalOptions, model_arms: list[str], rows: list[dict]) -> list[str]:
     production = os.getenv("OPENAI_REASONING_EFFORT") or "unset"
     caveats = [
         "Labels are agent-authored and not human reviewed.",
@@ -391,6 +420,8 @@ def _caveats(options: EvalOptions, model_arms: list[str]) -> list[str]:
             "The single arm saw the first eight seeded sources by id (no retrieval on this"
             " text-only corpus)."
         )
+    if "multi" in model_arms:
+        caveats.append(_multi_tool_use(rows))
     return caveats
 
 
@@ -417,6 +448,7 @@ def _table_row(row: dict) -> str:
         f"{p50} / {p95}",
         f"{row['tokens']['input']}/{row['tokens']['output']}",
         f"${cost:.4f}" if cost is not None else "n/a",
+        f"{row['toolCalls']} / {row['citedSources']}",
     ]
     return "| " + " | ".join(cells) + " |"
 
@@ -436,7 +468,7 @@ def _markdown(report: dict) -> str:
         f" Aborted at the spend cap: {'yes' if report['aborted'] else 'no'}.",
         "",
         TABLE_HEADER,
-        "|" + "---|" * 13,
+        "|" + "---|" * TABLE_COLUMNS,
         *(_table_row(row) for row in report["rows"]),
         "",
         "Caveats:",
@@ -509,7 +541,7 @@ async def evaluate_arms(options: EvalOptions, *, client_factory=None) -> dict:
             "maxUsd": options.max_usd,
             "fitCalibration": options.fit_calibration,
         },
-        "caveats": _caveats(options, model_arms),
+        "caveats": _caveats(options, model_arms, rows),
         "rows": rows,
         "cases": results,
     }

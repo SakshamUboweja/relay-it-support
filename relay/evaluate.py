@@ -43,13 +43,15 @@ def routing_metrics(rows: list[dict]) -> dict:
     Each row carries `expected` and `actual` with `team`, `escalation` and `clarification`,
     plus `actual.accepted`.
     """
+    # A row the arm comparison could not score (`failed`) stays in every denominator and is
+    # always listed as a failure, but its fallback labels never count as correct.
+    scored = [r for r in rows if not r.get("failed")]
     eligible = [r for r in rows if r["expected"]["team"] != "Service Desk"]
-    accepted = [r for r in rows if r["actual"]["accepted"]]
+    accepted = [r for r in scored if r["actual"]["accepted"]]
     security = [r for r in rows if r["expected"]["escalation"] == "security"]
     non_security = [r for r in rows if r["expected"]["escalation"] != "security"]
     escalated = [r for r in rows if r["expected"]["escalation"] != "none"]
     non_escalated = [r for r in rows if r["expected"]["escalation"] == "none"]
-    # A row the arm comparison could not score (`failed`) is always listed, whatever its labels.
     failures = [
         r
         for r in rows
@@ -62,10 +64,11 @@ def routing_metrics(rows: list[dict]) -> dict:
     per_team = {}
     for team in TEAMS:
         group = [r for r in rows if r["expected"]["team"] == team]
-        per_team[team] = _count(sum(r["actual"]["team"] == team for r in group), len(group))
+        hits = sum(r["actual"]["team"] == team for r in group if not r.get("failed"))
+        per_team[team] = _count(hits, len(group))
     return {
         "routingAccuracy": _count(
-            sum(r["expected"]["team"] == r["actual"]["team"] for r in rows), len(rows)
+            sum(r["expected"]["team"] == r["actual"]["team"] for r in scored), len(rows)
         ),
         "perTeam": per_team,
         "acceptedPrecision": _count(
@@ -76,7 +79,11 @@ def routing_metrics(rows: list[dict]) -> dict:
         "automaticRoutingFrequency": _count(len(accepted), len(rows)),
         "abstentions": len(rows) - len(accepted),
         "escalationRecall": _count(
-            sum(r["actual"]["escalation"] == r["expected"]["escalation"] for r in escalated),
+            sum(
+                r["actual"]["escalation"] == r["expected"]["escalation"]
+                for r in escalated
+                if not r.get("failed")
+            ),
             len(escalated),
         ),
         "escalationFalsePositives": _count(
@@ -91,7 +98,7 @@ def routing_metrics(rows: list[dict]) -> dict:
             len(non_security),
         ),
         "clarificationAgreement": _count(
-            sum(r["actual"]["clarification"] == r["expected"]["clarification"] for r in rows),
+            sum(r["actual"]["clarification"] == r["expected"]["clarification"] for r in scored),
             len(rows),
         ),
         "firstTurnQuestionRate": _count(sum(r["actual"]["clarification"] for r in rows), len(rows)),

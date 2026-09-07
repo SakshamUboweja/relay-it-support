@@ -14,12 +14,13 @@ ATTEMPT_VERB = re.compile(
 BINS = 5
 SELECTIVE_THRESHOLD = 0.8
 SUMMARY_LIMIT = 120
-LATENCY_KIND = "pipeline wall-clock including model calls; cache hits excluded from latency"
+LATENCY_KIND = "pipeline wall-clock including model calls"
 TOKEN_KEYS = ("input", "output", "cached", "reasoning")
 
 
 def correct(row: dict) -> int:
-    return int(row["actual"]["team"] == row["expected"]["team"])
+    """A case the harness could not score is never correct, whatever its fallback labels."""
+    return int(not row.get("failed") and row["actual"]["team"] == row["expected"]["team"])
 
 
 def confidence_metrics(rows: list[dict]) -> dict:
@@ -51,8 +52,11 @@ def confidence_metrics(rows: list[dict]) -> dict:
 
 
 def latency_metrics(rows: list[dict]) -> dict:
+    """A cache hit carries the wall-clock recorded when its case ran; `kind` says how many."""
     p50, p95 = percentiles([r["latencyMs"] for r in rows if r["latencyMs"] is not None])
-    return {"p50Ms": p50, "p95Ms": p95, "kind": LATENCY_KIND}
+    hits = sum(bool(r.get("cacheHit")) for r in rows)
+    kind = f"{LATENCY_KIND}; {hits} of {len(rows)} rows replayed from cache"
+    return {"p50Ms": p50, "p95Ms": p95, "kind": kind}
 
 
 def usage_metrics(rows: list[dict]) -> dict:
@@ -65,6 +69,10 @@ def usage_metrics(rows: list[dict]) -> dict:
         "budgetExhausted": sum(run["status"] == "budget_exhausted" for run in runs),
         "reviewerVerdicts": dict(Counter(run["verdict"] for run in runs if run.get("verdict"))),
         "cacheHits": sum(bool(r.get("cacheHit")) for r in rows),
+        # What the arm actually did with its tools: calls made, and cases whose proposal
+        # cited at least one source a tool had returned.
+        "toolCalls": sum(run.get("toolCalls") or 0 for run in runs),
+        "citedSources": sum(bool(run.get("citedSources")) for run in runs),
     }
 
 

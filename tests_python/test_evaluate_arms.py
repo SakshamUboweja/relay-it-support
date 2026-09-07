@@ -51,7 +51,7 @@ ROUTING_KEYS = (
 )
 TABLE_HEADER = (
     "| Arm | Split | Route acc | Accepted prec | Coverage | Security recall | Escalation recall"
-    " | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost |"
+    " | ECE | Brier | AUROC | p50 / p95 ms | Tokens in/out | Est. cost | Tool calls / cited |"
 )
 
 
@@ -191,7 +191,22 @@ async def test_a_cache_hit_skips_the_model_call_and_the_key_follows_effort_and_p
     second = await evaluate_arms(options(), client_factory=factory)
     assert parse.await_count == 2 and second["cacheHits"] == 2
     [row] = second["rows"]
-    assert row["cacheHits"] == 2 and row["latency"]["p50Ms"] is None
+    # A hit replays the wall-clock recorded when the case actually ran, and says so.
+    assert row["cacheHits"] == 2 and row["latency"]["p50Ms"] is not None
+    assert (row["latency"]["p50Ms"], row["latency"]["p95Ms"]) == (
+        first["rows"][0]["latency"]["p50Ms"],
+        first["rows"][0]["latency"]["p95Ms"],
+    )
+    assert row["latency"]["kind"] == (
+        "pipeline wall-clock including model calls; 2 of 2 rows replayed from cache"
+    )
+    assert first["rows"][0]["latency"]["kind"] == (
+        "pipeline wall-clock including model calls; 0 of 2 rows replayed from cache"
+    )
+    assert [c["latencyMs"] for c in second["cases"]["single"]["dev"]] == [
+        c["latencyMs"] for c in first["cases"]["single"]["dev"]
+    ]
+    assert all(isinstance(c["latencyMs"], int) for c in second["cases"]["single"]["dev"])
     assert row["routingAccuracy"] == first["rows"][0]["routingAccuracy"]
     assert row["tokens"] == first["rows"][0]["tokens"]
     assert [c["cacheHit"] for c in second["cases"]["single"]["dev"]] == [True, True]
@@ -339,13 +354,18 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
         "reviewerVerdicts",
         "cacheHits",
         "fidelity",
+        "toolCalls",
+        "citedSources",
     }
     assert row["estimatedCostUSD"] is None
     assert row["tokens"] == {"input": 30, "output": 40, "cached": 0, "reasoning": 0}
+    assert (row["toolCalls"], row["citedSources"]) == (0, 0)
     assert row["latency"]["kind"] == (
-        "pipeline wall-clock including model calls; cache hits excluded from latency"
+        "pipeline wall-clock including model calls; 0 of 1 rows replayed from cache"
     )
     assert row["latency"]["p50Ms"] is not None and row["latency"]["p95Ms"] is not None
+    assert result["cases"]["single"]["dev"][0]["run"]["toolCalls"] == 0
+    assert result["cases"]["single"]["dev"][0]["run"]["citedSources"] == 0
     assert set(row["confidence"]) >= {
         "ece",
         "brier",
@@ -384,7 +404,10 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
     assert saved["rows"] == result["rows"] and saved["cases"] == result["cases"]
     markdown = (tmp_path / "ARMS-RESULTS.md").read_text()
     assert TABLE_HEADER in markdown
-    assert len([line for line in markdown.splitlines() if line.startswith("| single | ")]) == 2
+    assert "\n|" + "---|" * 14 + "\n" in markdown
+    single_lines = [line for line in markdown.splitlines() if line.startswith("| single | ")]
+    assert len(single_lines) == 2 and all(line.endswith("| 0 / 0 |") for line in single_lines)
+    assert not any("multi arm" in caveat for caveat in result["caveats"])
     for number, caveat in enumerate(result["caveats"], 1):
         assert f"{number}. {caveat}" in markdown
     assert "gpt-test" in markdown and result["policyHash"] in markdown
@@ -481,7 +504,13 @@ async def test_a_failed_case_is_listed_even_when_its_labels_match_the_fallback(m
         options(ids=["dev-036"]), client_factory=lambda: mock_client(parse)
     )
     [row] = result["rows"]
-    assert row["routingAccuracy"] == rate(1, 1) and row["failedCases"] == 1
+    # Its labels match the fallback shape, but a case the harness could not score is never
+    # counted as a correct route, a correct abstention or an agreeing clarification.
+    assert row["routingAccuracy"] == rate(0, 1) and row["failedCases"] == 1
+    assert row["perTeam"]["Service Desk"] == rate(0, 1)
+    assert row["acceptedPrecision"] == rate(0, 0)
+    assert row["clarificationAgreement"] == rate(0, 1)
+    assert row["confidence"]["brier"] == 0.0
     assert [f["id"] for f in row["failures"]] == ["dev-036"]
     assert row["failures"][0]["failed"] is True
 
@@ -548,8 +577,18 @@ async def test_the_multi_arm_runs_and_replays_from_the_cache(monkeypatch, tmp_pa
     [row] = result["rows"]
     assert row["reviewerVerdicts"] == {"accept": 1}
     assert row["tokens"] == {"input": 120, "output": 160, "cached": 0, "reasoning": 0}
+    assert (row["toolCalls"], row["citedSources"]) == (1, 0)
+    assert result["caveats"][-1] == (
+        "The multi arm made 1 tool call and cited sources in 0 of 1 cases; its routing was"
+        " not tool-grounded in this run."
+    )
+    markdown = (tmp_path / "ARMS-RESULTS.md").read_text()
+    assert next(line for line in markdown.splitlines() if line.startswith("| multi | ")).endswith(
+        "| 1 / 0 |"
+    )
     [case] = result["cases"]["multi"]["dev"]
     assert case["run"]["status"] == "completed" and case["run"]["modelCalls"] == 4
+    assert (case["run"]["toolCalls"], case["run"]["citedSources"]) == (1, 0)
     entry = json.loads(next((tmp_path / "cache/multi").glob("dev-001.*")).read_text())
     assert [s["kind"] for s in entry["result"]["run"]["steps"]] == [
         "model_call",
@@ -565,6 +604,9 @@ async def test_the_multi_arm_runs_and_replays_from_the_cache(monkeypatch, tmp_pa
     assert replayed["actual"] == case["actual"]
     assert replayed["run"]["usage"] == case["run"]["usage"]
     assert replayed["run"]["modelCalls"] == 4
+    assert (again["rows"][0]["toolCalls"], again["rows"][0]["citedSources"]) == (1, 0)
+    assert again["caveats"][-1] == result["caveats"][-1]
+    assert replayed["latencyMs"] == case["latencyMs"]
     assert replayed["confidence"]["raw"] == case["confidence"]["raw"]
     # Triage ranked its candidates with the configured scoring; flipping it misses the cache.
     assert entry["candidateScoring"] == "v2" and again["candidateScoring"] == "v2"
