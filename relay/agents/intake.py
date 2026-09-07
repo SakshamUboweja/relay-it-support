@@ -19,7 +19,9 @@ async def run_intake(ctx: PipelineContext, rt: ModelRuntime, *, image: dict | No
             "approvedProcedure": ctx.procedure,
         },
         text_format=Extraction,
-        validator=lambda parsed: validate_extraction(parsed, ctx.text, ctx.message_ids),
+        validator=lambda parsed: validate_extraction(
+            parsed, ctx.text, ctx.message_ids, has_image=image is not None
+        ),
         image=image,
         input_summary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]",
     )

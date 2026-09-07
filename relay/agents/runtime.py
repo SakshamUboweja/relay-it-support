@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from openai import APIConnectionError, APIStatusError, APITimeoutError
 
-from ..model import live_client
+from ..model import input_image, live_client
 from . import pricing
 from .schemas import AgentRun, AgentStep, Budget, Usage, summary
 
@@ -202,13 +202,7 @@ class ModelRuntime:
         """
         content = [{"type": "input_text", "text": json.dumps(user_json)}]
         if image:
-            content.append(
-                {
-                    "type": "input_image",
-                    "image_url": image["data_url"],
-                    "detail": image.get("detail", "auto"),
-                }
-            )
+            content.append(input_image(image))
         args = {
             "model": self.model,
             "store": False,

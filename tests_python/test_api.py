@@ -123,7 +123,7 @@ async def test_demo_http_contract_and_authorization(client):
     assert {k: v for k, v in versions.items() if k != "calibration"} == {
         "policy": "northstar-1.0",
         "scoring": "v1",
-        "prompt": "relay-intake-v2",
+        "prompt": "relay-intake-v3",
         "verifier": "ticket-verifier-v1",
         "pipeline": "deterministic",
         "pricing": "2026-09-06-openrouter",

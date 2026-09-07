@@ -24,7 +24,7 @@ def _restrict(d: dict, quote: str, evidence_ids: list[str]) -> dict:
     return d
 
 
-def apply_extraction(d: dict, data: dict) -> dict:
+def apply_extraction(d: dict, data: dict, *, attachment_id: str | None = None) -> dict:
     quotes = {
         key: data[f"{key}Quote"]
         for key in (
@@ -59,6 +59,12 @@ def apply_extraction(d: dict, data: dict) -> dict:
         d["reasons"].append("model-catalog-conflict")
     if data["securityQuote"]:
         _restrict(d, data["securityQuote"], data["evidenceIds"])
+    observations = data.get("imageObservations") or []
+    if observations:
+        # What the model saw, cited to the staged file: never a quoted requester fact.
+        d["facts"]["imageEvidence"] = fact(
+            "\n".join(observations), "image", [attachment_id] if attachment_id else []
+        )
     return d
 
 

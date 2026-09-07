@@ -140,7 +140,11 @@ async def test_python_responses_adapter_sends_pydantic_schema_and_validates_resu
     assert args["max_output_tokens"] == 8192
     assert args["store"] is False
     assert json.loads(args["input"][1]["content"])["evidenceIds"] == ["test-message"]
-    assert result == {"data": EXTRACTED, "usage": {"input": 123, "output": 45}}
+    # Without a screenshot the v3 image fields come back empty; everything else is unchanged.
+    assert result == {
+        "data": {**EXTRACTED, "imageObservations": [], "imageText": None, "imageService": None},
+        "usage": {"input": 123, "output": 45},
+    }
 
 
 @pytest.mark.asyncio

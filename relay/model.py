@@ -3,10 +3,10 @@
 import json
 import math
 import os
-from typing import Literal
+from typing import Annotated, Literal
 
 from openai import APIStatusError, AsyncOpenAI
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from .intake_prompt import INTAKE_PROMPT
 from .policy import policy
@@ -30,6 +30,22 @@ class Extraction(BaseModel):
         description="Exact evidence of suspected compromise, phishing, unauthorized access, unexpected MFA, malware, or data exposure. Null for ordinary login failures, user-initiated password changes, or routine access requests without a threat indicator."
     )
     evidenceIds: list[str]
+    # Only when a screenshot was sent: what is visible, verbatim on-screen text, and a
+    # clearly shown service. Screenshot text never satisfies a Quote above.
+    imageObservations: list[Annotated[str, StringConstraints(max_length=200)]] = Field(
+        default_factory=list, max_length=8
+    )
+    imageText: str | None = Field(default=None, max_length=2000)
+    imageService: Literal["vpn", "sso", "wifi", "laptop", "atlas"] | None = None
+
+
+def input_image(image: dict) -> dict:
+    """The Responses `input_image` part for a staged screenshot's data URL."""
+    return {
+        "type": "input_image",
+        "image_url": image["data_url"],
+        "detail": image.get("detail", "auto"),
+    }
 
 
 def model_settings() -> dict:
@@ -55,9 +71,13 @@ def live_client() -> AsyncOpenAI:
     return AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"], max_retries=0, timeout=20.0)
 
 
-def validate_extraction(data: dict | Extraction, text: str, allowed_ids: list[str]) -> dict:
+def validate_extraction(
+    data: dict | Extraction, text: str, allowed_ids: list[str], *, has_image: bool = False
+) -> dict:
     parsed = data if isinstance(data, Extraction) else Extraction.model_validate(data)
     data = parsed.model_dump()
+    if not has_image and (data["imageObservations"] or data["imageText"] or data["imageService"]):
+        raise ValueError("Model described an image that was not provided.")
     quotes = [
         data[key]
         for key in (
@@ -86,9 +106,20 @@ def validate_extraction(data: dict | Extraction, text: str, allowed_ids: list[st
 
 
 async def extract_live(
-    text: str, source_ids: list[str], approved_procedure: dict | None = None
+    text: str,
+    source_ids: list[str],
+    approved_procedure: dict | None = None,
+    image: dict | None = None,
 ) -> dict:
     settings = model_settings()
+    user_json = json.dumps(
+        {"message": text, "evidenceIds": source_ids, "approvedProcedure": approved_procedure}
+    )
+    content = (
+        user_json
+        if image is None
+        else [{"type": "input_text", "text": user_json}, input_image(image)]
+    )
     last = None
     async with live_client() as client:
         for _ in range(policy["maxModelRetries"] + 1):
@@ -99,16 +130,7 @@ async def extract_live(
                     "max_output_tokens": settings["maxOutputTokens"],
                     "input": [
                         {"role": "system", "content": INTAKE_PROMPT},
-                        {
-                            "role": "user",
-                            "content": json.dumps(
-                                {
-                                    "message": text,
-                                    "evidenceIds": source_ids,
-                                    "approvedProcedure": approved_procedure,
-                                }
-                            ),
-                        },
+                        {"role": "user", "content": content},
                     ],
                     "text_format": Extraction,
                     "timeout": 60.0,
@@ -121,7 +143,9 @@ async def extract_live(
                         "Model response incomplete or refused; saved for general intake."
                     )
                 return {
-                    "data": validate_extraction(response.output_parsed, text, source_ids),
+                    "data": validate_extraction(
+                        response.output_parsed, text, source_ids, has_image=image is not None
+                    ),
                     "usage": {
                         "input": response.usage.input_tokens if response.usage else 0,
                         "output": response.usage.output_tokens if response.usage else 0,

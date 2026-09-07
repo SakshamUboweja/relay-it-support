@@ -92,7 +92,7 @@ def compose_decision(
                 promptVersion=_prompt_version(ctx.pipeline),
                 reasoningEffort=rt.settings["effort"],
             )
-            apply_extraction(d, extraction)
+            apply_extraction(d, extraction, attachment_id=(ctx.image or {}).get("attachmentId"))
             if result.proposal is not None:
                 # The gate scores the proposal before the lanes judge it, so a tie-break is
                 # weighed on the agent's own confidence rather than on the route it lost.

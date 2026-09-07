@@ -48,7 +48,10 @@ async def run_deterministic(ctx: PipelineContext, rt: ModelRuntime, extract) -> 
         inputSummary=f"{sanitize(ctx.text)[:200]} [{len(ctx.message_ids)} evidence ids]",
     )
     try:
-        result = await extract(ctx.text, ctx.message_ids, ctx.procedure)
+        # The screenshot rides along only when there is one, so plain extractors still fit.
+        result = await extract(
+            ctx.text, ctx.message_ids, ctx.procedure, **({"image": ctx.image} if ctx.image else {})
+        )
     except Exception as error:
         rt.record(
             **step,

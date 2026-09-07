@@ -426,7 +426,7 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
     decision = report["decision"]
     assert decision["pipeline"] == "deterministic" and decision["scoring"] == "v1"
     assert decision["model"] == "test-model" and decision["costUsd"] is None
-    assert decision["promptVersions"] == {"intake": "relay-intake-v2"}
+    assert decision["promptVersions"] == {"intake": "relay-intake-v3"}
     assert 0 <= decision["confidence"]["value"] <= 1
     assert decision["confidence"]["band"] in {"high", "medium", "low"}
     assert decision["confidence"]["signals"]
@@ -449,7 +449,7 @@ async def test_live_support_runs_extraction_preserves_evidence_and_skips_tried_p
         )
     ).rows
     assert [(s["kind"], s["status"]) for s in steps] == [("model_call", "ok"), ("policy", "ok")]
-    assert steps[0]["prompt_version"] == "relay-intake-v2"
+    assert steps[0]["prompt_version"] == "relay-intake-v3"
     assert steps[0]["usage"]["input"] == 30
     assert "supportRequestQuote" in steps[0]["output_summary"]
     assert "Endpoint" in steps[1]["output_summary"]
@@ -772,11 +772,11 @@ async def test_multi_pipeline_run_records_every_role_and_the_review(monkeypatch)
     assert decision["proposal"]["citedSourceIds"] == [reviewed["id"]]
     assert decision["reviewer"] == {"verdict": "accept", "agreementProbability": 0.9, "issues": []}
     assert decision["promptVersions"] == {
-        "intake": "relay-intake-v2",
+        "intake": "relay-intake-v3",
         "triage": "relay-triage-v1",
         "reviewer": "relay-reviewer-v1",
     }
-    assert decision["promptVersion"] == "relay-intake-v2"
+    assert decision["promptVersion"] == "relay-intake-v3"
     assert decision["usage"] == {"input": 120, "output": 160}
     assert {s["kind"] for s in decision["confidence"]["signals"]} >= {"agentProbability", "agreement"}
     run = (await query("SELECT * FROM agent_runs WHERE report_id=$1", [id])).rows[0]
@@ -803,7 +803,7 @@ async def test_multi_pipeline_run_records_every_role_and_the_review(monkeypatch)
     assert "Never sent" not in tool["tool_result_summary"]
     assert reviewed["id"] in tool["tool_result_summary"]
     assert [s["prompt_version"] for s in steps[:5]] == [
-        "relay-intake-v2",
+        "relay-intake-v3",
         "relay-triage-v1",
         None,
         "relay-triage-v1",

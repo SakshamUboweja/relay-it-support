@@ -1,5 +1,6 @@
 """Durable intake state machine. Model work never holds a database transaction."""
 
+import base64
 import hashlib
 import json
 import os
@@ -287,6 +288,25 @@ async def intake(raw, user, image=None):
         return id
 
 
+async def intake_image(report_id):
+    """The newest chat screenshot still held locally, as the intake role's image input."""
+    rows = (
+        await query(
+            "SELECT id,content_type,content FROM report_attachments WHERE report_id=$1 AND origin='intake_image' AND content IS NOT NULL ORDER BY created_at DESC,id DESC LIMIT 1",
+            [report_id],
+        )
+    ).rows
+    if not rows:
+        return None
+    shot = rows[0]
+    encoded = base64.b64encode(bytes(shot["content"])).decode()
+    return {
+        "data_url": f"data:{shot['content_type']};base64,{encoded}",
+        "detail": os.getenv("RELAY_IMAGE_DETAIL", "auto"),
+        "attachmentId": shot["id"],
+    }
+
+
 async def process_intake(id, user, dependencies=None):
     dependencies = {"retrieve": retrieve, "extract_live": extract_live, **(dependencies or {})}
     pipeline = dependencies.get("pipeline") or build_pipeline(
@@ -329,6 +349,7 @@ async def process_intake(id, user, dependencies=None):
                 procedure={"id": procedure["id"], "body": procedure["body"]} if procedure else None,
                 settings=model_settings(),
                 pipeline=name,
+                image=await intake_image(id),
             )
             rt = ModelRuntime(
                 ctx.settings,

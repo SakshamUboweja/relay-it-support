@@ -2,8 +2,11 @@
 
 import argparse
 import asyncio
+import base64
 import json
 import os
+import struct
+import zlib
 from uuid import uuid4
 
 import psycopg
@@ -12,6 +15,22 @@ from psycopg.rows import dict_row
 from .config import validate_environment
 from .db import close_pool, migrate, mode, query, transaction
 from .fixtures import articles, catalog, users
+
+
+def probe_png(size=8):
+    """A solid grey RGB PNG built in code, so the vision preflight needs no fixture file."""
+
+    def chunk(kind, body):
+        crc = zlib.crc32(kind + body) & 0xFFFFFFFF
+        return struct.pack(">I", len(body)) + kind + body + struct.pack(">I", crc)
+
+    rows = b"".join(b"\x00" + b"\x80\x80\x80" * size for _ in range(size))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", zlib.compress(rows))
+        + chunk(b"IEND", b"")
+    )
 
 
 async def seed_demo():
@@ -201,6 +220,18 @@ async def run(args):
                     }
                 )
             )
+            image = {
+                "data_url": "data:image/png;base64," + base64.b64encode(probe_png()).decode(),
+                "detail": os.getenv("RELAY_IMAGE_DETAIL", "auto"),
+            }
+            try:
+                seen = await extract_live(
+                    "The attached screenshot shows what I see.", ["preflight-message"], image=image
+                )
+                vision = {"vision": bool(seen["data"]["imageObservations"])}
+            except Exception as error:
+                vision = {"vision": False, "error": str(error) or type(error).__name__}
+            print(json.dumps(vision))
     elif args.command == "retention":
         from .policy import policy
 

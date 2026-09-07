@@ -49,7 +49,10 @@ async def run_single_agent(ctx: PipelineContext, rt: ModelRuntime) -> PipelineRe
         fields = parsed.model_dump()
         return {
             "extraction": validate_extraction(
-                {key: fields[key] for key in Extraction.model_fields}, ctx.text, ctx.message_ids
+                {key: fields[key] for key in Extraction.model_fields},
+                ctx.text,
+                ctx.message_ids,
+                has_image=ctx.image is not None,
             ),
             "proposal": validate_proposal(
                 {key: fields[key] for key in RoutingProposal.model_fields},
