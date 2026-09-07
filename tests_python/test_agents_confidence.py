@@ -16,6 +16,7 @@ from relay.agents.confidence import (
     features,
     fit_isotonic,
     load_weights,
+    proposal_gate,
     raw_score,
     signals,
     why,
@@ -232,3 +233,90 @@ def test_build_returns_the_exact_contract(tmp_path, monkeypatch):
         degraded=True,
     )
     assert degraded["degraded"] is True
+
+
+PROPOSAL = {"team": "Network", "probability": 0.9, "rationale": "The message names the VPN."}
+TIED = [{"team": "Network", "score": 3}, {"team": "Endpoint", "score": 3}]
+
+
+def test_agent_probability_flips_when_the_lanes_overruled_the_proposal():
+    agreed = features(
+        pipeline="single",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    assert agreed["agentProbability"] == 0.9
+    overruled = features(
+        pipeline="single",
+        decision=decision(team="Service Desk", service=None),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    assert overruled["agentProbability"] == pytest.approx(0.1)
+
+
+def test_proposal_gate_scores_the_proposal_at_face_value():
+    weights = load_weights()
+    raw = proposal_gate(
+        pipeline="single",
+        decision=decision(team="Service Desk", service=None),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    expected = (weights["agentProbability"] * 0.9 + weights["evidenceFidelity"] * 1.0) / (
+        weights["agentProbability"] + weights["deterministicMargin"] + weights["evidenceFidelity"]
+    )
+    assert raw == pytest.approx(expected)
+    assert raw >= 0.6
+
+
+def test_agent_signal_reads_as_a_sentence_in_both_directions():
+    agreed = features(
+        pipeline="single",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    labels = [
+        s["label"]
+        for s in signals(agreed, decision=decision(), ranked=TIED, sources=[], proposal=PROPOSAL)
+    ]
+    assert labels[0] == "Agent estimated 90% that Network is right"
+    lost = decision(team="Service Desk", service=None)
+    overruled = features(
+        pipeline="single",
+        decision=lost,
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal=PROPOSAL,
+    )
+    labels = [
+        s["label"]
+        for s in signals(overruled, decision=lost, ranked=TIED, sources=[], proposal=PROPOSAL)
+    ]
+    assert labels[0] == "Agent proposed Network, overruled by policy"
+
+
+def test_build_records_a_sanitized_agent_rationale(tmp_path, monkeypatch):
+    monkeypatch.setattr(confidence, "CALIBRATION_PATH", tmp_path / "missing.json")
+    result = build(
+        pipeline="single",
+        decision=decision(),
+        ranked=TIED,
+        sources=[],
+        extraction_ok=True,
+        proposal={**PROPOSAL, "rationale": "VPN named; password: hunter2"},
+    )
+    assert result["agentRationale"] == "VPN named; password: [REDACTED]"
+    assert [s["kind"] for s in result["signals"]][0] == "agentProbability"
+    assert result["why"].startswith("Medium confidence: agent estimated 90% that Network is right;")

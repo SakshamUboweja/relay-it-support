@@ -1,10 +1,12 @@
-"""Typed agent-run records and the context handed to every intake pipeline."""
+"""Typed agent-run records, routing proposals, and the context handed to every pipeline."""
 
 from dataclasses import dataclass
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from ..domain import TEAMS
+from ..model import Extraction
 from ..sanitize import sanitize
 
 SUMMARY_LIMIT = 500
@@ -83,6 +85,45 @@ class AgentRun(BaseModel):
     latencyMs: int
     outcome: dict
     steps: list[AgentStep]
+
+
+class RoutingProposal(BaseModel):
+    """A model's routing opinion. Deterministic lanes decide how much of it may apply."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+    service: Literal["vpn", "sso", "wifi", "laptop", "atlas"] | None
+    team: str = Field(max_length=40)
+    abstain: bool
+    blockedQuote: str | None
+    broadImpactQuote: str | None
+    securityQuote: str | None
+    rationale: str = Field(max_length=300)
+    probability: float = Field(ge=0, le=1)
+    citedSourceIds: list[str] = Field(max_length=10)
+
+
+class SingleAgentOutput(Extraction, RoutingProposal):
+    """One structured call: the extraction contract plus a routing proposal over it."""
+
+
+def validate_proposal(
+    proposal: RoutingProposal | dict, text: str, allowed_source_ids: set[str]
+) -> dict:
+    """Quotes must be literal spans of the requester text; teams and sources must exist."""
+    parsed = (
+        proposal
+        if isinstance(proposal, RoutingProposal)
+        else RoutingProposal.model_validate(proposal)
+    )
+    data = parsed.model_dump(include=set(RoutingProposal.model_fields))
+    for quote in (data["blockedQuote"], data["broadImpactQuote"], data["securityQuote"]):
+        if quote and quote not in text:
+            raise ValueError("Proposal asserted unsupported evidence.")
+    if data["team"] not in TEAMS:
+        raise ValueError("Proposal named an unknown team.")
+    if any(identifier not in allowed_source_ids for identifier in data["citedSourceIds"]):
+        raise ValueError("Proposal cited a source that was not provided.")
+    return data
 
 
 @dataclass

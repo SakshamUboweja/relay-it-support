@@ -5,6 +5,7 @@ import json
 from ..config import ROOT
 from ..fixtures import catalog
 from ..policy import policy
+from ..sanitize import sanitize
 
 CONFIDENCE_PATH = ROOT / "config/confidence.json"
 CALIBRATION_PATH = ROOT / "config/calibration.json"
@@ -44,6 +45,14 @@ def _service_name(service: str | None) -> str | None:
     return next((s["name"] for s in catalog if s["id"] == service), service)
 
 
+def _agent_probability(proposal, decision: dict) -> float | None:
+    """The agent's own estimate, inverted once the lanes have overruled the team it proposed."""
+    if not proposal:
+        return None
+    probability = float(proposal["probability"])
+    return probability if proposal["team"] == decision["team"] else _clip(1 - probability)
+
+
 def features(
     *,
     pipeline: str,
@@ -71,12 +80,33 @@ def features(
     )
     fidelity = {None: None, True: 1.0, False: 0.0, "retried": 0.5}[extraction_ok]
     return {
-        "agentProbability": None,
+        "agentProbability": _agent_probability(proposal, decision),
         "agreement": None,
         "retrievalSupport": support,
         "deterministicMargin": margin,
         "evidenceFidelity": fidelity,
     }
+
+
+def proposal_gate(
+    *,
+    pipeline: str,
+    decision: dict,
+    ranked: list[dict],
+    sources: list[dict],
+    extraction_ok,
+    proposal,
+) -> float:
+    """Raw score for the lane gate: the proposal is scored at face value, not yet judged."""
+    found = features(
+        pipeline=pipeline,
+        decision=decision,
+        ranked=ranked,
+        sources=sources,
+        extraction_ok=extraction_ok,
+    )
+    found["agentProbability"] = float(proposal["probability"])
+    return raw_score(found, load_weights())
 
 
 def raw_score(features: dict, weights: dict) -> float:
@@ -93,8 +123,18 @@ def band(value: float) -> str:
     return "medium" if value >= limits["medium"] else "low"
 
 
-def signals(features: dict, *, decision: dict, ranked: list[dict], sources: list[dict]) -> list:
+def signals(
+    features: dict, *, decision: dict, ranked: list[dict], sources: list[dict], proposal=None
+) -> list:
     found = []
+    agent = features.get("agentProbability")
+    if agent is not None and proposal:
+        label = (
+            f"Agent estimated {agent:.0%} that {decision['team']} is right"
+            if proposal["team"] == decision["team"]
+            else f"Agent proposed {proposal['team']}, overruled by policy"
+        )
+        found.append({"kind": "agentProbability", "label": label, "value": agent})
     margin = features.get("deterministicMargin")
     if margin is not None:
         if decision["escalation"] == "security":
@@ -223,7 +263,9 @@ def build(
     value, calibrated = calibrate(pipeline, raw)
     value = round(value, 4)
     band_name = band(value)
-    found_signals = signals(found, decision=decision, ranked=ranked, sources=sources)
+    found_signals = signals(
+        found, decision=decision, ranked=ranked, sources=sources, proposal=proposal
+    )
     return {
         "value": value,
         "band": band_name,
@@ -232,5 +274,5 @@ def build(
         "degraded": degraded,
         "signals": found_signals,
         "why": why(band_name, found_signals),
-        "agentRationale": None,
+        "agentRationale": sanitize(proposal["rationale"]) if proposal else None,
     }

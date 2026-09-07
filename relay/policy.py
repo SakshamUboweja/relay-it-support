@@ -76,6 +76,13 @@ def security_evidence(text: str) -> bool:
     return False
 
 
+def catalog_candidates(text: str, supplemental: str = "") -> list[str]:
+    """Catalog service ids whose aliases appear in the message; VPN outranks a bare sign-in hit."""
+    scan = text.lower() + "\n" + supplemental.lower() if supplemental else text.lower()
+    found = [s["id"] for s in catalog if any(alias in scan for alias in s["aliases"])]
+    return [i for i in found if i != "sso"] if "vpn" in found else found
+
+
 def vpn_auth(text: str) -> bool:
     """Catalog exception: a VPN report whose evidence points at credentials, not the tunnel."""
     t = text.lower()
@@ -127,10 +134,9 @@ def decide(
         r"\b(new (access|account|laptop)|request access|access (to|approval)|grant|permission to|procure|purchase|buy |onboard|payroll|vacation|hr request|how (do|can|should) i report|what is phishing)\b",
         t,
     )
-    candidates = [s for s in catalog if any(alias in scan for alias in s["aliases"])]
+    found = catalog_candidates(text, supplemental)
+    candidates = [s for s in catalog if s["id"] in found]
     vpn_password = vpn_auth(text)
-    if any(s["id"] == "vpn" for s in candidates):
-        candidates = [s for s in candidates if s["id"] != "sso"]
     allowed = [
         s
         for s in sources
