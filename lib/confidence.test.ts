@@ -76,3 +76,57 @@ void test('isConfidence rejects malformed payloads', () => {
   assert.equal(isConfidence({ ...sample, signals: undefined }), false);
   assert.equal(isConfidence({ ...sample, signals: 'none' }), false);
 });
+
+void test('isConfidence validates every signal in the list', () => {
+  assert.equal(isConfidence({ ...sample, signals: [] }), true);
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [
+        { kind: 'margin', label: 'Clear winner', value: 0.4 },
+        { kind: 'agreement', label: 'Agents agreed', value: null },
+      ],
+    }),
+    true,
+  );
+  assert.equal(isConfidence({ ...sample, signals: [{}, {}] }), false);
+  assert.equal(isConfidence({ ...sample, signals: [null] }), false);
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [{ kind: 'margin', label: 7, value: 0.4 }],
+    }),
+    false,
+  );
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [{ kind: 2, label: 'Clear', value: 0.4 }],
+    }),
+    false,
+  );
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [{ kind: 'margin', label: 'Clear', value: Number.NaN }],
+    }),
+    false,
+  );
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [{ kind: 'margin', label: 'Clear', value: '0.4' }],
+    }),
+    false,
+  );
+  assert.equal(
+    isConfidence({
+      ...sample,
+      signals: [
+        { kind: 'margin', label: 'Clear', value: 0.4 },
+        { kind: 'agreement', label: 'Agreed' },
+      ],
+    }),
+    false,
+  );
+});

@@ -553,9 +553,11 @@ export function TicketReview({
                 <summary>Why this team?</summary>
                 <p>{confidenceCopy(review.confidence.band).sentence}</p>
                 <ul>
-                  {review.confidence.signals.map((signal) => (
-                    <li key={signal.kind}>{signal.label}</li>
-                  ))}
+                  {review.confidence.signals
+                    .filter((signal) => signal.label.trim())
+                    .map((signal, i) => (
+                      <li key={`${signal.kind}-${i}`}>{signal.label}</li>
+                    ))}
                 </ul>
                 <p className="review-caption">
                   {pipelineNote(review.pipeline)} Confidence{' '}

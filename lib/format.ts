@@ -1,30 +1,39 @@
-export const fmtDateTime = (s: string) =>
-  new Date(s).toLocaleString(undefined, {
+export const fmtDateTime = (s: string, locale?: string | string[]) =>
+  new Date(s).toLocaleString(locale, {
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
     minute: '2-digit',
   });
+/** Missing and non-finite numbers read the same way: the value is not known. */
+const given = (v: number | null | undefined): v is number =>
+  v != null && Number.isFinite(v);
 export function fmtMs(ms: number | null | undefined): string {
-  if (ms == null) return '—';
+  if (!given(ms)) return '—';
   if (ms < 1000) return `${Math.round(ms)} ms`;
-  if (ms < 60000) return `${(ms / 1000).toFixed(1)} s`;
-  const seconds = Math.round(ms / 1000);
-  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+  const seconds = Number((ms / 1000).toFixed(1));
+  if (seconds < 60) return `${seconds.toFixed(1)} s`;
+  const whole = Math.round(seconds);
+  return `${Math.floor(whole / 60)}m ${whole % 60}s`;
 }
-const trim = (value: string) => value.replace(/\.0$/, '');
-export function fmtTokens(n: number): string {
+/** Whole units print without a decimal; everything else keeps one. */
+const scale = (n: number, unit: number) =>
+  n % unit === 0 ? String(n / unit) : (n / unit).toFixed(1);
+export function fmtTokens(n: number | null | undefined): string {
+  if (!given(n)) return '—';
   if (n < 1000) return String(n);
-  if (n < 1e6) return `${trim((n / 1000).toFixed(1))}K`;
-  return `${trim((n / 1e6).toFixed(1))}M`;
+  // Round in thousands first so 999_999 reads as 1.0M rather than 1000K.
+  return Number((n / 1000).toFixed(1)) < 1000
+    ? `${scale(n, 1000)}K`
+    : `${scale(n, 1e6)}M`;
 }
 export function fmtUsd(v: number | null | undefined): string {
-  if (v == null) return 'unknown';
+  if (!given(v)) return 'unknown';
   if (v === 0) return '$0.00';
   return `$${v.toFixed(v < 0.01 ? 4 : 2)}`;
 }
-export function fmtPct(rate: number | null): string {
-  if (rate == null) return 'n/a';
+export function fmtPct(rate: number | null | undefined): string {
+  if (!given(rate)) return 'n/a';
   return `${(rate * 100).toFixed(1)}%`;
 }
 export function fmtRate(v: {

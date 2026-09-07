@@ -1,4 +1,4 @@
-import type { Confidence, Pipeline } from './domain';
+import type { Confidence, ConfidenceSignal, Pipeline } from './domain';
 
 const bands: Confidence['band'][] = ['high', 'medium', 'low'];
 const copy: Record<Confidence['band'], { label: string; sentence: string }> = {
@@ -32,6 +32,16 @@ export const pipelineLabel = (pipeline: Pipeline | null | undefined) =>
   pipeline ? labels[pipeline] : '';
 export const pipelineNote = (pipeline: Pipeline | null | undefined) =>
   pipeline ? notes[pipeline] : '';
+function isSignal(x: unknown): x is ConfidenceSignal {
+  if (typeof x !== 'object' || x === null) return false;
+  const s = x as Partial<ConfidenceSignal>;
+  return (
+    typeof s.kind === 'string' &&
+    typeof s.label === 'string' &&
+    (s.value === null ||
+      (typeof s.value === 'number' && Number.isFinite(s.value)))
+  );
+}
 export function isConfidence(x: unknown): x is Confidence {
   if (typeof x !== 'object' || x === null) return false;
   const c = x as Partial<Confidence>;
@@ -41,6 +51,7 @@ export function isConfidence(x: unknown): x is Confidence {
     c.value >= 0 &&
     c.value <= 1 &&
     bands.includes(c.band as Confidence['band']) &&
-    Array.isArray(c.signals)
+    Array.isArray(c.signals) &&
+    c.signals.every(isSignal)
   );
 }
