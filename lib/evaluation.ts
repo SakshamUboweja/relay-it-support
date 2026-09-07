@@ -1,3 +1,5 @@
+import { fmtDateTime } from './format';
+
 /** Types and helpers for the offline evaluation report behind GET /api/evaluation. */
 export type EvaluationRate = {
   numerator: number;
@@ -87,9 +89,38 @@ const armColors: Record<string, string> = {
   single: palette[2],
   multi: palette[3],
 };
-/** Fixed colour per known arm so a filtered chart never repaints the survivors. */
-export const armColor = (arm: string, index: number): string =>
-  armColors[arm] ?? palette[index % palette.length];
+const isKnown = (arm: string) => arm in armColors;
+
+/**
+ * Fixed colour per known arm so a filtered chart never repaints the survivors.
+ * An unknown arm takes, in first-seen order, a slot none of the known arms in
+ * `arms` has claimed; without that list it can only fall back to its index.
+ */
+export function armColor(
+  arm: string,
+  index: number,
+  arms: string[] = [],
+): string {
+  const known = armColors[arm];
+  if (known) return known;
+  const claimed = new Set(
+    arms.filter(isKnown).map((a) => palette.indexOf(armColors[a])),
+  );
+  const free = palette
+    .map((_, slot) => slot)
+    .filter((slot) => !claimed.has(slot));
+  const unknown = arms.filter((a) => !isKnown(a)).indexOf(arm);
+  const position = unknown < 0 ? index : unknown;
+  return free.length
+    ? palette[free[position % free.length]]
+    : palette[position % palette.length];
+}
+
+/** An absent or unparsable run date must not reach the page as "Invalid Date". */
+export const runDateLabel = (runDate: string): string =>
+  runDate && !Number.isNaN(Date.parse(runDate))
+    ? fmtDateTime(runDate)
+    : 'unknown date';
 
 /** Cost of a single case, which is what makes arms with different sample sizes comparable. */
 export const costPerCase = (row: EvaluationRow): number | null =>

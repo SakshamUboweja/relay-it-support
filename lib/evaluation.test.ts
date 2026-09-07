@@ -5,8 +5,10 @@ import {
   bestKey,
   bestPerColumn,
   fetchEvaluation,
+  runDateLabel,
   type EvaluationRow,
 } from './evaluation';
+import { fmtDateTime } from './format';
 
 const rate = (numerator: number, denominator: number) => ({
   numerator,
@@ -73,10 +75,34 @@ void test('armColor keeps a known arm on its own colour whatever its index', () 
   assert.equal(armColor('rules-v1', 3), 'var(--chart-1)');
 });
 
-void test('armColor gives unknown arms the palette in first-seen order', () => {
+void test('armColor gives unknown arms the slots the known arms leave free', () => {
+  const arms = ['rules-v2', 'custom'];
+  assert.equal(armColor('rules-v2', 0, arms), 'var(--chart-2)');
+  assert.equal(armColor('custom', 1, arms), 'var(--chart-1)');
+  assert.notEqual(armColor('custom', 1, arms), armColor('rules-v2', 0, arms));
+});
+
+void test('armColor keeps unknown arms apart in first-seen order', () => {
+  const arms = ['multi', 'custom', 'rules-v1', 'other'];
+  assert.deepEqual(
+    arms.map((arm, index) => armColor(arm, index, arms)),
+    ['var(--chart-4)', 'var(--chart-2)', 'var(--chart-1)', 'var(--chart-3)'],
+  );
+});
+
+void test('armColor falls back to the index when no arm list is given', () => {
   assert.equal(armColor('rules-v3', 0), 'var(--chart-1)');
   assert.equal(armColor('rules-v3', 1), 'var(--chart-2)');
   assert.equal(armColor('rules-v3', 4), 'var(--chart-1)');
+});
+
+void test('runDateLabel names an absent or unparsable run date', () => {
+  assert.equal(runDateLabel(''), 'unknown date');
+  assert.equal(runDateLabel('not a date'), 'unknown date');
+  assert.equal(
+    runDateLabel('2026-09-04T09:30:00Z'),
+    fmtDateTime('2026-09-04T09:30:00Z'),
+  );
 });
 
 void test('bestPerColumn marks the highest rates and the lowest error metrics', () => {

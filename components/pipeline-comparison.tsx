@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -33,18 +33,12 @@ import {
   bestPerColumn,
   costPerCase,
   fetchEvaluation,
+  runDateLabel,
   type EvaluationReport,
   type EvaluationRow,
   type Metric,
 } from '@/lib/evaluation';
-import {
-  fmtDateTime,
-  fmtMs,
-  fmtPct,
-  fmtRate,
-  fmtTokens,
-  fmtUsd,
-} from '@/lib/format';
+import { fmtMs, fmtPct, fmtRate, fmtTokens, fmtUsd } from '@/lib/format';
 
 const armLabels: Record<string, string> = {
   'rules-v1': 'Rules v1',
@@ -80,7 +74,7 @@ function Meta({ report }: { report: EvaluationReport }) {
     <div className="comparison-meta">
       <p>
         {report.model} · effort {report.effort} · scoring {report.scoring} ·{' '}
-        {fmtDateTime(report.runDate)} · prompts {prompts || 'none recorded'}
+        {runDateLabel(report.runDate)} · prompts {prompts || 'none recorded'}
       </p>
       {report.aborted && (
         <p className="comparison-warning">
@@ -90,8 +84,8 @@ function Meta({ report }: { report: EvaluationReport }) {
       )}
       {report.caveats.length > 0 && (
         <ul className="small">
-          {report.caveats.map((caveat) => (
-            <li key={caveat}>{caveat}</li>
+          {report.caveats.map((caveat, index) => (
+            <li key={index}>{caveat}</li>
           ))}
         </ul>
       )}
@@ -246,6 +240,7 @@ function RoutingChart({
                           background: armColor(
                             String(name),
                             arms.indexOf(String(name)),
+                            arms,
                           ),
                         }}
                       />
@@ -263,7 +258,7 @@ function RoutingChart({
               key={arm}
               dataKey={arm}
               name={arm}
-              fill={armColor(arm, index)}
+              fill={armColor(arm, index, arms)}
               maxBarSize={24}
               radius={[4, 4, 0, 0]}
               isAnimationActive={false}
@@ -298,7 +293,7 @@ function CalibrationChart({
   const curves = arms
     .map((arm, index) => ({
       arm,
-      color: armColor(arm, index),
+      color: armColor(arm, index, arms),
       // The arm names the y field so the legend and tooltip resolve its label.
       points: (heldout.find((row) => row.arm === arm)?.confidence.bins ?? [])
         .filter((bin) => bin.count > 0)
@@ -372,6 +367,7 @@ function CalibrationChart({
                           background: armColor(
                             String(name),
                             arms.indexOf(String(name)),
+                            arms,
                           ),
                         }}
                       />
@@ -407,7 +403,7 @@ function CalibrationChart({
     .map((arm, index) => ({
       arm,
       label: armLabel(arm),
-      fill: armColor(arm, index),
+      fill: armColor(arm, index, arms),
       ece: heldout.find((row) => row.arm === arm)?.confidence.ece ?? null,
     }))
     .filter((x): x is typeof x & { ece: number } => x.ece != null);
@@ -477,9 +473,17 @@ export default function PipelineComparison() {
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState('');
 
-  // Kept out of the effect body so the first read never sets state synchronously.
+  // Every read carries a cancel token, so a slow earlier response can never
+  // overwrite a newer one, and unmounting drops whatever is still in flight.
+  const cancelRun = useRef<(() => void) | null>(null);
   const run = useCallback(() => {
+    cancelRun.current?.();
     let cancelled = false;
+    const cancel = () => {
+      cancelled = true;
+    };
+    cancelRun.current = cancel;
+    // Kept out of the effect body so the first read never sets state synchronously.
     fetchEvaluation()
       .then((next) => {
         if (cancelled) return;
@@ -491,9 +495,7 @@ export default function PipelineComparison() {
         setError(e.message);
         setState('error');
       });
-    return () => {
-      cancelled = true;
-    };
+    return cancel;
   }, []);
   const reload = useCallback(() => {
     setState('loading');
@@ -531,7 +533,7 @@ export default function PipelineComparison() {
   const config: ChartConfig = Object.fromEntries(
     arms.map((arm, index) => [
       arm,
-      { label: armLabel(arm), color: armColor(arm, index) },
+      { label: armLabel(arm), color: armColor(arm, index, arms) },
     ]),
   );
   return (
