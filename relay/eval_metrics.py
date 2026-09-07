@@ -106,6 +106,7 @@ def arm_metrics(rows: list[dict], *, arm: str, split: str, scoring: str) -> dict
         "split": split,
         "scoring": scoring,
         "cases": len(rows),
+        "failedCases": sum(bool(r.get("failed")) for r in rows),
         **routing,
         "confidence": confidence_metrics(rows),
         "latency": latency_metrics(rows),

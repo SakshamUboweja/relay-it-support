@@ -326,6 +326,7 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
     assert set(row) >= {
         *ROUTING_KEYS,
         "failures",
+        "failedCases",
         "confidence",
         "latency",
         "tokens",
@@ -447,9 +448,28 @@ async def test_a_case_that_raises_becomes_a_failed_row_never_a_fabricated_one(
     assert failed["confidence"]["value"] == 0.0 and failed["cacheHit"] is False
     assert failed["run"]["usage"]["input"] == 30
     assert failed in result["rows"][0]["failures"]
+    assert result["rows"][0]["failedCases"] == 1
     assert result["rows"][0]["routingAccuracy"]["denominator"] == 2
     assert not list((tmp_path / "cache/single").glob("dev-002.*"))
     assert len(list((tmp_path / "cache/single").glob("dev-001.*"))) == 1
+
+
+async def test_a_failed_case_is_listed_even_when_its_labels_match_the_fallback(monkeypatch):
+    # dev-036 expects Service Desk, no escalation and no question: exactly the failed-row shape.
+    live(monkeypatch)
+
+    def explode(ctx, result, rt, *, scoring=None):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(harness, "compose_decision", explode)
+    parse = single_parse()
+    result = await evaluate_arms(
+        options(ids=["dev-036"]), client_factory=lambda: mock_client(parse)
+    )
+    [row] = result["rows"]
+    assert row["routingAccuracy"] == rate(1, 1) and row["failedCases"] == 1
+    assert [f["id"] for f in row["failures"]] == ["dev-036"]
+    assert row["failures"][0]["failed"] is True
 
 
 # --- the multi arm through the harness ----------------------------------------------------

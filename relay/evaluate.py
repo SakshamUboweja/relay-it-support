@@ -49,10 +49,12 @@ def routing_metrics(rows: list[dict]) -> dict:
     non_security = [r for r in rows if r["expected"]["escalation"] != "security"]
     escalated = [r for r in rows if r["expected"]["escalation"] != "none"]
     non_escalated = [r for r in rows if r["expected"]["escalation"] == "none"]
+    # A row the arm comparison could not score (`failed`) is always listed, whatever its labels.
     failures = [
         r
         for r in rows
-        if any(
+        if r.get("failed")
+        or any(
             r["actual"][key] != r["expected"][key]
             for key in ("team", "escalation", "clarification")
         )
