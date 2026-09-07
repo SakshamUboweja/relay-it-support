@@ -11,7 +11,13 @@ export type Team = (typeof teams)[number];
 export type Service = (typeof services)[number];
 export type Fact<T = string> = {
   value: T | null;
-  origin: 'user' | 'context' | 'hypothesis' | 'policy_default' | 'unknown';
+  origin:
+    | 'user'
+    | 'context'
+    | 'hypothesis'
+    | 'policy_default'
+    | 'image'
+    | 'unknown';
   evidenceIds: string[];
 };
 export const fact = <T>(

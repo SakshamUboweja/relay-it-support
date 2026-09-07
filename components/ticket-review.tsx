@@ -228,6 +228,16 @@ export function TicketReview({
     !busy &&
     !dirty &&
     !conflict;
+  // Send is disabled for several reasons; these two are the ones the requester
+  // can act on, so they are named next to the button.
+  const sendBlocked =
+    !review || approved
+      ? ''
+      : dirty
+        ? 'Save and recheck your edits before sending.'
+        : review.verification.status !== 'passed'
+          ? 'Resolve the verification issues above before sending.'
+          : '';
 
   async function attach(file: File) {
     if (
@@ -896,6 +906,9 @@ export function TicketReview({
                       type="button"
                       className="primary"
                       disabled={!canApprove}
+                      aria-describedby={
+                        sendBlocked ? 'review-send-blocked' : undefined
+                      }
                       onClick={() =>
                         void mutate(
                           'Approving',
@@ -961,6 +974,11 @@ export function TicketReview({
                       )}
                     </p>
                   </div>
+                  {sendBlocked && (
+                    <p className="review-caption" id="review-send-blocked">
+                      {sendBlocked}
+                    </p>
+                  )}
                 </div>
               )}
             </form>
