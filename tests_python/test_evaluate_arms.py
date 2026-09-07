@@ -222,15 +222,16 @@ async def test_model_arms_require_live_mode_a_key_and_a_model(monkeypatch):
 
 
 async def test_rules_arms_never_call_a_model_and_match_the_legacy_numbers(legacy_outputs, tmp_path):
-    # The legacy runner calls `decide()` with the configured default, which is now scoring v2.
-    result = await evaluate_arms(EvalOptions(arm="rules-v2", split="dev"), client_factory=never)
+    # The legacy runner is pinned to scoring v1, so its published numbers keep their label
+    # after the shipped default moved to v2.
+    result = await evaluate_arms(EvalOptions(arm="rules-v1", split="dev"), client_factory=never)
     legacy = await evaluate()
     [row] = result["rows"]
     proposed = legacy["splits"]["dev"]["proposed"]
     for key in ROUTING_KEYS:
         assert row[key] == proposed[key], key
     assert [f["id"] for f in row["failures"]] == [f["id"] for f in proposed["failures"]]
-    assert row["scoring"] == "v2" and row["cases"] == 60
+    assert row["scoring"] == "v1" and row["cases"] == 60
     assert row["estimatedCostUSD"] == 0
     assert row["tokens"] == {"input": 0, "output": 0, "cached": 0, "reasoning": 0}
     assert row["cacheHits"] == 0 and not (tmp_path / "cache").exists()
@@ -239,9 +240,9 @@ async def test_rules_arms_never_call_a_model_and_match_the_legacy_numbers(legacy
     assert row["fidelity"]["quoteValidityRate"] == rate(0, 0)
     assert result["model"] is None and result["promptVersions"] == {}
     assert len(result["caveats"]) == 3 and not any("effort" in c for c in result["caveats"])
-    v1 = await evaluate_arms(EvalOptions(arm="rules-v1", split="dev"), client_factory=never)
-    assert v1["rows"][0]["scoring"] == "v1"
-    assert v1["rows"][0]["routingAccuracy"] != row["routingAccuracy"]
+    v2 = await evaluate_arms(EvalOptions(arm="rules-v2", split="dev"), client_factory=never)
+    assert v2["rows"][0]["scoring"] == "v2"
+    assert v2["rows"][0]["routingAccuracy"] != row["routingAccuracy"]
 
 
 # --- calibration --------------------------------------------------------------------------

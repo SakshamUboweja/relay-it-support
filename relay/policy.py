@@ -27,7 +27,7 @@ class Policy(BaseModel):
     criticalServices: list[str]
     routingMinimum: float = Field(ge=0)
     routingMargin: float = Field(ge=0)
-    routingScoring: Literal["v1", "v2"] = "v1"
+    routingScoring: Literal["v1", "v2"] = "v2"
     proposalMinConfidence: float = Field(default=0.6, ge=0, le=1)
     contextMaxAgeHours: float = Field(gt=0)
     relatedWindowHours: float = Field(gt=0)

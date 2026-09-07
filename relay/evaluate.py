@@ -135,7 +135,9 @@ async def evaluate() -> dict:
             rows = []
             for case in cases:
                 start = time.perf_counter()
-                d = decide(case["text"], sources, users[0])
+                # Pinned to v1: these published numbers are the scoring-v1 regression baseline
+                # and must not move when the shipped default changes.
+                d = decide(case["text"], sources, users[0], scoring="v1")
                 keyword = next(
                     (
                         s
