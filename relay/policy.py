@@ -92,6 +92,24 @@ def vpn_auth(text: str) -> bool:
     )
 
 
+BROAD_IMPACT = r"\b(everyone|entire (team|office|company)|all (employees|users|staff)|whole (team|office)|company.wide|organization.wide)\b"
+NOT_BROAD = r"not (everyone|the entire|all)"
+WORK_BLOCKED = r"\b(blocked|cannot work|can.t work|unable to work|work has stopped)\b"
+NO_WORKAROUND = r"no (usable )?workaround|no (other|alternative)|nothing else|without a workaround"
+
+
+def broad_impact(text: str) -> bool:
+    """The requester reports a loss across many people; `decide` records it as the impact fact."""
+    t = text.lower()
+    return _matches(BROAD_IMPACT, t) and not _matches(NOT_BROAD, t)
+
+
+def work_blocked(text: str) -> bool:
+    """The requester says work has stopped and names no workaround; the urgency fact."""
+    t = text.lower()
+    return _matches(WORK_BLOCKED, t) and _matches(NO_WORKAROUND, t)
+
+
 _DEVICE_CONTAINERS = {"laptop", "computer", "macbook", "thinkpad"}
 _CONNECTIVITY = ("wifi", "vpn")
 _CONNECTIVITY_FAILURE = r"\b(cannot|can.t|unable|won.t|fails?|failed|failing|never completes|drops?|dropped|disconnect\w*|times? out|timeout|unreachable)\b"
@@ -203,15 +221,8 @@ def decide(
     ]
     if demoted:
         reasons.insert(1, "device-context-demoted")
-    broad = _matches(
-        r"\b(everyone|entire (team|office|company)|all (employees|users|staff)|whole (team|office)|company.wide|organization.wide)\b",
-        t,
-    ) and not _matches(r"not (everyone|the entire|all)", t)
-    blocked = _matches(
-        r"\b(blocked|cannot work|can.t work|unable to work|work has stopped)\b", t
-    ) and _matches(
-        r"no (usable )?workaround|no (other|alternative)|nothing else|without a workaround", t
-    )
+    broad = broad_impact(t)
+    blocked = work_blocked(t)
     incidents = [
         s
         for s in allowed

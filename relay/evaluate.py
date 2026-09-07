@@ -21,13 +21,86 @@ def _metric(value):
     return f"{value['numerator']}/{value['denominator']} ({rate})"
 
 
-async def evaluate() -> dict:
-    root = Path(__file__).resolve().parents[1]
-    scenarios = json.loads((root / "evaluation/scenarios.json").read_text())
+def policy_hash(root: Path) -> str:
+    """One digest over the routing implementation and its configuration."""
     digest = hashlib.sha256()
     for filename in ("relay/policy.py", "config/policy.json", "config/fixtures.json"):
         digest.update((root / filename).read_bytes())
-    policy_hash = digest.hexdigest()
+    return digest.hexdigest()
+
+
+def percentiles(times: list[float]) -> tuple:
+    """(p50, p95) by rank over the sorted times; (None, None) without observations."""
+    times = sorted(times)
+    if not times:
+        return None, None
+    return times[len(times) // 2], times[int(len(times) * 0.95)]
+
+
+def routing_metrics(rows: list[dict]) -> dict:
+    """Routing, escalation and clarification counts over per-case rows; shared by both runners.
+
+    Each row carries `expected` and `actual` with `team`, `escalation` and `clarification`,
+    plus `actual.accepted`.
+    """
+    eligible = [r for r in rows if r["expected"]["team"] != "Service Desk"]
+    accepted = [r for r in rows if r["actual"]["accepted"]]
+    security = [r for r in rows if r["expected"]["escalation"] == "security"]
+    non_security = [r for r in rows if r["expected"]["escalation"] != "security"]
+    escalated = [r for r in rows if r["expected"]["escalation"] != "none"]
+    non_escalated = [r for r in rows if r["expected"]["escalation"] == "none"]
+    failures = [
+        r
+        for r in rows
+        if any(
+            r["actual"][key] != r["expected"][key]
+            for key in ("team", "escalation", "clarification")
+        )
+    ]
+    per_team = {}
+    for team in TEAMS:
+        group = [r for r in rows if r["expected"]["team"] == team]
+        per_team[team] = _count(sum(r["actual"]["team"] == team for r in group), len(group))
+    return {
+        "routingAccuracy": _count(
+            sum(r["expected"]["team"] == r["actual"]["team"] for r in rows), len(rows)
+        ),
+        "perTeam": per_team,
+        "acceptedPrecision": _count(
+            sum(r["actual"]["team"] == r["expected"]["team"] for r in accepted),
+            len(accepted),
+        ),
+        "eligibleCoverage": _count(sum(r["actual"]["accepted"] for r in eligible), len(eligible)),
+        "automaticRoutingFrequency": _count(len(accepted), len(rows)),
+        "abstentions": len(rows) - len(accepted),
+        "escalationRecall": _count(
+            sum(r["actual"]["escalation"] == r["expected"]["escalation"] for r in escalated),
+            len(escalated),
+        ),
+        "escalationFalsePositives": _count(
+            sum(r["actual"]["escalation"] != "none" for r in non_escalated),
+            len(non_escalated),
+        ),
+        "securityRecall": _count(
+            sum(r["actual"]["escalation"] == "security" for r in security), len(security)
+        ),
+        "securityFalsePositives": _count(
+            sum(r["actual"]["escalation"] == "security" for r in non_security),
+            len(non_security),
+        ),
+        "clarificationAgreement": _count(
+            sum(r["actual"]["clarification"] == r["expected"]["clarification"] for r in rows),
+            len(rows),
+        ),
+        "firstTurnQuestionRate": _count(sum(r["actual"]["clarification"] for r in rows), len(rows)),
+        "failures": failures,
+    }
+
+
+async def evaluate() -> dict:
+    root = Path(__file__).resolve().parents[1]
+    scenarios = json.loads((root / "evaluation/scenarios.json").read_text())
+    digest = policy_hash(root)
     sources = (
         await query(
             "SELECT * FROM sources WHERE kind IN ('article','case') AND created_at<=now() ORDER BY id",
@@ -41,7 +114,7 @@ async def evaluate() -> dict:
         "model": "deterministic-demo-v1",
         "promptVersion": "intake-v1",
         "policyVersion": policy["version"],
-        "policyHash": policy_hash,
+        "policyHash": digest,
         "dataset": "120 synthetic cases; historical 60/60 family split, already observed during development; agent-authored labels NOT human reviewed. Migration regression corpus, not a new untouched holdout.",
         "allowedInformation": {
             "keyword": "Text and catalog; first alias match; no policy, history, model or incidents",
@@ -97,73 +170,18 @@ async def evaluate() -> dict:
                         "latencyMs": (time.perf_counter() - start) * 1000,
                     }
                 )
-            eligible = [r for r in rows if r["expected"]["team"] != "Service Desk"]
-            accepted = [r for r in rows if r["actual"]["accepted"]]
-            security = [r for r in rows if r["expected"]["escalation"] == "security"]
-            non_security = [r for r in rows if r["expected"]["escalation"] != "security"]
-            escalated = [r for r in rows if r["expected"]["escalation"] != "none"]
-            non_escalated = [r for r in rows if r["expected"]["escalation"] == "none"]
-            times = sorted(r["latencyMs"] for r in rows)
-            failures = [
-                r
-                for r in rows
-                if any(
-                    r["actual"][key] != r["expected"][key]
-                    for key in ("team", "escalation", "clarification")
-                )
-            ]
-            per_team = {}
-            for team in TEAMS:
-                group = [r for r in rows if r["expected"]["team"] == team]
-                per_team[team] = _count(sum(r["actual"]["team"] == team for r in group), len(group))
+            metrics = routing_metrics(rows)
+            p50, p95 = percentiles([r["latencyMs"] for r in rows])
             result["splits"][split][method] = {
-                "routingAccuracy": _count(
-                    sum(r["expected"]["team"] == r["actual"]["team"] for r in rows), len(rows)
-                ),
-                "perTeam": per_team,
-                "acceptedPrecision": _count(
-                    sum(r["actual"]["team"] == r["expected"]["team"] for r in accepted),
-                    len(accepted),
-                ),
-                "eligibleCoverage": _count(
-                    sum(r["actual"]["accepted"] for r in eligible), len(eligible)
-                ),
-                "automaticRoutingFrequency": _count(len(accepted), len(rows)),
-                "abstentions": len(rows) - len(accepted),
-                "escalationRecall": _count(
-                    sum(
-                        r["actual"]["escalation"] == r["expected"]["escalation"] for r in escalated
-                    ),
-                    len(escalated),
-                ),
-                "escalationFalsePositives": _count(
-                    sum(r["actual"]["escalation"] != "none" for r in non_escalated),
-                    len(non_escalated),
-                ),
-                "securityRecall": _count(
-                    sum(r["actual"]["escalation"] == "security" for r in security), len(security)
-                ),
-                "securityFalsePositives": _count(
-                    sum(r["actual"]["escalation"] == "security" for r in non_security),
-                    len(non_security),
-                ),
-                "clarificationAgreement": _count(
-                    sum(
-                        r["actual"]["clarification"] == r["expected"]["clarification"] for r in rows
-                    ),
-                    len(rows),
-                ),
-                "firstTurnQuestionRate": _count(
-                    sum(r["actual"]["clarification"] for r in rows), len(rows)
-                ),
+                **{key: value for key, value in metrics.items() if key != "failures"},
                 "latency": {
-                    "p50Ms": times[len(times) // 2] if times else None,
-                    "p95Ms": times[int(len(times) * 0.95)] if times else None,
+                    "p50Ms": p50,
+                    "p95Ms": p95,
                     "kind": "In-process deterministic route evaluation; includes proposed decision computation for both methods. Not UI or provider latency.",
                 },
                 "tokens": {"input": 0, "output": 0},
                 "estimatedModelCostUSD": 0,
-                "failures": failures,
+                "failures": metrics["failures"],
             }
     result["unmeasured"] = [
         "Live model performance/baseline/cost",
@@ -177,7 +195,7 @@ async def evaluate() -> dict:
     lines = [
         "# Python migration regression results",
         "",
-        f"Run: {result['runDate']}. Policy: {policy['version']}. Implementation SHA-256: {policy_hash}.",
+        f"Run: {result['runDate']}. Policy: {policy['version']}. Implementation SHA-256: {digest}.",
         "",
         "Labels are agent-authored and **not human reviewed**. Both historical split names are retained for comparison; their cases have already been observed. This is migration regression evidence, not a new untouched holdout or proof of improved real-world accuracy.",
         "",

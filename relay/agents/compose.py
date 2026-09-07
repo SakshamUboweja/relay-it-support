@@ -22,7 +22,8 @@ def _prompt_version(pipeline: str) -> str:
     return SINGLE_PROMPT_VERSION if pipeline == "single" else INTAKE_PROMPT_VERSION
 
 
-def _prompt_versions(pipeline: str) -> dict:
+def prompt_versions(pipeline: str) -> dict:
+    """Every prompt version an arm can put on a decision; the eval cache keys on them."""
     versions = {"intake": INTAKE_PROMPT_VERSION}
     if pipeline == "single":
         versions["single"] = SINGLE_PROMPT_VERSION
@@ -148,7 +149,7 @@ def compose_decision(
     d.update(
         pipeline=ctx.pipeline,
         scoring=scoring,
-        promptVersions=_prompt_versions(ctx.pipeline) if live else {},
+        promptVersions=prompt_versions(ctx.pipeline) if live else {},
         costUsd=rt.cost_usd,
         agentRunId=rt.id,
     )

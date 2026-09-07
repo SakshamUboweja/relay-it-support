@@ -10,6 +10,8 @@ from ..fixtures import catalog
 from ..retrieval import lexical
 from ..sanitize import sanitize
 
+# Bump when a tool name, argument model or result shape changes; the eval cache keys on it.
+TOOL_SCHEMA_VERSION = "relay-tools-v1"
 RESULT_LIMIT = 5
 SNIPPET_LIMIT = 240
 SEARCH_LIMIT = 25

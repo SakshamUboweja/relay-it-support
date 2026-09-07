@@ -374,3 +374,15 @@ def test_agreement_is_absent_without_a_reviewer(tmp_path, monkeypatch):
     )
     assert reviewed["raw"] > result["raw"]
     assert [s["kind"] for s in reviewed["signals"]][1] == "agreement"
+
+
+def test_fit_isotonic_pools_tied_scores_before_the_violators():
+    assert fit_isotonic([(0.5, 0), (0.5, 1)]) == [[0.5, 0.5]]
+    # The tie at 0.5 averages to 2/3 first; PAV then pools it with the 1.0 at 0.2 into 3/4.
+    points = fit_isotonic([(0.2, 1), (0.5, 0), (0.5, 1), (0.5, 1), (0.9, 1)])
+    assert points == [[0.2, 0.75], [0.5, 0.75], [0.9, 1.0]]
+    xs = [x for x, _ in points]
+    assert len(xs) == len(set(xs))
+    assert calibrate.__module__ == "relay.agents.confidence"
+    assert confidence.interpolate(points, 0.35) == pytest.approx(0.75)
+    assert confidence.interpolate(points, 0.7) == pytest.approx(0.875)

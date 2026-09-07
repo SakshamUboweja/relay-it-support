@@ -196,7 +196,8 @@ def why(band_name: str, signals: list[dict]) -> str:
     return f"{band_name.capitalize()} confidence: {clauses}."
 
 
-def _interpolate(points: list, x: float) -> float:
+def interpolate(points: list, x: float) -> float:
+    """Piecewise-linear value of fitted `[[raw, calibrated], ...]` breakpoints at `x`, clipped."""
     points = sorted(points)
     if x <= points[0][0]:
         return _clip(points[0][1])
@@ -215,14 +216,24 @@ def calibrate(arm: str, raw: float) -> tuple[float, bool]:
     points = table.get("breakpoints")
     if not points:
         return raw, False
-    return _interpolate(points, raw), True
+    return interpolate(points, raw), True
 
 
 def fit_isotonic(pairs: list[tuple[float, int]]) -> list[list[float]]:
-    """Pool-adjacent-violators: monotone breakpoints [[raw, calibrated], ...] for `calibrate`."""
+    """Pool-adjacent-violators: monotone breakpoints [[raw, calibrated], ...] for `calibrate`.
+
+    Equal raw scores are pooled first (summed outcomes, summed weight), so every breakpoint
+    has its own x and `interpolate` is well-defined.
+    """
+    grouped: dict[float, list[float]] = {}
+    for x, y in pairs:
+        total = grouped.setdefault(x, [0.0, 0])
+        total[0] += float(y)
+        total[1] += 1
     blocks = []
-    for x, y in sorted(pairs):
-        blocks.append([x, x, float(y), 1])
+    for x in sorted(grouped):
+        total, count = grouped[x]
+        blocks.append([x, x, total, count])
         while len(blocks) > 1 and blocks[-2][2] / blocks[-2][3] > blocks[-1][2] / blocks[-1][3]:
             low, high = blocks[-2], blocks.pop()
             low[1], low[2], low[3] = high[1], low[2] + high[2], low[3] + high[3]

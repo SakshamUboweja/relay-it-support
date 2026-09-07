@@ -250,9 +250,33 @@ async def run(args):
         else:
             print("Dry run. Use --apply after reviewing the retention policy.")
     elif args.command == "eval":
-        from .evaluate import evaluate
+        if args.arm == "rules-v1":
+            harness_only = args.fit_calibration or args.ids or args.limit is not None
+            if harness_only or args.max_usd is not None or args.no_write or args.split != "all":
+                raise ValueError(
+                    "--arm rules-v1 runs the legacy evaluation only; use --arm all"
+                    " (or rules-v2, single, multi) with the harness flags."
+                )
+            from .evaluate import evaluate
 
-        await evaluate()
+            await evaluate()
+        else:
+            from .evaluate_arms import EvalOptions, evaluate_arms
+
+            await evaluate_arms(
+                EvalOptions(
+                    arm=args.arm,
+                    split=args.split,
+                    effort=args.effort,
+                    limit=args.limit,
+                    ids=args.ids,
+                    resume=args.resume,
+                    concurrency=args.concurrency,
+                    max_usd=args.max_usd,
+                    fit_calibration=args.fit_calibration,
+                    write=not args.no_write,
+                )
+            )
     elif args.command == "smoke-live":
         from .connector import connector
 
@@ -280,7 +304,11 @@ async def run(args):
         print(json.dumps({"status": "verified", "ticket": confirmed}))
 
 
-def main():
+def _ids(value: str) -> list[str]:
+    return [item for item in value.split(",") if item]
+
+
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
     for name in [
@@ -289,7 +317,6 @@ def main():
         "copy-sandbox-sources",
         "embed-sources",
         "preflight",
-        "eval",
         "smoke-live",
     ]:
         commands.add_parser(name)
@@ -300,7 +327,28 @@ def main():
     user.add_argument("name")
     user.add_argument("role", choices=["employee", "operator"], default="employee", nargs="?")
     commands.add_parser("retention").add_argument("--apply", action="store_true")
-    args = parser.parse_args()
+    # `eval` alone is the legacy deterministic run; any other arm compares arms with cached
+    # live calls. Calibration is only ever fitted on the dev split.
+    evaluation = commands.add_parser("eval")
+    evaluation.add_argument(
+        "--arm", choices=["rules-v1", "rules-v2", "single", "multi", "all"], default="rules-v1"
+    )
+    evaluation.add_argument("--split", choices=["dev", "heldout", "all"], default="all")
+    evaluation.add_argument(
+        "--effort", choices=["none", "low", "medium", "high", "xhigh", "max"], default="medium"
+    )
+    evaluation.add_argument("--limit", type=int)
+    evaluation.add_argument("--ids", type=_ids)
+    evaluation.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
+    evaluation.add_argument("--concurrency", type=int, default=4)
+    evaluation.add_argument("--max-usd", type=float)
+    evaluation.add_argument("--fit-calibration", action="store_true")
+    evaluation.add_argument("--no-write", action="store_true")
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
 
     async def execute():
         try:
