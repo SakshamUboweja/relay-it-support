@@ -6,7 +6,11 @@ Railway project: `8e0945be-9448-4bdc-9c76-0967baf67442`, production environment 
 
 ## Architecture
 
-Relay uses two model roles: intake extracts grounded facts, and an independent verifier checks the prepared Jira draft. Application code retrieves scoped sources, applies routing/security policy and validates fields. Only requester approval releases the durable Jira operation. The worker handles delivery and attachment reconciliation; it is not an AI agent. See TICKET_REVIEW.md for the implemented boundaries.
+Relay's intake stage is one of three selectable arms set by `RELAY_PIPELINE` — deterministic rules, a single agent, or a triage agent with an independent reviewer — followed by an independent verifier that checks the prepared Jira draft. Application code retrieves scoped sources, applies routing/security policy and validates fields. Only requester approval releases the durable Jira operation. See MULTI_AGENT_PLAN.md for the arms and the bounded lanes a model may use, and TICKET_REVIEW.md for the implemented boundaries.
+
+The worker now does more than delivery: with the multi arm in live mode the API answers `{"state":"processing"}` and the worker's `resume_intakes` runs the intake pipeline and prepares the review before the requester sees a draft. It still performs delivery and attachment reconciliation, and it still makes no approval or routing decision of its own.
+
+`evaluation/arms-results.json` is copied into the image so `GET /api/evaluation` can serve the committed arm comparison to operators. It is optional: the endpoint reports `available: false` if the file is absent.
 
 Use one Railway project with three services in the same region:
 
@@ -35,6 +39,12 @@ Set these on both application services through Railway variables, never in Git o
 | OPENAI_REASONING_EFFORT | `high` |
 | OPENAI_MAX_OUTPUT_TOKENS | `8192` |
 | OPENAI_EMBEDDING_MODEL | `text-embedding-3-small` |
+| RELAY_PIPELINE | `single` — the shipped intake arm; `deterministic` and `multi` are the alternatives |
+| RELAY_IMAGE_DETAIL | Unset (`auto`) — detail level for a chat screenshot sent to the intake role |
+| RELAY_INTAKE_INLINE | Unset — leave unset in the cloud so the multi arm runs on the worker |
+| OPENAI_PRICE_INPUT_PER_M | Unset — overrides the configured model's input price from `config/pricing.json` |
+| OPENAI_PRICE_CACHED_INPUT_PER_M | Unset — overrides the cached-input price |
+| OPENAI_PRICE_OUTPUT_PER_M | Unset — overrides the output price |
 | JIRA_EMAIL | Existing integration account |
 | JIRA_API_TOKEN | Existing authorized Jira token; currently expires September 12, 2026 |
 | JIRA_CONFIG_JSON | JSON contents of the local ignored `config/jira.json` |
@@ -75,6 +85,8 @@ The initial cloud token is in the owner-only ignored `.local/railway-session.tok
 Until GitHub source access is connected, deploy a clean archive of a CI-verified commit with `railway up PATH --path-as-root --service relay-web --detach`, then the same archive with `--service relay-worker`. Keep credentials exclusively in Railway variables. The checked-in infrastructure definition currently matches the CLI-managed service configuration; after connecting GitHub, run `railway config pull` without `--include-variables` to record that source change.
 
 ## Operations and limits
+
+The multi-agent intake release adds two additive migrations. `003_agent_traces.sql` creates `agent_runs` and `agent_steps` for persisted agent traces; `004_intake_images.sql` adds `origin` and `message_id` columns to `report_attachments` for chat screenshots. Both are `IF NOT EXISTS` / `ADD COLUMN IF NOT EXISTS` and safe to re-run. Neither removes or rewrites existing records, and an older release ignores both, so rollback needs no schema change.
 
 The ticket-review release adds migration `002_ticket_review.sql`, which creates versioned reviews, bounded attachment storage and an approval trigger. Retain that trigger on rollback: an older worker must not send a new unapproved report. Older releases cannot render pending review forms, so prefer a forward fix when reviews are active. No migration removes historical records, and no object-storage or additional Railway service is required.
 

@@ -18,6 +18,17 @@ npm run live
 
 Open http://127.0.0.1:3000. This builds the static React interface and starts the Python API server and background worker together. Install Node 22 and uv, then run `npm ci` and `uv sync --frozen` first. Stop another Relay server on port 3000 before running it. Ctrl-C stops the processes. PostgreSQL must be running on the existing local port 55432.
 
+After pulling this release, apply the additive migrations to an existing local live database before
+running `npm run live`: `relay.local` does not migrate on startup.
+
+```sh
+uv run python -c "import asyncio; from relay import db; asyncio.run(db.migrate())"
+```
+
+Use `npm run setup` for the demo database instead. Migrations `003_agent_traces.sql` (agent traces)
+and `004_intake_images.sql` (chat screenshots) are idempotent and safe to re-run; neither touches
+existing records.
+
 Live data uses the separate `relay_sandbox` database. It contains the 20 synthetic articles and 100 synthetic historical cases from the original demo, plus operator `saksham`. These are demonstration data, not real Jira history or reviewed company procedures. The original `relay` demo database is preserved. No synthetic incident advisories were copied into the live database.
 
 To obtain a new eight-hour login token, run:
@@ -43,6 +54,10 @@ The September 5 model upgrade uses Relay's own workflow, not the Codex SDK. The 
 Terra account access and structured extraction were verified. The original monitor scenario and five additional live checks passed: previously attempted monitor steps without a handoff request; a new monitor issue without invented attempts; routine VPN/password change; threat evidence despite instructions to ignore it; and instructions to fabricate impact/attempts. These are focused development regressions, not a new holdout score or evidence that Terra outperforms the old model on representative data.
 
 The upgraded authenticated HTTP-to-worker-to-Jira regression created **HELP-4**: "External monitor flickers when connected through USB-C dock". Jira read-back confirmed Endpoint, Medium, readable facts and attempted steps. Relay offered no repeated procedure; replaying the same submission returned the same report with one create operation. Routing arrives as a separate update after creation, so verification waited for both operations to succeed. HELP-3 is retained as the before-upgrade example. All 49 automated tests, TypeScript and the optimized production build passed after the implementation change.
+
+A live local multi-arm check on September 7, 2026 sent a chat screenshot through the worker intake
+path. The report reached review with a calibrated confidence value and a four-step agent trace. It was
+not approved, so no Jira request was created.
 
 Security-related reports remain blocked from external delivery; a queue named Security Review does not implement issue-security permissions.
 

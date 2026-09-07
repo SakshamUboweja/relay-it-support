@@ -1,6 +1,6 @@
 # Ticket verification and requester approval
 
-Relay now uses two model roles in live mode: the intake agent extracts grounded facts, then an independent verifier checks the proposed Jira ticket against the original messages, explicit requester edits and current Jira fields. They use distinct instructions and structured outputs with the configured `gpt-5.6-terra`/high model. This is an application-orchestrated two-agent workflow; neither agent can approve or write to Jira. Demo verification is explicitly deterministic, without an AI call.
+Relay uses at least two model roles in live mode: the intake stage extracts grounded facts (with one or two agent roles, depending on the configured arm — see MULTI_AGENT_PLAN.md), then an independent verifier checks the proposed Jira ticket against the original messages, explicit requester edits and current Jira fields. They use distinct instructions and structured outputs with the configured `gpt-5.6-terra`/high model. This is an application-orchestrated workflow; no agent can approve or write to Jira. Demo verification is explicitly deterministic, without an AI call.
 
 ## Employee flow
 
@@ -9,6 +9,8 @@ Relay now uses two model roles in live mode: the intake agent extracts grounded 
 3. Edit fields and choose **Save and recheck**. The verifier checks the new version. Missing fields, unsupported claims, security concerns and verifier failures block approval. This is a consistency check, not a guarantee that every fact is correct.
 4. Attach up to three PNG, JPEG, PDF, UTF-8 TXT or LOG files, up to 5 MiB each. Files are staged in Relay and are not sent to the verifier. If Jira requires an attachment, at least one is necessary.
 5. Choose **Approve and submit**. Only the report owner can approve. The exact field values, version and file selection are frozen and audited, then the worker creates the Jira request. Open the resulting Jira link to inspect it. Attachment delivery has its own visible status.
+
+The review form also shows how the route was reached. A confidence badge carries the calibrated score and its band, and **Why this team?** expands into the signals behind it — the agent's own estimate, triage/reviewer agreement, support from reviewed similar cases, the deterministic scoring margin and whether extraction validated on the first attempt. A pipeline chip names the intake arm that ran (`deterministic`, `single` or `multi`). Operators see more in the decision record: the ranked candidate teams with their scores, and a per-run timeline of every agent step with its role, prompt version, tool calls, tokens, estimated cost and latency. A chat message may carry one screenshot (PNG or JPEG, up to 5 MiB). It is shown to the intake role only — never to the verifier — and is staged as an ordinary attachment for approval; if the Jira request type does not accept attachments it is deleted while the review is prepared and the requester is told it informed intake but will not be sent. See MULTI_AGENT_PLAN.md for the arms and the bounded lanes a model may use.
 
 The user selected review inside Relay. This is a form generated from Jira metadata, not an embedded Jira portal or browser automation. Actual Jira fields are discovered through the [request-type field API](https://developer.atlassian.com/cloud/jira/service-desk/rest/api-group-servicedesk/). Attachments use Jira's [issue attachment API](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-attachments/). Linked Atlassian Forms/Assets and complex picker fields are not generically implemented; unsupported required fields block submission rather than disappear.
 
@@ -23,7 +25,7 @@ The user selected review inside Relay. This is a form generated from Jira metada
 
 ## Verification
 
-144 automated tests pass, including 66 new tests for verifier grounding, real-field contracts, ownership, stale approvals, database guards, schema changes, file validation/quotas, upload reconciliation, edit sanitation and failure recovery. The original 120 deterministic policy cases still pass unchanged; this feature does not claim improved routing accuracy.
+310 Python tests and 52 web tests pass. That includes 66 tests for verifier grounding, real-field contracts, ownership, stale approvals, database guards, schema changes, file validation/quotas, upload reconciliation, edit sanitation and failure recovery. The original 120 deterministic policy cases still pass unchanged; this feature does not claim improved routing accuracy.
 
 Local live browser/API test created **HELP-10** after explicit approval. Intake and independent verification used Terra/high. Browser edits required rechecking; a synthetic file was staged through the HTTP endpoint (Chrome extension file selection lacked file-URL permission). Before approval there were no Jira operations. Jira read-back matched the approved summary and description exactly, confirmed Endpoint/Medium, and showed one 205-byte attachment. Local file bytes were cleared after delivery. The browser retained the locked approved preview and attachment success after reload.
 

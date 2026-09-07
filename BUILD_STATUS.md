@@ -16,6 +16,20 @@
 - [x] 120-scenario dataset, frozen policy hash, measured baseline comparisons and failed examples.
 - [x] README, sample mapping/environment, local startup, data handling and opt-in sandbox smoke command.
 
+## Multi-agent comparison
+
+- [x] Three selectable intake arms behind `RELAY_PIPELINE` — `deterministic`, `single`, `multi` — sharing one evidence packet and one deterministic policy. Budgets per arm in `config/policy.json`; a run over budget stops as `budget_exhausted` and the deterministic decision stands. Prompts `relay-intake-v3`, `relay-single-v2`, `relay-triage-v1`, `relay-reviewer-v1`.
+- [x] Bounded proposal lanes in `relay/intake_evidence.py`: a model may tie-break to a service named in the message, abstain, or cite a validated blocked-work, broad-impact or security quote. It never writes a priority, escalation or visibility string, never selects Security Review, and is ignored on an already restricted report. The reviewer may request human review or restrict on a validated quote only.
+- [x] Calibrated confidence with five weighted signals, per-arm isotonic breakpoints in `config/calibration.json`, and a plain-language "why" shown to the requester. The calibration table was fitted after the restricted-confidence change, on the dev split only.
+- [x] Persisted agent traces in `agent_runs` and `agent_steps` (migration `003_agent_traces.sql`, additive), with per-step usage, estimated cost from `config/pricing.json` and latency; shown as an operator timeline.
+- [x] Screenshot intake: multipart `POST /api/intake` accepts one PNG or JPEG up to 5 MB (migration `004_intake_images.sql`, additive). It is shown to the intake role only, staged as an attachment, and deleted when the Jira request type does not accept attachments. `python-multipart` added.
+- [x] Asynchronous multi-arm intake: in live mode the API answers `{"state":"processing"}` and the worker's `resume_intakes` completes the pipeline and prepares the review. `RELAY_INTAKE_INLINE=1` forces inline execution locally.
+- [x] Arm comparison harness (`npm run eval -- --arm all --split all --effort medium`) with a resumable cache under `evaluation/cache/`, calibration fitted on dev only, results in `evaluation/arms-results.json` / `evaluation/ARMS-RESULTS.md`, and `GET /api/evaluation` for operators. `--arm rules-v1` runs the legacy runner, pinned to scoring v1.
+- [x] Frontend: confidence badge and "Why this team?" in the review form, pipeline chip, operator decision record with candidate teams and the agent timeline, Operations pipeline-comparison panel, chat screenshot attach, and polling that pauses on hidden tabs.
+- [x] 310 Python tests and 52 web tests pass. `npm run preflight` prints `{"vision": true}` for the image path.
+- [x] Live comparison run on 2026-09-07 with `gpt-5.6-terra` at reasoning effort medium; about $3 of live spend across all runs. Held-out routing accuracy: rules-v1 43/60, rules-v2 43/60, single 59/60, multi 58/60; security recall 3/10, 3/10, 10/10, 10/10. `RELAY_PIPELINE=single` and scoring v2 shipped as the defaults. Numbers and caveats in `evaluation/ARMS-RESULTS.md`; design in `MULTI_AGENT_PLAN.md`.
+- [x] Resolved the retained HELP-7 routing regression: laptop + Wi-Fi evidence no longer ties into a Service Desk fallback. Scoring v2 routes it to Network, and so do both model arms.
+
 ## Verified this session
 
 - [x] Ticket-review release `d6af9d6` deployed after 144 tests and GitHub CI passed. Local browser/API HELP-10 and hosted HELP-11 verified two model roles, exact approved Jira fields, zero pre-approval writes, stale/repeated approval protection, and one attachment per ticket. Existing cloud records remain intact.
@@ -41,16 +55,14 @@
 
 ## Pending or incomplete compared with the full brief
 
-- [ ] Live LLM-only comparison and representative routing evaluation; the small setup checks are not an evaluation benchmark.
+- [ ] Representative routing evaluation on human-reviewed labels and a freshly authored holdout. The measured arm comparison below used agent-authored labels on a split already seen during development.
 - [ ] Human review of evaluation truth and a fresh holdout before any post-evaluation tuning claims.
-- [ ] Improve security recognition and routing on development data; current heldout security recall is 3/10.
 - [ ] Approved semantic reranking with a second model call and broader fact-fidelity evaluation.
 - [ ] Provider-enforced restricted security destination; all security handoffs currently remain local.
 - [ ] Live related-request linking and configurable mandatory provider logging for shared-incident reports.
 - [ ] Broad browser, keyboard, screen-reader and responsive interaction QA.
 - [ ] Supported WebMCP contract verification.
 - [x] Web/worker + persistent PostgreSQL deployment on Railway; this architecture is not Sites Worker-compatible.
-- [ ] Resolve the retained HELP-7 routing regression: laptop + Wi-Fi evidence produces a conflict and Service Desk fallback instead of Network.
 - [ ] Production SSO, operational hardening, comprehensive DLP, production incident policies (outside MVP scope).
 
-The local and hosted MVPs and ordinary Jira handoff are verified. Complete evaluation, remaining provider features, GitHub automatic deployment and production readiness remain incomplete. Independent verification and requester approval are implemented; MULTI_AGENT_PLAN.md proposes broader autonomous triage and investigation.
+The local and hosted MVPs and ordinary Jira handoff are verified. Human-reviewed evaluation labels, remaining provider features, GitHub automatic deployment and production readiness remain incomplete. Independent verification, requester approval and the three intake arms are implemented; MULTI_AGENT_PLAN.md is now the design record of what shipped and holds the measured comparison.

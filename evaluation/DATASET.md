@@ -2,7 +2,7 @@
 
 ## Dataset status and interpretation
 
-`eval-scenarios.json` contains 120 unique, synthetic first-message scenarios: 60 development and 60 held out. Each split contains 12 scenario families with five examples each. Family IDs never cross the split. The development set covers password-change VPN authentication, unreachable VPN gateways, SSO lockout, Wi-Fi joining, laptop displays, Atlas runtime errors, vague access, procurement/approval, unsolicited MFA, individual work blocking, general security information, and multiple unresolved services. The held-out set introduces established tunnel loss, SSO session loops, geographically bounded Wi-Fi symptoms, boot/power failures, Atlas record actions, HR administration, potential Atlas data exposure, security negation, reported broad critical loss, unidentified failure objects, historical red herrings, and phishing credential disclosure.
+`scenarios.json` contains 120 unique, synthetic first-message scenarios: 60 development and 60 held out. Each split contains 12 scenario families with five examples each. Family IDs never cross the split. The development set covers password-change VPN authentication, unreachable VPN gateways, SSO lockout, Wi-Fi joining, laptop displays, Atlas runtime errors, vague access, procurement/approval, unsolicited MFA, individual work blocking, general security information, and multiple unresolved services. The held-out set introduces established tunnel loss, SSO session loops, geographically bounded Wi-Fi symptoms, boot/power failures, Atlas record actions, HR administration, potential Atlas data exposure, security negation, reported broad critical loss, unidentified failure objects, historical red herrings, and phishing credential disclosure.
 
 **Expected labels were authored by an AI agent and have not been human reviewed.** A human must review and freeze the labels before these results support claims about routing quality. This is a synthetic regression corpus, not a validated benchmark or evidence of real employee outcomes. Human review was unavailable during authoring. The scenario author did not inspect the application's router or routing tests.
 
@@ -11,6 +11,21 @@ The `team` label describes the appropriate destination, including general-intake
 `escalation` is an action category, not a factual claim that an incident is confirmed. `security` means suspected compromise or exposure and restricted review, `urgent` means expedited review of reported broad loss of the fixture's critical Atlas service, and `elevated` means individual work is explicitly blocked without a usable workaround. `none` does not assert low impact; unknown impact/urgency must remain unknown with the configured provisional priority. In particular, urgent Atlas examples are user reports, not authoritative outage confirmations.
 
 All six destination labels match the brief exactly. Service IDs are `vpn`, `sso`, `wifi`, `laptop`, `atlas`, and `null`. Family separation prevents exact-family paraphrase leakage but does not establish statistical independence: language and service categories necessarily overlap. The corpus has deliberate challenge-case balance and does not estimate production case prevalence.
+
+## Arm comparison
+
+The four intake arms — `rules-v1`, `rules-v2`, `single`, `multi` — were run over this corpus with
+`npm run eval -- --arm all --split all --effort medium`. The measured table, the per-case failures and
+the caveats are in [ARMS-RESULTS.md](ARMS-RESULTS.md); the design behind the arms is in
+[../MULTI_AGENT_PLAN.md](../MULTI_AGENT_PLAN.md).
+
+Confidence calibration is fitted on the **dev split only**, after the restricted-confidence change,
+and the published numbers come from a run made under the shipped defaults (routing scoring v2,
+`RELAY_PIPELINE=single`). The dev-split ECE of 0.000 is therefore **in-sample** and is not evidence of
+calibration quality; only the heldout ECE is out-of-fit, and even that split was already inspected
+during development, so it is a holdout-informed regression comparison rather than a clean holdout
+claim. `--arm rules-v1` on its own runs the legacy deterministic runner, which stays pinned to routing
+scoring v1 so `python-RESULTS.md` keeps its original label.
 
 ## Run discipline and reporting
 
