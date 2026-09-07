@@ -5,11 +5,15 @@ from uuid import uuid4
 import httpx
 import pytest
 
+from relay import review, workflow
+from relay.agents import Pipeline
+from relay.agents.schemas import PipelineResult
 from relay.api import app
 from relay.auth import issue_session
 from relay.cli import seed_demo
+from relay.connector import DemoConnector
 from relay.db import query
-from relay.jobs import process_operation
+from relay.jobs import process_operation, resume_intakes
 
 pytestmark = pytest.mark.usefixtures("isolated_db")
 
@@ -230,3 +234,88 @@ async def test_invalid_input_and_restricted_correction(client):
     assert (await client.get("/api/reports", params={"id": id})).json()["report"][
         "provider_key"
     ] is None
+
+
+async def test_live_multi_intake_returns_processing_and_the_worker_completes_it(client, monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("APP_ORIGIN", "https://relay.test")
+    monkeypatch.setenv("RELAY_PIPELINE", "multi")
+    monkeypatch.setenv("OPENAI_MODEL", "test-model")
+    monkeypatch.delenv("RELAY_INTAKE_INLINE", raising=False)
+    client.base_url = httpx.URL("https://relay.test")
+    client.headers["origin"] = "https://relay.test"
+    client.cookies.set("relay_session", await issue_session("maya"))
+    body = {"text": "VPN broke after I changed my password", "submissionKey": str(uuid4())}
+    created = await client.post("/api/intake", json=body)
+    assert created.status_code == 200
+    id = created.json()["id"]
+    assert created.json() == {"id": id, "state": "processing"}
+    report = (await query("SELECT state FROM reports WHERE id=$1", [id])).rows[0]
+    assert report["state"] == "processing"
+    assert (await query("SELECT 1 FROM ticket_reviews WHERE report_id=$1", [id])).rows == []
+    runs = (await query("SELECT 1 FROM agent_runs WHERE report_id=$1", [id])).rows
+    assert runs == []
+
+    async def no_sources(text, user):
+        return []
+
+    async def run(ctx, rt):
+        extraction = {
+            "summary": "VPN fails after a password change",
+            "service": "vpn",
+            "serviceQuote": "VPN",
+            "symptomQuote": "VPN broke",
+            "impactQuote": None,
+            "urgencyQuote": None,
+            "deviceQuote": None,
+            "startedQuote": None,
+            "workaroundQuote": None,
+            "attemptedStepsQuotes": [],
+            "supportRequestQuote": None,
+            "procedureAttemptedQuote": None,
+            "securityQuote": None,
+            "evidenceIds": ctx.message_ids,
+        }
+        finished = rt.finish(
+            pipeline=ctx.pipeline, scoring="v1", status="completed", outcome={"extraction": "validated"}
+        )
+        return PipelineResult(run=finished, extraction=extraction, summary=extraction["summary"])
+
+    monkeypatch.setattr(workflow, "retrieve", no_sources)
+    monkeypatch.setattr(workflow, "build_pipeline", lambda name, extract: Pipeline(name, run))
+
+    async def demo_connector():
+        return DemoConnector()
+
+    monkeypatch.setattr(review, "connector", demo_connector)
+    await resume_intakes()
+    report = (await query("SELECT state,summary,decision FROM reports WHERE id=$1", [id])).rows[0]
+    assert report["state"] == "awaiting_approval"
+    assert report["summary"] == "VPN fails after a password change"
+    assert report["decision"]["pipeline"] == "multi"
+    assert report["decision"]["team"] == "Identity & Access"
+    assert (await query("SELECT 1 FROM ticket_reviews WHERE report_id=$1", [id])).rows
+    run_row = (await query("SELECT pipeline,status FROM agent_runs WHERE report_id=$1", [id])).rows
+    assert run_row == [{"pipeline": "multi", "status": "completed"}]
+
+
+async def test_inline_override_keeps_the_multi_arm_in_the_request(client, monkeypatch):
+    monkeypatch.setenv("APP_MODE", "live")
+    monkeypatch.setenv("APP_ORIGIN", "https://relay.test")
+    monkeypatch.setenv("RELAY_PIPELINE", "multi")
+    monkeypatch.setenv("RELAY_INTAKE_INLINE", "1")
+    client.base_url = httpx.URL("https://relay.test")
+    client.headers["origin"] = "https://relay.test"
+    client.cookies.set("relay_session", await issue_session("maya"))
+    seen = []
+
+    async def process(report_id, user):
+        seen.append(report_id)
+
+    monkeypatch.setattr(workflow, "process_intake", process)
+    monkeypatch.setattr(review, "prepare_review", process)
+    body = {"text": "VPN broke after I changed my password", "submissionKey": str(uuid4())}
+    created = await client.post("/api/intake", json=body)
+    assert created.status_code == 200
+    assert created.json() == {"id": created.json()["id"]}
+    assert seen == [created.json()["id"]] * 2

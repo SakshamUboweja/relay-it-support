@@ -159,6 +159,14 @@ async def intake(req: Request):
         mode="json", exclude_none=True
     )
     report_id = await save_intake(data, user)
+    if (
+        select_pipeline() == "multi"
+        and mode() == "live"
+        and os.getenv("RELAY_INTAKE_INLINE") != "1"
+    ):
+        # The multi-agent arm makes several model calls; the worker's `resume_intakes`
+        # drives processing and review preparation for every `processing` report.
+        return response({"id": report_id, "state": "processing"})
     await process_intake(report_id, user)
     from .review import prepare_review
 
