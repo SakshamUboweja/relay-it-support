@@ -39,6 +39,7 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
+import dynamic from 'next/dynamic';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { TicketReview } from '@/components/ticket-review';
 import { PipelineChip } from '@/components/pipeline-chip';
@@ -89,6 +90,11 @@ const labels: Record<string, string> = {
   resolved: 'Resolution saved',
   operator_review: 'Needs operator review',
 };
+// Charts are heavy and operator-only, so the panel arrives on its own chunk when opened.
+const PipelineComparison = dynamic(
+  () => import('@/components/pipeline-comparison'),
+  { ssr: false, loading: () => <p className="small">Loading comparison…</p> },
+);
 async function api<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(path, {
     method: body ? 'POST' : 'GET',
@@ -113,7 +119,8 @@ export default function Home() {
     [filter, setFilter] = useState('all');
   const [correctionTeam, setCorrectionTeam] = useState<string>('Service Desk'),
     [correctionPriority, setCorrectionPriority] = useState<string>('normal'),
-    [reason, setReason] = useState('');
+    [reason, setReason] = useState(''),
+    [comparisonOpen, setComparisonOpen] = useState(false);
   const pending = useRef<{ body: unknown; signature: string } | null>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const bootstrap = useCallback(async () => {
@@ -977,6 +984,13 @@ export default function Home() {
                     <small>Security reports remain restricted</small>
                   </div>
                 </div>
+                <details
+                  className="ops-comparison"
+                  onToggle={(e) => setComparisonOpen(e.currentTarget.open)}
+                >
+                  <summary>Pipeline comparison</summary>
+                  {comparisonOpen && <PipelineComparison />}
+                </details>
                 <div className="operator-table">
                   <Table>
                     <TableHeader>

@@ -2201,3 +2201,119 @@ input {
     display: none;
   }
 }
+.ops-comparison {
+  margin-top: 25px;
+  background: var(--jsm-surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 16px 20px;
+  font-size: 14px;
+}
+.ops-comparison > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 500;
+  color: var(--jsm-text);
+}
+.ops-comparison > summary::-webkit-details-marker {
+  display: none;
+}
+.ops-comparison > summary::before {
+  content: '▸';
+  display: inline-block;
+  width: 14px;
+  color: var(--jsm-text-subtlest);
+}
+.ops-comparison[open] > summary::before {
+  content: '▾';
+}
+.comparison-body {
+  margin-top: 16px;
+}
+.comparison-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.comparison-meta {
+  color: var(--jsm-text-subtle);
+  font-size: 13px;
+}
+.comparison-meta ul {
+  margin: 8px 0 0 16px;
+  list-style: disc;
+}
+.comparison-warning {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--jsm-warning-border);
+  border-radius: 4px;
+  background: var(--jsm-warning-bg);
+  color: var(--jsm-warning-text);
+}
+.comparison-error {
+  align-items: center;
+  justify-content: space-between;
+}
+.ops-comparison .empty.compact {
+  min-height: 0;
+  padding: 24px 0;
+}
+.comparison-table {
+  margin-top: 16px;
+  overflow-x: auto;
+}
+.comparison-table th,
+.comparison-table td {
+  white-space: nowrap;
+  padding: 10px 12px;
+}
+.comparison-table td strong {
+  color: var(--jsm-text);
+  font-weight: 600;
+}
+.comparison-charts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 22px;
+}
+.comparison-figure {
+  margin: 0;
+  min-width: 0;
+}
+.comparison-figure figcaption {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--jsm-text);
+  margin-bottom: 8px;
+}
+.comparison-chart {
+  width: 100%;
+  height: 240px;
+  aspect-ratio: auto;
+}
+.comparison-tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  color: var(--jsm-text-subtle);
+}
+.comparison-tip strong {
+  margin-left: auto;
+  color: var(--jsm-text);
+  font-variant-numeric: tabular-nums;
+}
+.comparison-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+@media (min-width: 1000px) {
+  .comparison-charts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
