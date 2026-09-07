@@ -29,6 +29,7 @@ from relay.evaluate import evaluate, policy_hash
 from relay.evaluate_arms import EvalOptions, evaluate_arms
 from relay.intake_prompt import INTAKE_PROMPT, INTAKE_PROMPT_VERSION
 from relay.model import Extraction
+from relay.policy import policy
 
 pytestmark = pytest.mark.usefixtures("isolated_db")
 
@@ -236,6 +237,7 @@ async def test_rules_arms_never_call_a_model_and_match_the_legacy_numbers(legacy
     assert row["confidence"]["brier"] is not None and len(row["confidence"]["bins"]) == 5
     assert row["fidelity"]["quoteValidityRate"] == rate(0, 0)
     assert result["model"] is None and result["promptVersions"] == {}
+    assert len(result["caveats"]) == 3 and not any("effort" in c for c in result["caveats"])
     v2 = await evaluate_arms(EvalOptions(arm="rules-v2", split="dev"), client_factory=never)
     assert v2["rows"][0]["scoring"] == "v2"
     assert v2["rows"][0]["routingAccuracy"] != row["routingAccuracy"]
@@ -372,7 +374,10 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
         " billing records.",
         "Model arms ran at reasoning effort medium; production uses"
         f" {os.environ['OPENAI_REASONING_EFFORT']}.",
+        "The single arm saw the first eight seeded sources by id (no retrieval on this text-only"
+        " corpus).",
     ]
+    assert (result["scoring"], result["candidateScoring"]) == ("v2", "v1")
     saved = json.loads((tmp_path / "arms-results.json").read_text())
     assert saved["rows"] == result["rows"] and saved["cases"] == result["cases"]
     markdown = (tmp_path / "ARMS-RESULTS.md").read_text()
@@ -384,13 +389,20 @@ async def test_results_json_and_markdown_have_the_documented_shape(monkeypatch, 
     assert markdown in capsys.readouterr().out
 
 
-async def test_no_write_keeps_the_outputs_and_the_calibration_off_disk(tmp_path):
+async def test_no_write_keeps_the_outputs_and_the_calibration_off_disk(monkeypatch, tmp_path):
     result = await evaluate_arms(
         EvalOptions(arm="rules-v1", split="dev", fit_calibration=True, write=False)
     )
     assert result["rows"][0]["routingAccuracy"]["denominator"] == 60
     assert result["cases"]["rules-v1"]["dev"][0]["confidence"]["calibrated"] is True
     assert sorted(p.name for p in tmp_path.iterdir()) == []
+    # Cache entries are the record of paid calls, so they are written even without outputs.
+    live(monkeypatch)
+    parse = single_parse()
+    await evaluate_arms(options(write=False), client_factory=lambda: mock_client(parse))
+    assert len(cache_files(tmp_path)) == 2 and sorted(p.name for p in tmp_path.iterdir()) == [
+        "cache"
+    ]
 
 
 # --- spend cap and failures -----------------------------------------------------------------
@@ -552,6 +564,13 @@ async def test_the_multi_arm_runs_and_replays_from_the_cache(monkeypatch, tmp_pa
     assert replayed["run"]["usage"] == case["run"]["usage"]
     assert replayed["run"]["modelCalls"] == 4
     assert replayed["confidence"]["raw"] == case["confidence"]["raw"]
+    # Triage ranked its candidates with the configured scoring; flipping it misses the cache.
+    assert entry["candidateScoring"] == "v1" and again["candidateScoring"] == "v1"
+    monkeypatch.setitem(policy, "routingScoring", "v2")
+    flipped = await evaluate_arms(options(arm="multi", ids=["dev-001"]), client_factory=factory)
+    assert parse.await_count == 8 and flipped["cacheHits"] == 0
+    assert flipped["candidateScoring"] == "v2" and flipped["scoring"] == "v2"
+    assert len(list((tmp_path / "cache/multi").glob("dev-001.*"))) == 2
 
 
 # --- the legacy runner stays untouched ----------------------------------------------------
@@ -721,6 +740,12 @@ def test_eval_flags_parse_with_the_documented_defaults():
         True,
         True,
     )
+    no_write = next(
+        a
+        for a in parser._subparsers._group_actions[0].choices["eval"]._actions
+        if a.dest == "no_write"
+    )
+    assert "cache entries are still written" in no_write.help
     with pytest.raises(SystemExit):
         parser.parse_args(["eval", "--arm", "bogus"])
     with pytest.raises(SystemExit):

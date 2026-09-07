@@ -34,7 +34,7 @@ from .eval_metrics import arm_metrics, correct
 from .evaluate import _metric, policy_hash
 from .fixtures import users
 from .model import live_client, model_settings
-from .policy import decide
+from .policy import decide, policy
 
 ARMS = ("rules-v1", "rules-v2", "single", "multi")
 SPLITS = ("dev", "heldout")
@@ -136,6 +136,8 @@ class _Run:
             "effort": options.effort,
             "maxOutputTokens": model_settings()["maxOutputTokens"],
         }
+        # The arms rank their candidates with the configured scoring, whatever compose uses.
+        self.candidate_scoring = policy["routingScoring"]
         self.semaphore = asyncio.Semaphore(max(1, options.concurrency))
         self.spent = 0.0
         self.aborted = False
@@ -242,6 +244,7 @@ class _Run:
             tool_schema_version=TOOL_SCHEMA_VERSION,
             scoring=MODEL_SCORING,
             sources_hash=self.sources_hash,
+            candidate_scoring=self.candidate_scoring,
         )
         path = cache_path(CACHE_DIR, arm, case["id"], key)
         entry = read_entry(path) if self.options.resume else None
@@ -272,6 +275,7 @@ class _Run:
                     "promptVersions": versions,
                     "toolSchemaVersion": TOOL_SCHEMA_VERSION,
                     "scoring": MODEL_SCORING,
+                    "candidateScoring": self.candidate_scoring,
                     "sourcesHash": self.sources_hash,
                     "cachedAt": datetime.now(timezone.utc).isoformat(),
                     "result": serialize_result(result),
@@ -368,17 +372,26 @@ def _calibration_hash() -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
 
-def _caveats(options: EvalOptions) -> list[str]:
+def _caveats(options: EvalOptions, model_arms: list[str]) -> list[str]:
     production = os.getenv("OPENAI_REASONING_EFFORT") or "unset"
-    return [
+    caveats = [
         "Labels are agent-authored and not human reviewed.",
         "The heldout split was already inspected during development (its failures are in"
         " python-results.json); this is a holdout-informed regression comparison, not a clean"
         " holdout claim.",
         f"Costs are estimates from config/pricing.json (version {pricing_version()}), not"
         " billing records.",
-        f"Model arms ran at reasoning effort {options.effort}; production uses {production}.",
     ]
+    if model_arms:
+        caveats.append(
+            f"Model arms ran at reasoning effort {options.effort}; production uses {production}."
+        )
+    if "single" in model_arms:
+        caveats.append(
+            "The single arm saw the first eight seeded sources by id (no retrieval on this"
+            " text-only corpus)."
+        )
+    return caveats
 
 
 def _number(value, digits=3) -> str:
@@ -414,8 +427,8 @@ def _markdown(report: dict) -> str:
         "# Arm comparison results",
         "",
         f"Run: {report['runDate']}. Model: {report['model'] or 'none (rules arms only)'}."
-        f" Effort: {report['effort']}. Scoring: {report['scoring']} for the model arms"
-        " (rules arms carry their own).",
+        f" Effort: {report['effort']}. Scoring: {report['scoring']} for the model arms,"
+        f" candidates ranked with {report['candidateScoring']} (rules arms carry their own).",
         "",
         f"Prompts: {prompts}. Policy SHA-256: {report['policyHash']}."
         f" Calibration SHA-256: {report['calibrationHash'] or 'none'}."
@@ -479,6 +492,7 @@ async def evaluate_arms(options: EvalOptions, *, client_factory=None) -> dict:
         "model": model,
         "effort": options.effort,
         "scoring": MODEL_SCORING,
+        "candidateScoring": run.candidate_scoring,
         "promptVersions": versions,
         "policyHash": policy_hash(ROOT),
         "calibrationHash": _calibration_hash(),
@@ -495,7 +509,7 @@ async def evaluate_arms(options: EvalOptions, *, client_factory=None) -> dict:
             "maxUsd": options.max_usd,
             "fitCalibration": options.fit_calibration,
         },
-        "caveats": _caveats(options),
+        "caveats": _caveats(options, model_arms),
         "rows": rows,
         "cases": results,
     }

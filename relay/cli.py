@@ -343,7 +343,11 @@ def build_parser() -> argparse.ArgumentParser:
     evaluation.add_argument("--concurrency", type=int, default=4)
     evaluation.add_argument("--max-usd", type=float)
     evaluation.add_argument("--fit-calibration", action="store_true")
-    evaluation.add_argument("--no-write", action="store_true")
+    evaluation.add_argument(
+        "--no-write",
+        action="store_true",
+        help="Skip the results, markdown and calibration files; cache entries are still written.",
+    )
     return parser
 
 

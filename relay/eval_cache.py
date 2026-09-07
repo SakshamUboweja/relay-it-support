@@ -36,7 +36,10 @@ def cache_key(
     tool_schema_version: str,
     scoring: str,
     sources_hash: str,
+    candidate_scoring: str,
 ) -> str:
+    """`scoring` is what compose ran with; `candidate_scoring` is `policy["routingScoring"]`,
+    the scoring the arm ranked its candidates with, so a policy flip misses the cache."""
     parts = [
         arm,
         case_id,
@@ -47,6 +50,7 @@ def cache_key(
         tool_schema_version,
         scoring,
         sources_hash,
+        candidate_scoring,
     ]
     return hashlib.sha256("|".join(parts).encode()).hexdigest()[:KEY_LENGTH]
 
