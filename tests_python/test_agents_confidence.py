@@ -12,6 +12,7 @@ from relay.agents.confidence import (
     brier,
     build,
     calibrate,
+    calibration_arm,
     ece,
     features,
     fit_isotonic,
@@ -21,6 +22,7 @@ from relay.agents.confidence import (
     signals,
     why,
 )
+from relay.policy import policy
 
 
 def case(service, team, reviewed=True):
@@ -386,3 +388,66 @@ def test_fit_isotonic_pools_tied_scores_before_the_violators():
     assert calibrate.__module__ == "relay.agents.confidence"
     assert confidence.interpolate(points, 0.35) == pytest.approx(0.75)
     assert confidence.interpolate(points, 0.7) == pytest.approx(0.875)
+
+
+def test_a_restricted_route_ignores_the_agent_and_the_reviewer(tmp_path, monkeypatch):
+    """Lane 1 drops the proposal on a security route, so neither may drag the score down."""
+    path = tmp_path / "calibration.json"
+    path.write_text(json.dumps({"multi": {"breakpoints": [[0.0, 0.0], [1.0, 1.0]]}}))
+    monkeypatch.setattr(confidence, "CALIBRATION_PATH", path)
+    restricted = decision(escalation="security", service=None, team="Security Review")
+    reviewer = {"verdict": "human_review", "agreementProbability": 0.8, "issues": []}
+    doubtful = {**PROPOSAL, "probability": 0.2}
+    found = features(
+        pipeline="multi",
+        decision=restricted,
+        ranked=[],
+        sources=[],
+        extraction_ok=True,
+        proposal=doubtful,
+        reviewer=reviewer,
+    )
+    assert found["agentProbability"] is None and found["agreement"] is None
+    result = build(
+        pipeline="multi",
+        decision=restricted,
+        ranked=[],
+        sources=[],
+        extraction_ok=True,
+        proposal=doubtful,
+        reviewer=reviewer,
+    )
+    assert result["calibrated"] is True and result["value"] >= 0.8
+    assert [s["kind"] for s in result["signals"]] == ["deterministicMargin", "evidenceFidelity"]
+    assert result["signals"][0]["label"] == "Security indicators decided the route"
+
+
+def test_calibration_keys_map_a_live_pipeline_to_the_arm_it_was_fitted_as(tmp_path, monkeypatch):
+    """The fit file is keyed by eval arm; the rules arms carry the scoring they ranked with."""
+    assert calibration_arm("deterministic", "v1") == "rules-v1"
+    assert calibration_arm("deterministic", "v2") == "rules-v2"
+    assert calibration_arm("deterministic") == f"rules-{policy['routingScoring']}"
+    assert calibration_arm("single", "v2") == "single"
+    assert calibration_arm("multi", "v1") == "multi"
+    path = tmp_path / "calibration.json"
+    path.write_text(json.dumps({"rules-v2": {"breakpoints": [[0.0, 0.6], [1.0, 0.9]]}}))
+    monkeypatch.setattr(confidence, "CALIBRATION_PATH", path)
+    ranked = [{"team": "Network", "score": 3}]
+    fitted = build(
+        pipeline="deterministic",
+        scoring="v2",
+        decision=decision(),
+        ranked=ranked,
+        sources=[],
+        extraction_ok=True,
+    )
+    assert (fitted["raw"], fitted["value"], fitted["calibrated"]) == (1.0, 0.9, True)
+    unfitted = build(
+        pipeline="deterministic",
+        scoring="v1",
+        decision=decision(),
+        ranked=ranked,
+        sources=[],
+        extraction_ok=True,
+    )
+    assert (unfitted["value"], unfitted["calibrated"]) == (1.0, False)

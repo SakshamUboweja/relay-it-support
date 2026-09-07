@@ -74,7 +74,10 @@ def features(
     reviewer=None,
 ) -> dict[str, float | None]:
     """Per-signal values in [0, 1]; None means the signal does not apply to this run."""
-    if decision["escalation"] == "security" or len(ranked) == 1:
+    # Lane 1 ignores the proposal on a restricted route, so the agent and its reviewer never
+    # score a decision the security rules made on their own.
+    restricted = decision["escalation"] == "security"
+    if restricted or len(ranked) == 1:
         margin = 1.0
     elif not ranked:
         margin = 0.0
@@ -90,8 +93,8 @@ def features(
     )
     fidelity = {None: None, True: 1.0, False: 0.0, "retried": 0.5}[extraction_ok]
     return {
-        "agentProbability": _agent_probability(proposal, decision),
-        "agreement": _agreement(reviewer),
+        "agentProbability": None if restricted else _agent_probability(proposal, decision),
+        "agreement": None if restricted else _agreement(reviewer),
         "retrievalSupport": support,
         "deterministicMargin": margin,
         "evidenceFidelity": fidelity,
@@ -208,6 +211,13 @@ def interpolate(points: list, x: float) -> float:
     return _clip(points[-1][1])
 
 
+def calibration_arm(pipeline: str, scoring: str | None = None) -> str:
+    """The eval arm a pipeline was fitted as; a rules arm carries the scoring it ranked with."""
+    if pipeline != "deterministic":
+        return pipeline
+    return f"rules-{policy['routingScoring'] if scoring is None else scoring}"
+
+
 def calibrate(arm: str, raw: float) -> tuple[float, bool]:
     """Piecewise-linear calibration when a fitted table exists for the arm; else the raw score."""
     if not CALIBRATION_PATH.exists():
@@ -285,6 +295,7 @@ def build(
     proposal=None,
     reviewer=None,
     degraded: bool = False,
+    scoring: str | None = None,
 ) -> dict:
     found = features(
         pipeline=pipeline,
@@ -296,7 +307,7 @@ def build(
         reviewer=reviewer,
     )
     raw = round(raw_score(found, load_weights()), 4)
-    value, calibrated = calibrate(pipeline, raw)
+    value, calibrated = calibrate(calibration_arm(pipeline, scoring), raw)
     value = round(value, 4)
     band_name = band(value)
     found_signals = signals(

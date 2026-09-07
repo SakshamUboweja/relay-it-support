@@ -138,6 +138,7 @@ def compose_decision(
     )
     d["confidence"] = confidence.build(
         pipeline=ctx.pipeline,
+        scoring=scoring,
         decision=d,
         ranked=d["alternatives"],
         sources=ctx.sources,
